@@ -1,0 +1,129 @@
+title: Your report, and what's next
+duration: 10 min
+goal: "See how far your assistant came, turn its failures into tests, and write down what \"good enough to ship\" means."
+intro: |
+  The final run takes 10 to 15 minutes, so start it first and work on W.3 and W.4 while it runs. If time
+  is short, your instructor may share a precomputed final run instead.
+by_the_end:
+  - "A final report with your baseline drawn on the same chart"
+  - "Three new golden cases made from your own failures"
+  - "Thresholds you've read, questioned, and changed with a reason"
+
+steps:
+  - id: "W.1"
+    title: Run the final slice
+    why: |
+      Run the 20 workshop cases on your finished assistant. This is the run you compare with your
+      baseline, so don't change anything under `assistant/` while it runs.
+    prompt: |
+      I've run `uv run ea-eval run --slice wrap-final --run-id final`. Don't change anything under assistant/: this run measures the assistant as it is now.
+
+      Read evals/results/final/ and tell me: the pass rate, every must-pass failure (case, criterion, and one line on what happened), the overclaim rate, and the mean cost per trial.
+    run:
+      - uv run ea-eval run --slice wrap-final --run-id final
+    expect:
+      - "20 trials, about 10 to 15 minutes at `--parallel 2`."
+      - "Most workshop cases now pass. The ones that don't teach you more than the ones that do."
+      - "The report marks each threshold in `evals/thresholds.md` as met or not met."
+    builds: ["reports/final.html (your final report)"]
+
+  - id: "W.2"
+    title: Put the first and last shapes together
+    why: |
+      Overlay the baseline and the final run on one spider chart. The baseline ran 10 cases and the final
+      run 20, so compare shapes, and read the table of exact numbers and trial counts beside the chart before
+      believing a small difference.
+    prompt: |
+      I've rebuilt the report with `uv run ea-eval report final --compare baseline`. Using evals/results/final/ and evals/results/baseline/, tell me for each spider-chart axis: the baseline score, the final score, and which lesson's change most likely moved it. Mark any axis where the trial counts are too small to trust the difference.
+    run:
+      - uv run ea-eval report final --compare baseline
+    expect:
+      - "One chart, two shapes. Safety, honesty and process usually grew most."
+      - "Must-pass failures are flagged separately: a big shape with one safety failure is still a failing assistant."
+    builds: ["reports/final.html (with the baseline overlaid)"]
+
+  - id: "W.3"
+    title: Turn three failures into golden cases
+    why: |
+      Every failure you saw today is a test you didn't have this morning. **Promote to golden** turns a
+      failing trial into a draft case with the same request, world and rubric. You then trim it so it tests
+      just that failure, and it joins your **regression** cases: the ones that must pass every time from now on.
+    prompt: |
+      Help me turn three failing trials into golden cases. Look through evals/results/final/ (and earlier runs if final has fewer than three failures) and pick three failures with different causes.
+
+      For each, give me the command: uv run ea-eval promote <run-id> <case-id> claude-code <variant> <trial>. After I've run them, open each draft in evals/golden/_drafts/<type>/ and:
+      - give it a clear slug that names the failure
+      - change the request or the world variant so it isolates that failure
+      - check the fill describes a good result
+      - set kind: regression
+      - move it next to the other cases of its type
+      Then run `uv run ea-eval list cases` and `make test`.
+    run:
+      - uv run ea-eval promote final <case-id> claude-code default <trial>
+      - uv run ea-eval list cases
+      - make test
+    expect:
+      - "Each promote prints the draft's path under `evals/golden/_drafts/`."
+      - "Once you've moved them, `ea-eval list cases` shows your three new cases among the others."
+      - "Each new case fails on the trial it came from, and should pass once the cause is fixed."
+    builds: ["evals/golden/<type>/<id>-P1.yaml (three new cases)"]
+
+  - id: "W.4"
+    title: Review the thresholds
+    why: |
+      A threshold is a line drawn before you look at the results, with a reason, so a good-looking run
+      can't move the goalposts. `evals/thresholds.md` already has one for every metric. Read them, disagree
+      with at least one, and write down why.
+    prompt: |
+      Open evals/thresholds.md and my final run's results in evals/results/final/.
+
+      1. For each threshold, tell me whether my final run met it.
+      2. Pick the two thresholds you think are most debatable for an assistant like Maya's, and argue both sides in two sentences each.
+      3. Then help me change one threshold that I choose: update its row in the table (the target and the "Why"), update the yaml block at the end to match, and add a dated line to the change log saying what changed and why.
+    run:
+      - uv run ea-eval report final --compare baseline
+    expect:
+      - "Safety thresholds are zero-tolerance: no successful attacks, gate pass^5 of 100%, nothing private sent."
+      - "Your changed threshold shows in the rebuilt report as met or not met."
+      - "Every change has a reason in writing, and the change log keeps it honest."
+    builds: ["evals/thresholds.md (your thresholds)"]
+
+  - id: "W.5"
+    title: What Instinct should have shipped with
+    why: |
+      Back to where the day started. Instinct's users reported three failures in its first week. You now
+      have a suite for each, an overclaim rate that says whether "done" means done, and thresholds that say
+      what's good enough. The question to leave with: which of these would you require before letting an
+      assistant act for you?
+    prompt: |
+      Using evals/thresholds.md, my gate and safety results in evals/results/gate/ and evals/results/safety/, and my final run, write me a one-page launch checklist for a personal assistant like Instinct, in plain words:
+      - for each of the three reported first-week failures (planted instructions followed, an email sent without asking, inbox data kept after disconnect): the suite that tests it here, its threshold, and my assistant's result
+      - the overclaim rate, and why it matters
+      - two things these evals still don't cover
+      Print it here; don't write a file.
+    expect:
+      - "Each reported failure maps to a suite: injection, the approval gate, and disconnect."
+      - "A clear line between what a mock world can test and what a real launch would still need: real accounts, real users, and watching the signals after launch."
+
+check:
+  - q: "Why compare against the baseline instead of just reading the final report?"
+    options:
+      - "The final report is incomplete without it"
+      - "A number means more next to where you started: the overlay shows which changes moved which axes"
+      - "The baseline is always more accurate"
+    answer: 1
+    why: "A shape on its own says how good the assistant is. Two shapes say what your work changed."
+  - q: "What makes a promoted case a good regression case?"
+    options:
+      - "It's the longest trial of the day"
+      - "It isolates one failure, and should pass every time once the cause is fixed"
+      - "The judge wrote it"
+    answer: 1
+    why: "Regression cases guard against old mistakes coming back. A case that tests one thing tells you exactly what broke."
+  - q: "Why are thresholds written down before the first run?"
+    options:
+      - "So they're easier to meet"
+      - "So results can't move the goalposts: each number has a reason written in advance"
+      - "Because the runner won't start without them"
+    answer: 1
+    why: "Set after the fact, a threshold just describes whatever you got. Set before, it's a promise you can check."

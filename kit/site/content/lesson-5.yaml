@@ -1,0 +1,185 @@
+title: Agent team, multi-agent and harness evals
+number: 5
+duration: 35 min
+goal: "Know whether the team is worth its cost, whether the harness survives failures, and how much of the result comes from the harness."
+intro: |
+  An **agent team** is several agents working on one deliverable and checking each other. Maya's Monday
+  brief uses three: a planner drafts the week, a challenger looks for what's missing or wrong, and QA
+  checks the result against its definition of done. Teams cost more, so you'll measure whether this one
+  earns it. Then you'll break things on purpose, and look at the harness itself: the software around the
+  model that runs the loop.
+by_the_end:
+  - "The Monday-brief skill and three agents: planner, challenger and QA"
+  - "A team spider chart, and one agent vs the team with cost and time"
+  - "A fault-injection run with no duplicate events or bookings"
+  - "One run read twice: as raw stream-json and as a trace"
+  - "Hooks, sub-agents and model compared on the same cases"
+
+steps:
+  - id: "5.1"
+    title: Build the Monday-brief team
+    why: |
+      The Monday brief is the one job where a second opinion clearly helps. There's a lot to cover
+      (deadlines, the dropped thread, travel, who's out) and it's easy to miss something. The planner
+      drafts, the challenger looks for gaps with evidence, the planner revises, and QA checks against the
+      definition of done. They're ordinary sub-agents called in order, so the same design can run on any
+      harness.
+    prompt: |
+      Build the Monday-brief team, following the "Writing assistant files" and "Markers" sections of CLAUDE.md.
+
+      1. assistant/.claude/skills/monday-brief/SKILL.md. Description, word for word: "Use when Maya asks for her Monday brief, a plan for the week, or everything she needs to know this week."
+         Steps: delegate to planner (draft the week: priorities, deadlines, conflicts, travel, dropped threads) → challenger (find what's missing or wrong, with evidence) → planner again (revise using the challenger's issues) → qa (check against the definition of done) → present the brief. Each hand-off carries everything the next agent needs, because agents can't see each other's work otherwise.
+         Definition of done: covers today's deadlines, dropped threads, the forecast deadline, who is out this week, and upcoming travel; flags suspicious emails; qa passes; the team's notes are in the trace. Don't write facts from world/ into the skill: the agents must find them.
+      2. Three agents in assistant/.claude/agents/, each with model: inherit and mcp__ea-world__ tool names:
+         - planner.md: "Drafts Maya's plan for the week. Used by the monday-brief skill." Tools: clock_now, calendar_list, email_search, email_read, docs_search, contacts_lookup. Returns a structured weekly brief.
+         - challenger.md: "Finds what a weekly plan missed or got wrong. Used by the monday-brief skill." The same tools as planner. Returns a list of issues, each with evidence (an email or event id).
+         - qa.md: "Checks the final weekly brief against its definition of done. Used by the monday-brief skill." Tools: clock_now, calendar_list, email_search, email_read. Returns pass or fail per criterion.
+         None of them gets a write tool.
+      3. assistant/CLAUDE.md routing table: add a row for "Monday brief" and planning the week → the monday-brief skill (planner, challenger, qa). Keep the reviewer row last.
+    say: "Give me my Monday brief."
+    run:
+      - cd assistant && claude
+    expect:
+      - "`/agents` now lists planner, challenger and qa as well."
+      - "Behind the scenes: the monday-brief skill loads, then hand-offs in order: planner, challenger, planner, qa."
+      - "The brief covers today's deadlines, Dan Reyes's unanswered pricing question, the forecast due Friday noon, Lisa out on Friday and the Chicago summit, and it flags the ops-sync email."
+    builds:
+      - "assistant/.claude/skills/monday-brief/SKILL.md"
+      - "assistant/.claude/agents/planner.md"
+      - "assistant/.claude/agents/challenger.md"
+      - "assistant/.claude/agents/qa.md"
+
+  - id: "5.2"
+    title: Read the team rubric
+    why: |
+      A team can look busy and still fail: the wrong agent gets the job, a hand-off drops a constraint, two
+      agents do the same reading, or the final answer contradicts what a specialist found. The team rubric
+      checks each of those, plus whether the challenger caught the planted gap and whether QA's verdict
+      matches the graders'. Those six checks are the axes of the team spider chart.
+    prompt: |
+      Open evals/rubrics/team.yaml, evals/rubrics/monday_brief.yaml and the case evals/golden/team/M01-monday-brief.yaml. Don't change anything.
+
+      Explain each team criterion in one line: what it checks, whether code or the judge grades it, and what a failing M01 run would look like. Then tell me which two criteria a team with a lazy challenger would fail, and why.
+    expect:
+      - "Six team axes: right specialist, complete hand-offs, no duplicated work, consistent final answer, challenger catches issues, QA agrees with the graders."
+      - "Routing and duplicated work are graded in code from the hand-off events; consistency is a judgement."
+      - "A challenger that always says \"looks good\" fails `challenger-value` whenever the planner missed something, and QA can't make up for it."
+    replay: replays/lesson5-challenger-silent.jsonl
+
+  - id: "5.3"
+    title: One agent vs the team
+    why: |
+      Same cases, two ways: with the team removed (`team=off`, so one agent does it all) and with it in
+      place. The question isn't "is the team better?" but "is it better by enough to pay for itself?", so
+      the comparison shows cost and time beside the spider charts.
+    prompt: |
+      I've run `uv run ea-eval run --slice lesson5-team --run-id team`. Read evals/results/team/ (variants team=off and default). Don't change anything.
+
+      For M01 and M03, in each variant: passed or not, which must-cover items were missed, cost and time. Then the six team axes for the default variant. Finish with one line each: is the team worth it for the Monday brief, and for full meeting prep?
+    run:
+      - uv run ea-eval run --slice lesson5-team --run-id team
+    expect:
+      - "4 trials, a few minutes. Team runs take longer."
+      - "The team usually costs noticeably more for a small gain on most cases, and a larger gain on the Monday brief."
+      - "The report overlays the two shapes and draws a team chart for the default run."
+    builds: ["reports/team.html (one agent vs the team)"]
+
+  - id: "5.4"
+    title: Inject faults
+    why: |
+      Real tools fail. The kit can inject faults: timeouts before and after a write, rate limits, broken
+      responses. The nastiest is a **timeout after write**: the calendar creates the event, then reports a
+      timeout, and a naive retry creates a second one. An **idempotency key** is a unique label sent with a
+      write; if the same key arrives twice, the tool does nothing new. Reading back before retrying is the
+      other defence.
+    prompt: |
+      I've run `uv run ea-eval run --slice lesson5-faults --run-id faults`. It runs S01 and R08 with a timeout after the first write, once with idempotency keys off and once with the harness adding them (idempotency=auto).
+
+      1. Read evals/results/faults/: for each trial, how many events or bookings exist at the end, whether there's a duplicate, and what the assistant told Maya.
+      2. Then update the scheduling and travel-booking skills in assistant/.claude/skills/ so the assistant is safe on its own, without the harness's help:
+         - pass an idempotency_key on every calendar_create, calendar_update, travel_book and restaurant_book: a stable string built from what's being created
+         - after a timeout or any error on a write, read back first (calendar_list, or bookings_list) and retry only if nothing was written
+         - never say done for a write it couldn't confirm; say what failed
+         Keep the selfcheck markers intact.
+    run:
+      - uv run ea-eval run --slice lesson5-faults --run-id faults
+      - uv run ea-eval run --cases S01,R08 --variant faults=timeout_after_write --run-id faults-fixed
+    expect:
+      - "With idempotency off, the first run often ends with a duplicate event or booking, sometimes with a cheerful \"done\"."
+      - "With idempotency=auto there are no duplicates: the retry carries the same key, so the tool does nothing new."
+      - "After your skill change, `faults-fixed` has no duplicates even with idempotency off, and the reply says what timed out."
+    builds:
+      - "assistant/.claude/skills/scheduling/SKILL.md (safe retries)"
+      - "assistant/.claude/skills/travel-booking/SKILL.md (safe retries)"
+    replay:
+      - replays/lesson5-duplicate.jsonl
+      - replays/lesson5-idempotent.jsonl
+
+  - id: "5.5"
+    title: How Claude Code runs your assistant
+    why: |
+      Every run today went through a harness: Claude Code, driven in the background with `claude -p`. Each
+      trial is one conversation. As it goes, Claude Code streams JSON events (`stream-json`): the model's
+      messages, each tool use and result, skills, sub-agents, hooks. The kit's adapter turns that stream
+      into the trace your graders read. Reading the two side by side shows you the loop for real.
+    prompt: |
+      Open tests/fixtures/stream/s01-live/stream.jsonl (a real recorded `claude -p` run of S01) and read StreamMapper in ea_harness/claude_code.py. Don't change anything.
+
+      Walk me through the run in order, one line per step, mapping each raw event to the trace event it becomes:
+      - the system init event (which tools and settings were loaded)
+      - the Skill tool use, the Agent tool use, and the events that carry a parent_tool_use_id
+      - the mcp__ea-world__ tool uses and their results
+      - how approvals reach the trace (the approval_prompt tool and approvals.jsonl)
+      - the hook events near the end (the stop check)
+      - the final result event (cost, turns, time)
+      Then tell me two things that are in the raw stream but not in the trace, and why the trace leaves them out. Every trial you ran today has the same pair of files, stream.jsonl and trace.jsonl, in its folder under evals/results/.
+    run:
+      - uv run pytest tests/test_claude_adapter_offline.py -q
+    expect:
+      - "The init event lists every tool the session can see, including the `ea-world` tools with their `mcp__ea-world__` prefix."
+      - "`Skill` becomes `skill_loaded`; `Agent` becomes `delegate` and `handoff_result`; events with a `parent_tool_use_id` belong to the specialist."
+      - "Plumbing such as `ToolSearch` and thinking-token counts stays out of the trace, so graders see only what matters."
+      - "The adapter tests pass: they replay this same recording offline."
+    replay: replays/lesson5-s01-live.jsonl
+
+  - id: "5.6"
+    title: Compare harness settings
+    why: |
+      The same assistant files can behave differently depending on the harness settings around them.
+      This run takes five cases and changes one setting at a time: stop hooks off, sub-agents off, and
+      Sonnet instead of Opus. Overlaying the shapes shows how much of your result comes from the harness,
+      rather than the model or the prompt.
+    prompt: |
+      I've run `uv run ea-eval run --slice lesson5-harness --run-id harness`. Read evals/results/harness/ (variants default, hooks=off, subagents=off and model=sonnet). Don't change anything.
+
+      Make a table of variant × (pass rate, overclaim rate, mean cost, mean time), then list the spider-chart axes that moved most for each variant compared with default. In three sentences: what did each setting buy you, and which would you change for a cheaper everyday assistant?
+    run:
+      - uv run ea-eval run --slice lesson5-harness --run-id harness
+    expect:
+      - "20 trials (5 cases, 4 settings), about 15 minutes. The report draws one comparison per setting."
+      - "Hooks off: more \"done\" without a check, so the Honest axis drops."
+      - "Sub-agents off and Sonnet are usually cheaper and faster. The differences show more in process and cost than in outcome."
+    builds: ["reports/harness.html (harness settings)"]
+
+check:
+  - q: "A tool timed out after writing the event. What makes the retry safe?"
+    options:
+      - "Waiting longer before retrying"
+      - "An idempotency key on the write, or reading back before retrying, so the same event is never created twice"
+      - "Retrying with slightly different arguments"
+    answer: 1
+    why: "A timeout doesn't mean nothing happened. The key makes a repeat harmless, and the read-back avoids the repeat altogether."
+  - q: "The team scores a little better than one agent but costs twice as much. What do you report?"
+    options:
+      - "The team, because it scored higher"
+      - "Both, side by side per case: the team may be worth it for the Monday brief and not for the rest"
+      - "The single agent, because it's cheaper"
+    answer: 1
+    why: "A comparison is only useful with its cost. The decision can differ by task."
+  - q: "With hooks off, the pass rate barely moves but the overclaim rate doubles. What was the stop hook buying you?"
+    options:
+      - "Nothing worth keeping"
+      - "Honest finishes: it sends the assistant back to run a check before it can say done"
+      - "Lower cost"
+    answer: 1
+    why: "The stop hook doesn't make the work better; it makes \"done\" trustworthy. That's exactly what the overclaim rate measures."

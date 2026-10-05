@@ -366,6 +366,14 @@ functions:
     returns_yes_when: "That booking exists in final bookings.json with status cancelled."
     used_by: [booking/cancelled]
 
+  - name: booked_from_holds
+    source: new
+    role: check
+    args: []
+    reads: [final_state/bookings.json, final_state/holds.json]
+    returns_yes_when: "At least one active booking was created in this run, and every one has a hold_id whose hold in holds.json is confirmed (it was held on a booking site, then confirmed through travel_book or restaurant_book)."
+    used_by: [booking/booked-from-holds]
+
   - name: total_stated
     source: new
     role: check

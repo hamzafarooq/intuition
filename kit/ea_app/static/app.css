@@ -436,8 +436,8 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
   background: linear-gradient(104deg, transparent 38%, rgb(255 255 255 / .24) 47%, rgb(255 255 255 / .07) 52%, transparent 60%);
   transform: translate3d(-4%, 0, 0);
 }
-:root[data-theme="dark"] .sheen { opacity: .55; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .sheen { opacity: .55; } }
+:root[data-theme="dark"] .sheen { opacity: .26; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .sheen { opacity: .26; } }
 
 .demo .row, .demo .row.first { margin-top: 6px; }
 .demo .slot { display: grid; }
@@ -712,7 +712,12 @@ body.popped .dock { padding-left: 4px; }
 @media (max-width: 420px) {
   .hero-actions .btn { width: 100%; }
   .phone--hero { --phone-w: 300px; --phone-h: 650px; transform: rotate(-2deg); margin: 0; }
-  .phone--hero .bubble, .phone--hero .approval { font-size: 13px; }
+  .phone--hero .bubble, .phone--hero .approval { font-size: 12.5px; }
+  .phone--hero .bubble { padding: 6px 10px 6px 11px; }
+  .phone--hero .approval { padding: 9px 11px 10px; }
+  .phone--hero .ap-rows { font-size: 11.5px; }
+  .phone--hero .demo .ap-swap, .phone--hero.demo .ap-swap { margin-top: 9px; }
+  .phone--hero .chat-body { padding-top: 6px; }
   .opt { flex-wrap: wrap; }
   .card { padding: 18px 16px; }
   .bubble { max-width: 86%; }

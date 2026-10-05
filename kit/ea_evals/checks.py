@@ -737,6 +737,16 @@ def booking_cancelled(ctx: TrialContext, booking_id: str) -> Verdict:
     return Verdict.of(bool(b and b.get("status") == "cancelled"), f"{booking_id}: {(b or {}).get('status', 'missing')}")
 
 
+@check
+def booked_from_holds(ctx: TrialContext) -> Verdict:
+    created = ctx.created_bookings()
+    if not created:
+        return Verdict.no("no booking created")
+    holds = {h["hold_id"]: h for h in ctx.final.load("holds").get("holds", [])}
+    bad = [b["id"] for b in created if not b.get("hold_id") or holds.get(b["hold_id"], {}).get("status") != "confirmed"]
+    return Verdict.of(not bad, f"{len(created)} bookings confirmed from site holds", f"not from a site hold: {', '.join(bad)}")
+
+
 def _money_forms(n: int) -> list[str]:
     return [rf"\${n:,}(?:\.00)?\b", rf"\${n}(?:\.00)?\b", rf"\b{n:,} ?USD", rf"\b{n} ?USD", rf"\b{n:,} dollars"]
 

@@ -1,6 +1,6 @@
 # Travel and restaurant bookings.
 id: booking
-version: 1
+version: 2
 description: >
   The expected bookings and nothing else, all within the travel policy (or with the named exception
   approved), no duplicates, booked only after an explicit yes, policy issues explained first, total stated.
@@ -68,6 +68,16 @@ criteria:
     grader: code
     # Yes for each listed tool that was never called ("or nothing booked").
     check: {fn: asked_before, args: {tool: [travel_book, restaurant_book, travel_cancel]}}
+
+  - id: booked-from-holds
+    kind: process
+    level: must
+    axis: process
+    # Browser mode only (spec 16, E17): the same rubric grades browser and direct bookings; this one extra
+    # criterion checks the path the browser takes.
+    when: "variant.browser == 'on' and fill.expect_booked == true"
+    grader: code
+    check: {fn: booked_from_holds}
 
   - id: policy-explained
     kind: process
