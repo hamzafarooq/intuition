@@ -293,3 +293,25 @@ def restaurant_book(
 def holds_list() -> dict[str, Any]:
     """Holds created on the booking sites in this session (browser mode), with their status."""
     return {"holds": _holds().get("holds", [])}
+
+
+@tool("travel")
+def bookings_list(
+    include_cancelled: Annotated[bool, Field(description="Also list cancelled bookings")] = False,
+) -> dict[str, Any]:
+    """Maya's flight, hotel and restaurant bookings, with ids, options, dates and totals."""
+    out = []
+    for b in core.st().load("bookings").get("bookings", []):
+        if b.get("status") != "active" and not include_cancelled:
+            continue
+        item = dict(b)
+        found = None
+        try:
+            found = find_option(b.get("option_id", ""))
+        except ToolError:
+            pass
+        if found:
+            kind, opt = found
+            item["option"] = {k: opt.get(k) for k in ("name", "airline", "flight_number", "depart", "arrive", "cabin", "city") if opt.get(k) is not None}
+        out.append(item)
+    return {"bookings": out}

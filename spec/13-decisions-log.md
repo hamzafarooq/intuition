@@ -37,6 +37,9 @@ Add a row whenever a decision is made or changed during the build.
 | 2026-10-05 | `claude -p --tools ""` runs with no tools (date-reasoning suite) | Live test |
 | 2026-10-05 | `claude -p` warns when stdin is a pipe with no data; the adapter runs it with `stdin=DEVNULL` | Live test |
 | 2026-10-05 | `chrome-devtools-mcp` pinned to `1.10.1` | `npm view chrome-devtools-mcp version` |
+| 2026-10-05 | Added a read-only `bookings_list` tool (travel group) | R08 ("switch my summit flight") needs the existing booking id; nothing else lists bookings |
+| 2026-10-05 | Runs build a per-trial overlay at `<run_dir>/assistant/`; hook commands are rewritten to absolute `cd <kit> && <python> -m ea_harness.stopcheck --hook stop --run-dir <run_dir>`, so parallel trials never share `runs/CURRENT`. The overlay drops `.mcp.json` (the adapter passes `--mcp-config` with `--strict-mcp-config`) | Live test: the Stop hook blocked an unchecked `calendar_create` and the assistant ran `check_event` |
+| 2026-10-05 | `selfcheck=off` also strips the markers in agent files and removes `check_*` tools from agents' tool lists | Agents' check steps would otherwise point at denied tools |
 
 ## Facts verified while writing the spec (2026-10-04)
 

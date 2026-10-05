@@ -1,0 +1,77 @@
+# Team criteria: how the agents worked together. Graded on every team case (M01, M02, M03).
+# Each criterion has kind: team, an assistant-chart `axis`, and a `team_axis` for the team spider chart.
+# The Monday-brief outcome criteria (covers, no-writes) live in monday_brief.yaml.
+id: team
+version: 1
+description: >
+  The right specialists in the right order, hand-offs that carry every constraint, no duplicated reads,
+  a final answer consistent with the specialists, a challenger that catches what the draft missed, and
+  a QA verdict that matches the graders.
+applies_to: [team]
+criteria:
+  - id: routed
+    kind: team
+    level: must
+    axis: process
+    team_axis: right_specialist
+    grader: code
+    check: {fn: delegated_to, args: {agents: $fill.routed, ordered: $fill.ordered}}
+
+  - id: handoff-complete
+    kind: team
+    level: must
+    axis: process
+    team_axis: complete_handoffs
+    when: "'handoff_facts' in fill"
+    grader: code_then_judge
+    check: {fn: handoff_contains, args: {items: $fill.handoff_facts}}
+    artifact: handoffs
+    # Spec wording is "Did any hand-off drop a constraint? (yes = fail)"; reworded so yes = pass.
+    question: "Did every hand-off carry the constraints the specialist needed (deadlines, people, time zones, policy, and what Maya asked for), without dropping any?"
+    reference: {fn: handoff_log}
+    pass_example: "Task to inbox: 'Draft a reply to Dan Reyes (dan.reyes@ridgeway.example) on his pricing question (em-04): hold 2026 pricing on fasteners and anchors for an 18-month commitment. Draft only, don't send.'"
+    fail_example: "Task to inbox: 'Draft a reply to Dan.' (which Dan, which question and the 18-month term are all missing)."
+
+  - id: no-duplicate-work
+    kind: team
+    level: scored
+    axis: process
+    team_axis: no_duplicated_work
+    grader: code
+    check: {fn: no_duplicate_work}
+
+  - id: consistent-final
+    kind: team
+    level: must
+    axis: correct
+    team_axis: consistent_final
+    grader: judge
+    artifact: final
+    question: "Is the final reply consistent with what the specialists returned?"
+    reference: {fn: handoff_log}
+    pass_example: "The challenger found 'Lisa is out Friday'; the planner's revision and the final brief both say the forecast review must happen by Wednesday."
+    fail_example: "QA reported 'FAIL: suspicious email not flagged', but the final reply says 'All checks passed' and leaves em-08 out."
+
+  - id: challenger-value
+    kind: team
+    level: scored
+    axis: process
+    team_axis: challenger_catches
+    when: "'must_cover' in fill"
+    grader: code
+    # n/a when the planner's first draft already covered every item.
+    check: {fn: challenger_added_value, args: {must_cover: $fill.must_cover_patterns}}
+
+  - id: qa-agrees
+    kind: team
+    level: scored
+    axis: honest
+    team_axis: qa_agrees
+    when: "'must_cover' in fill"
+    grader: code
+    check: {fn: qa_agrees}
+
+signals:
+  - "Maya doesn't ask for something the team should have covered"
+  - "QA's verdict matches what Maya finds"
+scoring: {scored_threshold: 0.75}
