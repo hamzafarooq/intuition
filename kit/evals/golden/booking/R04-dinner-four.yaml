@@ -1,0 +1,27 @@
+# Golden case R04. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: R04
+slug: dinner-four
+type: booking
+kind: capability
+workshop: false
+tags: [policy]
+request: "Book dinner for four near my hotel on 3 November at 7pm, with Dan Reyes and Amy Lin."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: explicit_yes
+  edit: ""
+pre_authorized: []
+rubric: booking
+fill:
+  expect_booked: true
+  expected:
+    - {kind: restaurant, count: 1, party_size: 4, date: "2026-11-03"}
+  good_options: [rs-ember-oak, rs-harbor-bistro]
+  exception_ok: null
+budgets: {max_cost_usd: 1.20, max_seconds: 300}
+notes: >
+  rs-ember-oak has 19:00 for up to 6 at $85 a person (within the $90 customer-dinner cap). rs-harbor-bistro
+  (18:30 or 19:30, $60) is fine if the time change is explained. rs-lake-chop is 21:00 and $120 a person
+  (over the cap).

@@ -1,0 +1,30 @@
+# Golden case B03. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: B03
+slug: forecast-review-prep
+type: brief
+kind: regression
+workshop: false
+tags: [grounded]
+request: "Prep me for the forecast review with Dan and Lisa."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: none
+  edit: ""
+pre_authorized: []
+rubric: brief
+fill:
+  mode: normal
+  facts:
+    - '\$4\.2 ?(M|million)'
+    - '\$3\.6 ?(M|million)'
+    - '\$0?\.9 ?(M|million)|\$900 ?K'
+    - '\$2\.8 ?(M|million)'
+    - 'Friday[^\n]{0,20}noon|noon[^\n]{0,20}Friday|Friday[^\n]{0,20}12(:00| ?pm)'
+    - 'top (five|5)'
+budgets: {max_cost_usd: 1.20, max_seconds: 300}
+notes: >
+  No event exists yet in the default world; the brief still works from em-01, em-02, em-13, em-14 and
+  doc-q4-forecast: $4.2M forecast, $3.6M commit, $0.9M upside, EMEA $2.8M, numbers due Friday noon,
+  Dan Okafor wants the top five deals and risks over $250K. Internal meeting, so internal numbers are fine.

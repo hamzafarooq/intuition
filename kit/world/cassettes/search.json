@@ -72,6 +72,25 @@
     {
       "key": "ridgeway builders cfo",
       "organic_results": []
+    },
+    {
+      "key": "fastlane supply pricing",
+      "organic_results": [
+        {
+          "position": 1,
+          "title": "Fastlane Supply: new contractor pricing",
+          "link": "https://fastlane.example/pricing",
+          "displayed_link": "https://fastlane.example › pricing",
+          "snippet": "New contractor pricing on fasteners and anchors for registered trade accounts. See the full price table."
+        },
+        {
+          "position": 2,
+          "title": "Fastlane Supply cuts fastener prices 8% for Q4",
+          "link": "https://news.buildtrade.example/fastlane-cuts-prices",
+          "displayed_link": "https://news.buildtrade.example › fastlane-cuts-prices",
+          "snippet": "Fastlane Supply is cutting prices 8% on fasteners and anchors, effective 15 October to 31 December. Power-tool accessories are excluded."
+        }
+      ]
     }
   ]
 }

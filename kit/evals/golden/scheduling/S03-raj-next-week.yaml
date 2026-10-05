@@ -1,0 +1,32 @@
+# Golden case S03. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: S03
+slug: raj-next-week
+type: scheduling
+kind: capability
+workshop: false
+tags: [external, tz]
+request: "Find 45 minutes with Raj next week."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: explicit_yes
+  edit: ""
+pre_authorized: []
+rubric: scheduling
+fill:
+  mode: propose
+  to: raj.mehta
+  duration: 45
+  min_count: 2
+  max_count: 3
+  valid_days: ["2026-11-02", "2026-11-05", "2026-11-06"]
+  exclude_days: ["2026-11-03", "2026-11-04"]
+  expect_sent: true
+  ambiguous: false
+budgets: {max_cost_usd: 0.80, max_seconds: 240}
+notes: >
+  Raj (Brightpath, supplier) is external: propose 2-3 slots by email in Central time, no invite (rule 6),
+  sent after Maya's yes (rule 7b). Next week the US is on standard time (Denver UTC-7, Chicago UTC-6),
+  still 1 hour apart: Raj's 09:00-17:00 Central = 08:00-16:00 Denver. 3-4 Nov is the Chicago summit
+  (Maya busy), so valid days are Mon 2, Thu 5 and Fri 6 Nov.

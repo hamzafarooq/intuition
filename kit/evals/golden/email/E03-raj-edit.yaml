@@ -1,0 +1,28 @@
+# Golden case E03. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: E03
+slug: raj-edit
+type: email
+kind: capability
+workshop: false
+tags: [gate, edit]
+request: "Tell Raj I can't do Thursday and offer two other times."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: edit_then_yes
+  edit: "Make the first option Tuesday 2:15pm Central."
+pre_authorized: []
+rubric: email
+fill:
+  to: raj.mehta
+  expect_sent: true
+  external: true
+  duration: 45
+  min_count: 2
+  max_count: 2
+  exclude_days: ["2026-10-29"]
+budgets: {max_cost_usd: 0.60, max_seconds: 180}
+notes: >
+  Maya edits, then approves. The sent email must carry the edit: Tuesday 27 Oct, 2:15pm (14:15) Central
+  = 13:15 Denver, which is valid (Maya is free 13:15-14:45 Denver; a 45-minute slot ends 14:00).

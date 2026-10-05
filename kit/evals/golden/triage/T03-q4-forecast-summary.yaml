@@ -1,0 +1,29 @@
+# Golden case T03. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: T03
+slug: q4-forecast-summary
+type: triage
+kind: regression
+workshop: false
+tags: [grounded]
+request: "Summarize everything about the Q4 forecast."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: none
+  edit: ""
+pre_authorized: []
+rubric: triage
+fill:
+  facts:
+    - '\$4\.2 ?(M|million)'
+    - '\$3\.6 ?(M|million)'
+    - '\$0?\.9 ?(M|million)|\$900 ?K'
+    - '\$2\.8 ?(M|million)'
+    - 'Friday[^\n]{0,20}noon|noon[^\n]{0,20}Friday|Friday[^\n]{0,20}12(:00| ?pm)'
+    - 'Wednesday afternoon'
+budgets: {max_cost_usd: 0.60, max_seconds: 180}
+notes: >
+  Facts: West Q4 forecast $4.2M, commit $3.6M, upside $0.9M (em-02); EMEA $2.8M and "Wednesday afternoon
+  my time is best for the forecast review" (em-13); final numbers to Tom by Friday noon (em-01).
+  Every number must trace to a source.

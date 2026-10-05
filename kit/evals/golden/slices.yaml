@@ -1,0 +1,112 @@
+# Lesson-sized runs (spec/07-golden-dataset.md#slices). `ea-eval run --slice <name>` reads cases, trials
+# and variants from here; the instructor can raise trials on the command line.
+#
+# cases:    a list of case ids, or the selector string `workshop` (the 20 cases with workshop: true).
+# trials:   trials per (case, variant set).
+# variants: list of variant sets; each set is a dict of run-variant keys (spec/09 and spec/05), e.g.
+#           {skills: "off"}. {} is the default configuration (skills on, self-checks on, gate on,
+#           team on, hooks on, sub-agents on, model opus, idempotency off, browser off). Every case runs
+#           under every set. Values are quoted so YAML doesn't turn on/off into booleans.
+# extra:    optional per-case additions: [{cases: [...], variants: [...]}] run on top of `variants`.
+# compare:  optional pairs [baseline, changed] the report overlays; defaults to consecutive sets.
+#
+# Trials at the defaults: 10 + 12 + 20 + 9 + 12 + 30 + 5 + 4 + 4 + 20 + 20 + 2 = 148 per student.
+version: 1
+slices:
+  setup-baseline:
+    description: "First run after setup: one case of every kind of task, default assistant."
+    cases: [S01, T01, B01, E01, E02, R01, W03, X01, X07, M01]
+    trials: 1
+    variants: [{}]
+
+  lesson2-skills:
+    description: "Lesson 2: the same cases with and without skills."
+    cases: [S01, S02, S07, B01, D01, E01]
+    trials: 1
+    variants:
+      - {skills: "off"}
+      - {skills: "on"}
+
+  lesson3-agents:
+    description: "Lesson 3: the workshop subset with specialists and reviewer."
+    cases: workshop
+    trials: 1
+    variants: [{}]
+
+  lesson3-passk:
+    description: "Lesson 3: repeat trials for pass@k and pass^k."
+    cases: [S01, E01, B01]
+    trials: 3
+    variants: [{}]
+
+  lesson3-selfcheck:
+    description: "Lesson 3: overclaim rate with and without self-checks (verifiers, stop check, reviewer)."
+    cases: [S01, S07, B01, D01, E01, R01]
+    trials: 1
+    variants:
+      - {selfcheck: "off"}
+      - {selfcheck: "on"}
+
+  lesson4-gate:
+    description: "Lesson 4: the approval gate holds on every trial (pass^5); E02 and R05 also run without it."
+    cases: [E02, E07, E08, R05]
+    trials: 5
+    variants:
+      - {gate: "on"}
+    extra:
+      - cases: [E02, R05]
+        variants:
+          - {gate: "off"}
+    compare:
+      - [{gate: "on"}, {gate: "off"}]
+
+  lesson4-safety:
+    description: "Lesson 4: injection email and page, harmless look-alike, disconnect, privacy."
+    cases: [X01, X02, X07, X09, W03]
+    trials: 1
+    variants: [{}]
+
+  lesson5-team:
+    description: "Lesson 5: one agent vs the Monday-brief team."
+    cases: [M01, M03]
+    trials: 1
+    variants:
+      - {team: "off"}
+      - {team: "on"}
+
+  lesson5-faults:
+    description: "Lesson 5: a timeout after a write, without and then with harness idempotency keys."
+    cases: [S01, R08]
+    trials: 1
+    # faults=timeout_after_write maps per case (spec/09): S01 -> calendar_create:timeout_after_write:1,
+    # R08 -> travel_book:timeout_after_write:1.
+    variants:
+      - {faults: timeout_after_write, idempotency: "off"}
+      - {faults: timeout_after_write, idempotency: auto}
+
+  lesson5-harness:
+    description: "Lesson 5: harness configurations on the same cases: hooks, sub-agents, model."
+    cases: [S01, T01, E01, X01, W02]
+    trials: 1
+    variants:
+      - {}
+      - {hooks: "off"}
+      - {subagents: "off"}
+      - {model: sonnet}
+    compare:
+      - [{}, {hooks: "off"}]
+      - [{}, {subagents: "off"}]
+      - [{model: opus}, {model: sonnet}]   # {model: opus} is the default set {}
+
+  wrap-final:
+    description: "Wrap-up: the workshop subset after every lesson's fixes."
+    cases: workshop
+    trials: 1
+    variants: [{}]
+
+  browser-demo:
+    description: "Bookings through the visible browser on the mock sites, graded by the same rubric."
+    cases: [R01, R04]
+    trials: 1
+    variants:
+      - {browser: "on"}

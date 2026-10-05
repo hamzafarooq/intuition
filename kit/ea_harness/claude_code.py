@@ -36,7 +36,7 @@ EXTRA_ENV = {
     "MCP_TIMEOUT": "60000",
 }
 TOOL_ENV_KEYS = ["EA_MODE", "EA_WORLD_VARIANT", "EA_FAULTS", "EA_SEED", "EA_APPROVAL_MODE", "EA_IDEMPOTENCY",
-                 "SERPAPI_API_KEY", "PATH", "HOME", "EA_KIT_ROOT", "EA_LOG_LEVEL"]  # fmt: skip
+                 "SERPAPI_API_KEY", "PATH", "HOME", "EA_KIT_ROOT", "EA_LOG_LEVEL", "EA_WRITE_CURRENT"]  # fmt: skip
 
 
 def claude_binary() -> str | None:

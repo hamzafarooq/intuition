@@ -1,0 +1,28 @@
+# Golden case B02. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: B02
+slug: granite-call
+type: brief
+kind: regression
+workshop: false
+tags: [grounded]
+request: "Prep me for Wednesday's Granite Homes call."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: none
+  edit: ""
+pre_authorized: []
+rubric: brief
+fill:
+  mode: normal
+  facts:
+    - 'Colorado Springs'
+    - 'back-?order'
+    - 'anchor'
+    - '\b9 Nov|Nov(ember)?\.? 9\b|11/9\b'
+    - 'Helen Ortiz'
+budgets: {max_cost_usd: 1.20, max_seconds: 300}
+notes: >
+  ev-granite, Wed 28 Oct 13:00-14:00 Denver. Agenda: Colorado Springs expansion, anchors backorder with
+  ETA 9 November (doc-granite); Ben Walsh asked to add CFO Helen Ortiz (em-17).

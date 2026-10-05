@@ -197,15 +197,22 @@ def _log_call(run: Path, record: dict[str, Any]) -> dict[str, Any]:
 # ---------------------------------------------------------------- dispatch
 
 
+def register_all() -> None:
+    """Import every tool module so its tools are registered."""
+    from . import calendar, connectors, contacts, docs, email, outputs, travel, verifiers, web  # noqa: F401
+
+
 def call(name: str, args: dict[str, Any] | None = None, run: Path | None = None) -> Any:
     """Run one tool call against the run directory, with logging, faults and idempotency."""
     args = {k: v for k, v in (args or {}).items() if v is not None}
     run = Path(run or run_dir())
+    if name not in REGISTRY:
+        register_all()
     spec = REGISTRY.get(name)
     if spec is None:
         raise ToolError(f"Unknown tool: {name}")
 
-    record: dict[str, Any] = {"tool": name, "args": args, "ok": False}
+    record: dict[str, Any] = {"tool": name, "args": args, "ok": False, "side_effects": [], "signals": [], "object_id": None}
     fault: str | None = None
     try:
         group = spec.group
@@ -214,7 +221,11 @@ def call(name: str, args: dict[str, Any] | None = None, run: Path | None = None)
                 raise ToolError(f"The {group} connector is disconnected by the user.")
 
         nth = _count_calls(run, name) + 1
-        fault = pick_fault(parse_faults(os.environ.get("EA_FAULTS")), name, nth, os.environ.get("EA_SEED", "0"))
+        try:
+            rules = parse_faults(os.environ.get("EA_FAULTS"))
+        except ValueError as exc:  # a misconfigured EA_FAULTS must still give a readable ToolError
+            raise ToolError(f"EA_FAULTS is invalid: {exc}") from exc
+        fault = pick_fault(rules, name, nth, os.environ.get("EA_SEED", "0"))
         if fault:
             record["fault"] = fault
         if fault in ("timeout_before_write", "rate_limit", "error_500"):
@@ -233,11 +244,11 @@ def call(name: str, args: dict[str, Any] | None = None, run: Path | None = None)
                     store = read_json(run / "state" / "idempotency.json", {}) or {}
                     slot = f"{name}:{key}"
                     if slot in store:
-                        record.update(ok=True, result=store[slot], idempotent_replay=True)
-                        record["object_id"] = store[slot].get("_object_id") if isinstance(store[slot], dict) else None
                         result = store[slot]
+                        record["object_id"] = result.get("_object_id") if isinstance(result, dict) else None
                         if isinstance(result, dict):
                             result = {k: v for k, v in result.items() if k != "_object_id"}
+                        record.update(ok=True, result=_truncate(result), idempotent_replay=True)
                         return result
                 call_args = {k: v for k, v in args.items() if k != "idempotency_key"}
                 try:

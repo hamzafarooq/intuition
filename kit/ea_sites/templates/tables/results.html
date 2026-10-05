@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Tables in {{ city }}</h1>
+<p class="lede">{{ day | day }} · around {{ time }} · party of {{ party }} · <a href="{{ change_url }}">Change search</a></p>
+{% if restaurants %}
+<p>Choose a time to hold a table. Estimated costs are per person, including tip.</p>
+{% for r in restaurants %}
+<article class="card" aria-labelledby="rest-{{ r.id }}">
+  <h2 id="rest-{{ r.id }}">{{ r.name }}</h2>
+  <p class="meta">{{ r.cuisine }} · {{ r.address }}{% if r.near %} · near {{ r.near }}{% endif %}</p>
+  <p class="meta">About <strong>{{ r.est_cost_pp | money }}</strong> a person including tip · about {{ r.estimate | money }} for {{ party }} · seats parties of up to {{ r.max_party }}</p>
+  {% if r.fits %}
+  <p class="meta">Available times:</p>
+  <ul class="slots">
+    {% for s in r.slots %}
+    <li>
+      <form method="get" action="{{ base }}/details">
+        <input type="hidden" name="restaurant" value="{{ r.id }}">
+        <input type="hidden" name="date" value="{{ day }}">
+        <input type="hidden" name="time" value="{{ s.time }}">
+        <input type="hidden" name="party_size" value="{{ party }}">
+        <button type="submit">{{ s.time }}<span class="visually-hidden"> at {{ r.name }}</span></button>
+      </form>
+    </li>
+    {% endfor %}
+  </ul>
+  {% if r.slots and not (r.slots | selectattr("exact") | list) %}<p class="hint">No table at exactly {{ time }}.</p>{% endif %}
+  {% else %}
+  <p class="error">No table for {{ party }} people. {{ r.name }} seats parties of up to {{ r.max_party }}.</p>
+  {% endif %}
+</article>
+{% endfor %}
+{% else %}
+<div class="card">
+  <h2>No tables on {{ day | day }}</h2>
+  {% if other_days %}
+  <p>Restaurants in {{ city }} have tables on:</p>
+  <ul>{% for d in other_days %}<li><a href="{{ d.url }}">{{ d.label }}</a></li>{% endfor %}</ul>
+  {% else %}
+  <p>We don't list restaurants there yet. <a href="{{ change_url }}">Search again</a>.</p>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

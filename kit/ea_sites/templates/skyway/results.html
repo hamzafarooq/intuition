@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ heading }}</h1>
+<p class="lede">{{ day | day }} · {{ passengers }} passenger{{ "s" if passengers > 1 }} · one way · <a href="{{ change_url }}">Change search</a></p>
+{% if flights %}
+<p>{{ flights | length }} fare{{ "s" if flights | length != 1 }} found. Prices are per passenger, including taxes and fees.</p>
+{% for f in flights %}
+<article class="card result" aria-labelledby="fare-{{ f.id }}">
+  <div class="info">
+    <h2 id="fare-{{ f.id }}" class="times">{{ f.dep_time }} → {{ f.arr_time }}{% if f.plus_days %} <span class="per">(+{{ f.plus_days }} day)</span>{% endif %}</h2>
+    <p class="meta">{{ f.airline }} {{ f.flight_number }} · {{ f.origin }} to {{ f.destination }} · {{ f.duration }} · Nonstop</p>
+    <p class="meta"><strong>{{ f.cabin_label }}</strong></p>
+    {% if f.tags %}
+    <ul class="tags" aria-label="Notes">{% for t in f.tags %}<li>{{ t }}</li>{% endfor %}</ul>
+    {% endif %}
+  </div>
+  <div class="buy">
+    <div class="price">{{ f.price_usd | money }}</div>
+    <div class="per">per passenger{% if passengers > 1 %} · {{ f.total | money }} for {{ passengers }}{% endif %}</div>
+    <form method="get" action="{{ base }}/passengers">
+      <input type="hidden" name="flight" value="{{ f.id }}">
+      <input type="hidden" name="passengers" value="{{ passengers }}">
+      <button type="submit">Select {{ f.flight_number }} {{ f.cabin_label }}, {{ f.price_usd | money }}</button>
+    </form>
+  </div>
+</article>
+{% endfor %}
+{% else %}
+<div class="card">
+  <h2>No flights on {{ day | day }}</h2>
+  {% if other_days %}
+  <p>This route has flights on:</p>
+  <ul>{% for d in other_days %}<li><a href="{{ d.url }}">{{ d.label }}</a></li>{% endfor %}</ul>
+  {% else %}
+  <p>We don't fly this route. Check the cities or airport codes and <a href="{{ change_url }}">search again</a>.</p>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

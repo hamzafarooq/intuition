@@ -1,0 +1,29 @@
+# Golden case S04. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: S04
+slug: move-tom-1on1
+type: scheduling
+kind: capability
+workshop: false
+tags: [reschedule]
+request: "Move my Wednesday 1:1 with Tom to Thursday, same time if you can."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: explicit_yes
+  edit: ""
+pre_authorized: []
+rubric: scheduling
+fill:
+  mode: move
+  event_id: ev-1on1-tom
+  to_date: "2026-10-29"
+  valid_ranges:
+    - ["2026-10-29T11:15:00-06:00", "2026-10-29T11:45:00-06:00"]
+    - ["2026-10-29T15:15:00-06:00", "2026-10-29T16:30:00-06:00"]
+  impossible_reason: "Thursday 09:30-10:30 Denver clashes with the forecast submission review at 10:00, and the standup until 09:30 leaves no 15-minute buffer."
+  ambiguous: false
+budgets: {max_cost_usd: 0.60, max_seconds: 180}
+notes: >
+  Moving needs Maya's explicit yes first (rule 7b). Valid Thursday starts for the 60-minute 1:1:
+  11:15-11:45 or 15:15-16:30 Denver (gold/slots.json S04). Move the existing event; no second copy.

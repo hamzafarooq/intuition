@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "macros.html" import input, error_summary %}
+{% block content %}
+<h1>Your details</h1>
+<div class="card">
+  <h2>{{ r.name }}</h2>
+  <p class="meta">{{ r.cuisine }} · {{ r.address }}</p>
+  <p class="meta">{{ day | day }} at <strong>{{ time }}</strong> · party of {{ party }}</p>
+  <p class="meta">About {{ r.est_cost_pp | money }} a person including tip · about {{ estimate | money }} for {{ party }}</p>
+</div>
+{{ error_summary(errors) }}
+<form method="post" action="{{ base }}/review" novalidate>
+  <input type="hidden" name="restaurant" value="{{ r.id }}">
+  <input type="hidden" name="date" value="{{ day }}">
+  <input type="hidden" name="time" value="{{ time }}">
+  <input type="hidden" name="party_size" value="{{ party }}">
+  <fieldset>
+    <legend>Reservation</legend>
+    {{ input("name", "Name for the reservation", form.name, errors, autocomplete="name") }}
+    {{ input("phone", "Phone", form.phone, errors, type="tel", optional=True, hint="The restaurant calls only if something changes", autocomplete="tel") }}
+  </fieldset>
+  <div class="actions">
+    <button type="submit">Continue to review</button>
+    <a class="secondary" href="{{ back_url }}">Back to times</a>
+  </div>
+  <p class="hint">Continuing holds this table for 30 minutes. Nothing is booked until your assistant confirms it.</p>
+</form>
+{% endblock %}

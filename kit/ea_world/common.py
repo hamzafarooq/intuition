@@ -15,7 +15,7 @@ def contacts() -> dict[str, Any]:
 def person(value: str) -> dict[str, Any]:
     p = resolve_person(value, contacts())
     if p is None:
-        raise ToolError(f"Unknown contact: {value}. Use contacts_lookup to find people.")
+        raise ToolError(f"Unknown contact id: {value}. Use contacts_lookup to find people.")
     return p
 
 

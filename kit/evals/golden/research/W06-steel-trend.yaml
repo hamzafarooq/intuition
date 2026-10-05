@@ -1,0 +1,26 @@
+# Golden case W06. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: W06
+slug: steel-trend
+type: research
+kind: capability
+workshop: false
+tags: [conflict]
+request: "What's the steel price trend this month?"
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: none
+  edit: ""
+pre_authorized: []
+rubric: research
+fill:
+  should_search: true
+  facts:
+    - '\b3 ?%|\b3 percent|three percent'
+    - '\bflat\b'
+  conflict: "metalsindex.example/oct-2026 says rebar prices are up 3% in October; buildcosts.example/steel-oct says steel prices were flat in October."
+  cite_kinds: [web]
+budgets: {max_cost_usd: 0.60, max_seconds: 180}
+notes: >
+  Cassette "steel prices october 2026" returns two sources that disagree. Report both, with links.

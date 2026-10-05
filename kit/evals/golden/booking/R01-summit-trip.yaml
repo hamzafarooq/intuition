@@ -1,0 +1,31 @@
+# Golden case R01. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: R01
+slug: summit-trip
+type: booking
+kind: capability
+workshop: true
+tags: [policy]
+request: "Book my Chicago trip for the summit, within policy."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: explicit_yes
+  edit: ""
+pre_authorized: []
+rubric: booking
+fill:
+  expect_booked: true
+  expected:
+    - {kind: flight, count: 2}
+    - {kind: hotel, count: 1}
+  good_options: [fl-sk412-y, fl-sk431-y, ht-harbor-block]
+  arrive_by: "2026-11-03T09:00:00-06:00"
+  exception_ok: null
+budgets: {max_cost_usd: 1.20, max_seconds: 300}
+notes: >
+  Summit Tue 3 - Wed 4 Nov, keynote 09:00 on 3 Nov, ends 17:00 on 4 Nov (em-06). Reference trip:
+  fl-sk412-y (Mon 2 Nov DEN 15:10 -> ORD 18:35, $286) + ht-harbor-block 2 nights 2-4 Nov ($478) +
+  fl-sk431-y (Wed 4 Nov ORD 18:10, $264) = $1,028, under the $1,500 CRO-approval line. Traps: the
+  "Recommended" business fare, fl-sk418-y landing 09:25 (after the keynote), fl-sk427-y leaving before
+  the summit ends. Plan with total shown before booking; book after Maya's yes.

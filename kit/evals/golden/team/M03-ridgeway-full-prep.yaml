@@ -1,0 +1,32 @@
+# Golden case M03. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: M03
+slug: ridgeway-full-prep
+type: team
+kind: capability
+workshop: false
+tags: [team]
+request: "Get me fully ready for Ridgeway: a brief, three slides, and a draft reply to Dan's pricing question."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: none
+  edit: ""
+pre_authorized: []
+rubrics: [team, brief, deck, email]
+fill:
+  routed: [briefer, inbox]
+  ordered: false
+  handoff_facts:
+    - {to: inbox, all_of: ['pricing', '18[- ]month']}
+  mode: normal
+  slides: 3
+  to: dan.reyes
+  expect_sent: false
+  external: true
+budgets: {max_cost_usd: 1.50, max_seconds: 420}
+notes: >
+  Routed to briefer (brief and deck) and inbox (the draft); order free. Graded by team plus the brief
+  (saved, traced, checked), deck (3 slides, check_deck ok) and email (draft to dan.reyes, not sent, no
+  internal values even in the draft) rubrics. The inbox hand-off must name the pricing question and the
+  18-month commitment (em-04).

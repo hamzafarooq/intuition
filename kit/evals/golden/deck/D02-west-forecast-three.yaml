@@ -1,0 +1,27 @@
+# Golden case D02. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: D02
+slug: west-forecast-three
+type: deck
+kind: regression
+workshop: false
+tags: [grounded]
+request: "Three slides summarizing the West Q4 forecast for Tom."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: none
+  edit: ""
+pre_authorized: []
+rubric: deck
+fill:
+  mode: normal
+  slides: 3
+  facts:
+    - '\$4\.2 ?(M|million)'
+    - '\$3\.6 ?(M|million)'
+    - '\$0?\.9 ?(M|million)|\$900 ?K'
+budgets: {max_cost_usd: 1.20, max_seconds: 300}
+notes: >
+  West Q4 forecast $4.2M, commit $3.6M, upside $0.9M (em-02, doc-q4-forecast). Tom is internal
+  (CRO), so internal numbers are fine.

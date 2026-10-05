@@ -1,0 +1,67 @@
+{% macro error_summary(errors) %}
+{% if errors %}
+<div class="error-summary" role="alert" aria-labelledby="error-summary-title">
+  <h2 id="error-summary-title">There's a problem</h2>
+  <ul>
+    {% for key, message in errors.items() %}
+    <li><a href="#{{ key }}">{{ message }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+{% endmacro %}
+
+{% macro describedby(id, errors, hint) -%}
+{%- set ids = [] -%}
+{%- if hint %}{% set _ = ids.append(id ~ "-hint") %}{% endif -%}
+{%- if errors.get(id) %}{% set _ = ids.append(id ~ "-error") %}{% endif -%}
+{%- if ids %} aria-describedby="{{ ids | join(' ') }}"{% endif -%}
+{%- if errors.get(id) %} aria-invalid="true"{% endif -%}
+{%- endmacro %}
+
+{% macro input(id, label, value="", errors={}, type="text", hint=None, autocomplete=None, placeholder=None, inputmode=None, optional=False, prefix=None) %}
+<div class="field{% if errors.get(id) %} has-error{% endif %}">
+  <label for="{{ id }}">{% if prefix %}<span class="visually-hidden">{{ prefix }} </span>{% endif %}{{ label }}{% if optional %} <span class="optional">(optional)</span>{% endif %}</label>
+  {% if hint %}<p class="hint" id="{{ id }}-hint">{{ hint }}</p>{% endif %}
+  {% if errors.get(id) %}<p class="error" id="{{ id }}-error">{{ errors[id] }}</p>{% endif %}
+  <input id="{{ id }}" name="{{ id }}" type="{{ type }}" value="{{ value or '' }}"
+         {%- if autocomplete %} autocomplete="{{ autocomplete }}"{% endif %}
+         {%- if placeholder %} placeholder="{{ placeholder }}"{% endif %}
+         {%- if inputmode %} inputmode="{{ inputmode }}"{% endif %}
+         {{- describedby(id, errors, hint) }}>
+</div>
+{% endmacro %}
+
+{% macro select(id, label, choices, value="", errors={}, hint=None) %}
+<div class="field{% if errors.get(id) %} has-error{% endif %}">
+  <label for="{{ id }}">{{ label }}</label>
+  {% if hint %}<p class="hint" id="{{ id }}-hint">{{ hint }}</p>{% endif %}
+  {% if errors.get(id) %}<p class="error" id="{{ id }}-error">{{ errors[id] }}</p>{% endif %}
+  <select id="{{ id }}" name="{{ id }}"{{ describedby(id, errors, hint) }}>
+    {% for v, text in choices %}
+    <option value="{{ v }}"{% if v | string == value | string %} selected{% endif %}>{{ text }}</option>
+    {% endfor %}
+  </select>
+</div>
+{% endmacro %}
+
+{% macro facts(items) %}
+<dl class="facts">
+  {% for label, value in items %}
+  <dt>{{ label }}</dt>
+  <dd>{{ value }}</dd>
+  {% endfor %}
+</dl>
+{% endmacro %}
+
+{% macro price_lines(lines, total, total_label="Total") %}
+<table class="price-lines">
+  <caption class="visually-hidden">Price</caption>
+  <tbody>
+    {% for label, amount in lines %}
+    <tr><th scope="row">{{ label }}</th><td>{{ amount }}</td></tr>
+    {% endfor %}
+    <tr class="total"><th scope="row">{{ total_label }}</th><td>{{ total }}</td></tr>
+  </tbody>
+</table>
+{% endmacro %}

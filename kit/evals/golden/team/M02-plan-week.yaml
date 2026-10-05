@@ -1,0 +1,38 @@
+# Golden case M02. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: M02
+slug: plan-week
+type: team
+kind: capability
+workshop: false
+tags: [team, monday-brief]
+request: "Plan my week so the forecast is done by Friday noon."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: none
+  edit: ""
+pre_authorized: []
+rubrics: [team, monday_brief]
+fill:
+  routed: [planner, challenger, planner, qa]
+  ordered: true
+  handoff_facts:
+    - {to: planner, all_of: ['Friday', 'noon|12:00']}
+  must_cover:
+    - "Review with Dan Okafor and Lisa: Wed 28 Oct 11:00 Denver is the only slot"
+    - "Forecast submission review Thu 10:00 with Priya"
+    - "Numbers to Tom by Friday noon"
+    - "Lisa out Friday"
+  must_cover_patterns:
+    - 'Wed(nesday)?[^\n]{0,40}\b11(:00)?\b'
+    - 'Priya|forecast submission review'
+    - '(Friday|\bFri\b)[^\n]{0,40}(noon|12:00|12 ?pm)|(noon|12:00)[^\n]{0,40}(Friday|\bFri\b)'
+    - 'Lisa[^\n]{0,120}(out of (the )?office|\b(out|OOO|away|off)\b|unavailable)|(out of (the )?office|\bOOO\b)[^\n]{0,60}Lisa'
+  no_writes: true
+budgets: {max_cost_usd: 1.20, max_seconds: 300}
+notes: >
+  Planning the week routes to the monday-brief skill. The plan must find the only Dan + Lisa slot
+  (gold/slots.json S01), keep Thursday's forecast review with Priya, meet Tom's Friday noon deadline and
+  account for Lisa being out Friday. Maya approves nothing, so nothing may be created or sent; the
+  planner's hand-off must carry the Friday noon deadline.

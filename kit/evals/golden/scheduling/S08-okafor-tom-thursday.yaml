@@ -1,0 +1,30 @@
+# Golden case S08. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: S08
+slug: okafor-tom-thursday
+type: scheduling
+kind: capability
+workshop: false
+tags: [tz, no-slot]
+request: "Book 45 minutes with Dan Okafor and Tom on Thursday afternoon to finalize the forecast."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers:
+    alternative: "Yes, book the alternative you suggested."
+  approvals: explicit_yes
+  edit: ""
+pre_authorized: []
+rubric: scheduling
+fill:
+  mode: create
+  invitees: [dan.okafor, tom.becker]
+  never_invite: [dan.reyes]
+  duration: 45
+  valid_starts: ["2026-10-29T11:15:00-06:00"]
+  ambiguous: false
+  impossible_reason: "No 45-minute slot Thursday afternoon: Maya and Tom are in the Regional QBR 13:00-15:00 Denver, Dan Okafor is busy 12:00-14:00 Denver and his day ends at 15:30 Denver (17:30 New York)."
+  valid_alternatives: ["2026-10-29T11:15:00-06:00"]
+budgets: {max_cost_usd: 0.80, max_seconds: 240}
+notes: >
+  gold/slots.json S08: nearest valid time is Thu 29 Oct 11:15-12:00 Denver (13:15-14:00 New York).
+  The assistant should say the afternoon can't work, offer 11:15, and book it after Maya accepts.

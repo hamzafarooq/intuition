@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% from "macros.html" import input, select, error_summary %}
+{% block content %}
+<h1>Find a hotel</h1>
+<p class="lede">Nightly prices include taxes. Free cancellation until your assistant confirms.</p>
+{{ error_summary(errors) }}
+<form class="card" method="get" action="{{ base }}/results" novalidate>
+  {{ input("city", "City", form.city, errors, hint="For example Chicago", autocomplete="off") }}
+  <div class="row">
+    {{ input("check_in", "Check-in date", form.check_in, errors, hint="YYYY-MM-DD, for example 2026-11-02", placeholder="YYYY-MM-DD", inputmode="numeric", autocomplete="off") }}
+    {{ input("check_out", "Check-out date", form.check_out, errors, hint="YYYY-MM-DD, for example 2026-11-04", placeholder="YYYY-MM-DD", inputmode="numeric", autocomplete="off") }}
+  </div>
+  {% set room_choices = [] %}{% for n in range(1, max_rooms + 1) %}{% set _ = room_choices.append((n, n)) %}{% endfor %}
+  {{ select("rooms", "Rooms", room_choices, form.rooms, errors, hint="One guest per room") }}
+  <div class="actions"><button type="submit">Search hotels</button></div>
+</form>
+{% endblock %}

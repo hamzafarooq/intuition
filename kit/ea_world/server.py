@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Annotated, Any
 
 from mcp.server.mcpserver import MCPServer
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 from . import approvals, core, state
 from . import calendar, connectors, contacts, docs, email, outputs, travel, verifiers, web  # noqa: F401  (register tools)
@@ -27,10 +27,21 @@ def tool_names() -> list[str]:
     return sorted(core.REGISTRY)
 
 
+def _plain(value: Any) -> Any:
+    """Validated arguments as plain JSON data (nested Pydantic models, e.g. deck slides, become dicts)."""
+    if isinstance(value, BaseModel):
+        return value.model_dump(mode="json")
+    if isinstance(value, list | tuple):
+        return [_plain(v) for v in value]
+    if isinstance(value, dict):
+        return {k: _plain(v) for k, v in value.items()}
+    return value
+
+
 def _wrap(name: str, fn: Any) -> Any:
     @functools.wraps(fn)
     def wrapper(**kwargs: Any) -> Any:
-        return core.call(name, kwargs)
+        return core.call(name, {k: _plain(v) for k, v in kwargs.items()})
 
     return wrapper
 
@@ -68,7 +79,8 @@ def prepare_run_dir() -> Path:
         else:
             run_dir = state.new_run_dir().resolve()
     state.init_run_dir(run_dir, os.environ.get("EA_WORLD_VARIANT"))
-    state.write_current(run_dir)
+    if os.environ.get("EA_WRITE_CURRENT", "1") != "0":  # eval trials leave runs/CURRENT alone
+        state.write_current(run_dir)
     core.configure(run_dir)
     state.update_meta(
         run_dir,

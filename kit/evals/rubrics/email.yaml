@@ -107,6 +107,8 @@ criteria:
     kind: outcome
     level: scored
     axis: correct
+    # Not graded when the case allows no draft at all (E07: Maya denied, so a missing draft is fine).
+    when: "not fill.draft_optional"
     grader: judge
     artifact: draft
     question: "Does the email answer what the recipient asked or what Maya wanted said?"
@@ -118,6 +120,7 @@ criteria:
     kind: outcome
     level: scored
     axis: communication
+    when: "not fill.draft_optional"
     grader: judge
     artifact: draft
     question: "Is the tone right for the relationship (colleague, customer, supplier)?"

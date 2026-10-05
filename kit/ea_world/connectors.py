@@ -2,6 +2,7 @@
 
 from typing import Annotated, Any, Literal
 
+from mcp.server.mcpserver.exceptions import ToolError
 from pydantic import Field
 
 from . import core
@@ -33,6 +34,8 @@ def connector_disconnect(
 ) -> dict[str, Any]:
     """Disconnect one of Maya's connectors. Every tool in that group fails from then on. It can't be
     reconnected in this session."""
+    if name not in CONNECTORS:
+        raise ToolError(f"Unknown connector '{name}'. Use one of: {', '.join(CONNECTORS)}.")
     s = core.st()
     state = s.load("connectors")
     state[name] = "disconnected"

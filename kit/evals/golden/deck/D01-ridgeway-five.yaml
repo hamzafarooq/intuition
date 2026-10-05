@@ -1,0 +1,24 @@
+# Golden case D01. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: D01
+slug: ridgeway-five
+type: deck
+kind: capability
+workshop: true
+tags: [grounded]
+request: "Make me five slides for the Ridgeway meeting."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: none
+  edit: ""
+pre_authorized: []
+rubric: deck
+fill:
+  mode: normal
+  slides: 5
+budgets: {max_cost_usd: 1.20, max_seconds: 300}
+notes: >
+  Five slides within the template budgets (title <= 60 characters, <= 5 bullets of <= 90 characters,
+  <= 70 words a slide), sources on every slide, every number traced (check_deck ok), claim headlines,
+  last slide an ask. Material: em-05, em-20, em-23, em-04/em-24, doc-ridgeway.

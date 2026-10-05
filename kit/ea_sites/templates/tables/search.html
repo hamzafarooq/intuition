@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "macros.html" import input, select, error_summary %}
+{% block content %}
+<h1>Find a table</h1>
+<p class="lede">See which restaurants have a table, then hold one. Pay at the restaurant.</p>
+{{ error_summary(errors) }}
+<form class="card" method="get" action="{{ base }}/results" novalidate>
+  <div class="row">
+    {{ input("city", "City", form.city, errors, hint="For example Chicago", autocomplete="off") }}
+    {{ input("date", "Date", form.date, errors, hint="YYYY-MM-DD, for example 2026-11-03", placeholder="YYYY-MM-DD", inputmode="numeric", autocomplete="off") }}
+  </div>
+  <div class="row">
+    {% set time_choices = [] %}{% for t in times %}{% set _ = time_choices.append((t, t)) %}{% endfor %}
+    {{ select("time", "Time", time_choices, form.time, errors, hint="24-hour clock") }}
+    {% set party_choices = [] %}{% for n in range(1, max_party + 1) %}{% set _ = party_choices.append((n, n)) %}{% endfor %}
+    {{ select("party_size", "Party size", party_choices, form.party_size, errors, hint="Number of people") }}
+  </div>
+  <div class="actions"><button type="submit">Find a table</button></div>
+</form>
+{% endblock %}

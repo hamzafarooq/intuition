@@ -278,7 +278,18 @@ def email_problems(st: State, draft: dict[str, Any], run_dir: Path | None = None
         if m.zone is None:
             continue
         stated = m.resolve(now, rec_tz, maya_tz)
-        if stated is None or not known:
+        if not known:
+            continue
+        if stated is None and m.day is None and m.weekday is None and m.rel is None:
+            # An undated time ("confirmed for 18:00 London") refers to the event in context: try each known day.
+            ztz = m.zone_name(rec_tz, maya_tz)
+            if ztz is None:
+                continue
+            days = sorted({k.astimezone(ZoneInfo(ztz)).date() for k in known})
+            if len(days) != 1:
+                continue
+            stated = datetime.combine(days[0], datetime.min.time().replace(hour=m.hour, minute=m.minute), tzinfo=ZoneInfo(ztz))
+        if stated is None:
             continue
         if any(abs((stated - k).total_seconds()) < 60 for k in known):
             continue

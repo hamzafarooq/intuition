@@ -10,8 +10,10 @@
   :root { --ink: #1d1b19; --muted: #6b645c; --accent: #b4442c; --paper: #fbf8f3; --rule: #e4ddd2; }
   * { box-sizing: border-box; }
   body { margin: 0; background: #e9e4dc; font-family: Georgia, "Times New Roman", serif; color: var(--ink); }
-  .deck { display: grid; gap: 24px; padding: 24px; justify-content: center; }
-  .slide { width: 960px; height: 540px; background: var(--paper); padding: 56px 64px 44px; position: relative;
+  :root { --s: 1; }
+  .deck { display: grid; gap: 24px; padding: 24px 16px; justify-content: center; }
+  .frame { width: calc(960px * var(--s)); height: calc(540px * var(--s)); }
+  .slide { transform: scale(var(--s)); transform-origin: top left; width: 960px; height: 540px; background: var(--paper); padding: 56px 64px 44px; position: relative;
            box-shadow: 0 1px 3px rgba(0,0,0,.12); overflow: hidden; display: flex; flex-direction: column; }
   .num { position: absolute; top: 24px; right: 32px; font: 600 14px/1 system-ui, sans-serif; color: var(--muted); }
   h2 { font-size: 34px; line-height: 1.15; margin: 0 0 28px; font-weight: 600; max-width: 820px; }
@@ -21,20 +23,24 @@
   .sources { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--rule);
              font: 12px/1.4 system-ui, sans-serif; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .cover h1 { font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 0 0 18px; font-family: system-ui, sans-serif; }
-  @media (max-width: 1000px) { .slide { transform-origin: top left; } }
 </style>
 </head>
 <body>
 <main class="deck" aria-label="{{ deck.title }}">
 {% for s in deck.slides %}
-  <section class="slide{% if loop.first %} cover{% endif %}" aria-label="Slide {{ loop.index }}">
+  <div class="frame"><section class="slide{% if loop.first %} cover{% endif %}" aria-label="Slide {{ loop.index }}">
     <span class="num">{{ loop.index }} / {{ deck.slides|length }}</span>
     {% if loop.first %}<h1>{{ deck.title }}</h1>{% endif %}
     <h2>{{ s.title }}</h2>
     <ul>{% for b in s.bullets %}<li>{{ b }}</li>{% endfor %}</ul>
     <div class="sources">Sources: {{ s.sources|join(", ") if s.sources else "none" }}</div>
-  </section>
+  </section></div>
 {% endfor %}
 </main>
+<script>
+  // Scale the fixed 960x540 slides to the window; type sizes inside a slide never change.
+  function fit() { document.documentElement.style.setProperty("--s", Math.min(1, (window.innerWidth - 32) / 960)); }
+  fit(); window.addEventListener("resize", fit);
+</script>
 </body>
 </html>

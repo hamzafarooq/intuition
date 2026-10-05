@@ -37,7 +37,7 @@ _MONEY_SUFFIX = re.compile(
 _PCT = re.compile(rf"(?<![\w.])(?P<num>{_NUM})\s?(?:%|percent\b|per\s?cent\b)", re.IGNORECASE)
 _WORDS = "|".join(WORD_NUMBERS)
 _COUNT = re.compile(
-    rf"(?<![\w$.,])(?P<num>{_NUM}|{_WORDS})(?:-|\s)(?:[A-Za-z]+(?:-|\s)){{0,2}}?(?P<unit>{'|'.join(COUNT_UNITS)})\b",
+    rf"(?<![\w$.,])(?P<num>{_NUM}|{_WORDS})(?:-|\s)(?:(?:[A-Za-z]+|[A-Za-z]+\d+|Q[1-4])(?:-|\s)){{0,2}}?(?P<unit>{'|'.join(COUNT_UNITS)})\b",
     re.IGNORECASE,
 )
 

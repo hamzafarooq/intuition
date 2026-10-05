@@ -1,0 +1,22 @@
+# Golden case T02. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: T02
+slug: dropped-threads
+type: triage
+kind: regression
+workshop: false
+tags: [dropped-thread]
+request: "Anything I've dropped?"
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: none
+  edit: ""
+pre_authorized: []
+rubric: triage
+fill:
+  must_include: [em-04]
+budgets: {max_cost_usd: 0.60, max_seconds: 180}
+notes: >
+  em-04 (Sat 17 Oct, Dan Reyes, "Pricing question on the 2027 renewal") has no reply from Maya in
+  sent.json, and em-24 asks about it again today.

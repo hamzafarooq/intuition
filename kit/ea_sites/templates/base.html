@@ -1,0 +1,144 @@
+{% set step_names = {
+  "skyway": ["Search", "Choose a flight", "Passengers", "Review"],
+  "stays": ["Search", "Choose a hotel", "Guests", "Review"],
+  "tables": ["Search", "Choose a time", "Your details", "Review"],
+} %}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ title }} · {{ site.name }}</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='4' fill='{{ site.accent | replace('#', '%23') }}'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --accent: {{ site.accent }};
+    --tint: {{ site.tint }};
+    --ink: #1b1f24;
+    --muted: #586070;
+    --line: #d5dae1;
+    --bg: #f4f5f7;
+    --card: #ffffff;
+    --error: #b42318;
+    --ok: #12704f;
+    --warn: #8a5200;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 3px solid #f2b600; outline-offset: 2px; }
+  .topbar { background: var(--accent); color: #fff; }
+  .topbar .inner { max-width: 760px; margin: 0 auto; padding: 12px 16px; display: flex; align-items: center;
+                   justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; }
+  .brand { color: #fff; text-decoration: none; font-weight: 700; font-size: 1.3rem; display: inline-flex;
+           align-items: center; gap: 8px; letter-spacing: .01em; }
+  .brand svg { width: 26px; height: 26px; }
+  .brand small { font-weight: 400; font-size: .85rem; opacity: .85; }
+  .account { font-size: .875rem; opacity: .92; }
+  main { max-width: 760px; margin: 0 auto; padding: 20px 16px 48px; }
+  h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 6px; }
+  h2 { font-size: 1.15rem; line-height: 1.3; margin: 0 0 6px; }
+  .lede { color: var(--muted); margin: 0 0 18px; }
+  .steps { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 0; margin: 0 0 14px;
+           font-size: .8125rem; color: var(--muted); }
+  .steps li[aria-current="step"] { color: var(--accent); font-weight: 700; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; margin: 0 0 12px; }
+  .field { margin: 0 0 16px; }
+  .row { display: flex; flex-wrap: wrap; gap: 0 14px; }
+  .row > .field { flex: 1 1 180px; min-width: 0; }
+  label { display: block; font-weight: 600; margin: 0 0 4px; }
+  .optional { font-weight: 400; color: var(--muted); }
+  input[type=text], input[type=email], input[type=tel], select {
+    width: 100%; padding: 10px 12px; font: inherit; color: inherit; background: #fff;
+    border: 1px solid #8f97a4; border-radius: 6px; min-height: 44px; }
+  .has-error input, .has-error select { border: 2px solid var(--error); }
+  .hint { color: var(--muted); font-size: .875rem; margin: 0 0 4px; }
+  .error { color: var(--error); font-weight: 600; margin: 0 0 4px; }
+  fieldset { border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px 2px; margin: 0 0 16px; background: var(--card); }
+  legend { font-weight: 700; padding: 0 6px; }
+  button, .button { display: inline-block; background: var(--accent); color: #fff; border: 0; border-radius: 6px;
+                    padding: 11px 20px; min-height: 44px; font: inherit; font-weight: 700; cursor: pointer;
+                    text-decoration: none; text-align: center; }
+  button:hover, .button:hover { filter: brightness(1.08); }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin: 18px 0 0; }
+  .secondary { font-size: .95rem; }
+  .result { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 18px; }
+  .result .info { flex: 1 1 260px; min-width: 0; }
+  .result .buy { flex: 0 1 270px; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+  .times { font-size: 1.25rem; font-weight: 700; }
+  .meta { color: var(--muted); margin: 2px 0; }
+  .price { font-size: 1.45rem; font-weight: 800; line-height: 1.1; }
+  .per { color: var(--muted); font-size: .875rem; }
+  .tags { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .tags li { background: var(--tint); color: var(--ink); border-radius: 999px; padding: 2px 10px; font-size: .8125rem; font-weight: 600; }
+  .slots { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 0; padding: 0; list-style: none; }
+  .slots form { margin: 0; }
+  .note { background: var(--tint); border-radius: 8px; padding: 10px 14px; margin: 0 0 16px; }
+  .hold-box { background: var(--card); border: 2px solid var(--accent); border-radius: 12px; padding: 16px; margin: 0 0 16px; }
+  .ref { font: 800 1.6rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .05em; margin: 2px 0 6px; }
+  .status { display: inline-block; padding: 3px 12px; border-radius: 999px; font-weight: 800; }
+  .status.confirmed { background: #dff3ea; color: var(--ok); }
+  .status.held { background: #fff1d6; color: var(--warn); }
+  .status.not, .status.expired, .status.cancelled { background: #fde7e5; color: var(--error); }
+  dl.facts { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 18px; margin: 0; }
+  dl.facts dt { color: var(--muted); }
+  dl.facts dd { margin: 0; overflow-wrap: anywhere; }
+  table.price-lines { width: 100%; border-collapse: collapse; margin: 6px 0 0; }
+  table.price-lines th, table.price-lines td { padding: 8px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; font-weight: 400; }
+  table.price-lines td { text-align: right; white-space: nowrap; padding-left: 12px; }
+  table.price-lines tr.total th, table.price-lines tr.total td { font-weight: 800; font-size: 1.15rem; border-top: 2px solid var(--ink); }
+  .error-summary { border: 3px solid var(--error); border-radius: 10px; background: #fff; padding: 12px 16px; margin: 0 0 18px; }
+  .error-summary h2 { color: var(--error); }
+  .error-summary ul { margin: 0; padding-left: 20px; }
+  footer { max-width: 760px; margin: 0 auto; padding: 0 16px 32px; color: var(--muted); font-size: .8125rem; }
+  .visually-hidden { position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
+                     clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  @media (max-width: 340px) {
+    dl.facts { grid-template-columns: 1fr; gap: 0; }
+    dl.facts dd { margin: 0 0 8px; }
+  }
+  @media (max-width: 480px) {
+    h1 { font-size: 1.35rem; }
+    dl.facts { gap: 6px 12px; }
+    .result .buy { flex-basis: 100%; }
+    .result .buy button { width: 100%; }
+    .actions > button { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="inner">
+    <a class="brand" href="{{ base }}/">
+      {% if site.key == "skyway" %}
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg>
+      {% elif site.key == "stays" %}
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9a4 4 0 0 0-4-4z"/></svg>
+      {% elif site.key == "tables" %}
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 9H9V2H7v7H5V2H3v7c0 2.1 1.7 3.8 3.8 4v9h2.5v-9c2.1-.2 3.7-1.9 3.7-4V2h-2zm5-3v8h2.5v8H21V2c-2.8 0-5 2.2-5 4z"/></svg>
+      {% else %}
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z"/></svg>
+      {% endif %}
+      <span>{{ site.name }}</span>
+    </a>
+    {% if user and user.name %}<span class="account">Signed in as {{ user.name }}{% if user.company %} · {{ user.company }}{% endif %}</span>{% endif %}
+  </div>
+</header>
+<main id="main">
+  {% if step and step_names.get(site.key) %}
+  <ol class="steps" aria-label="Booking steps">
+    {% for name in step_names[site.key] %}
+    <li{% if loop.index == step %} aria-current="step"{% endif %}>{{ loop.index }}. {{ name }}</li>
+    {% endfor %}
+  </ol>
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+<footer>
+  <p>{{ site.name }} is a practice booking site for the Intuition workshop. Nothing here is real and nothing is charged.</p>
+</footer>
+</body>
+</html>

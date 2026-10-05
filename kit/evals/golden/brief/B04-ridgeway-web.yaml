@@ -1,0 +1,33 @@
+# Golden case B04. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: B04
+slug: ridgeway-web
+type: brief
+kind: capability
+workshop: false
+tags: [web, grounded]
+request: "Prep me for Ridgeway and include anything new about them online."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: none
+  edit: ""
+pre_authorized: []
+rubric: brief
+fill:
+  mode: normal
+  facts:
+    - '\b(three|3)\b[^\n]{0,40}(shipment|deliver|PO)'
+    - '\$12,?500|\$12\.5 ?K'
+    - '31 Dec|Dec(ember)?\.? 31|2026-12-31|12/31/2026'
+    - '\$1\.1 ?(M|million)'
+    - 'pricing'
+    - '18[- ]month'
+  web_facts:
+    - '\$48 ?(M|million)'
+    - 'Apr(il)?\.? 2027'
+budgets: {max_cost_usd: 1.20, max_seconds: 300}
+notes: >
+  B01's facts plus the web: "Ridgeway Builders wins Aurora logistics warehouse contract"
+  (news.buildtrade.example/ridgeway-aurora): $48M project, groundbreaking April 2027. The brief must
+  carry the news link (in the text or its sources list).

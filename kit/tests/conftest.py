@@ -81,9 +81,11 @@ class Run:
         }
 
 
-@pytest.fixture(autouse=True)
-def _clean_env(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    """No EA_* leaks in from the developer's shell; the kit root points at a temp dir (runs/CURRENT)."""
+@pytest.fixture
+def clean_env(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """No EA_* leaks in from the developer's shell; the kit root points at a temp dir (runs/CURRENT).
+
+    Requested by `make_run` (and so `run`), not autouse, so other suites in this folder are unaffected."""
     for name in EA_ENV:
         monkeypatch.delenv(name, raising=False)
     monkeypatch.setenv("EA_WORLD_DIR", str(WORLD))
@@ -92,7 +94,7 @@ def _clean_env(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
 
 
 @pytest.fixture
-def make_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Callable[..., Run]:
+def make_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, clean_env: None) -> Callable[..., Run]:
     counter = {"n": 0}
 
     def _make(

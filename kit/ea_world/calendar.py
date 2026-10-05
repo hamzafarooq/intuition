@@ -81,7 +81,7 @@ def calendar_list(
     pid = "maya" if person in ("", "me", "maya") else person
     p = maybe_person(pid)
     if p is None:
-        raise ToolError(f"Unknown contact: {person}. Use contacts_lookup to find people.")
+        raise ToolError(f"Unknown contact id: {person}. Use contacts_lookup to find people.")
     core.ctx().object_id = p["id"]
     if p["id"] == "maya":
         events = []
@@ -150,7 +150,7 @@ def calendar_find_free(
         elif p["id"] not in ids:
             ids.append(p["id"])
     if unknown:
-        raise ToolError(f"Unknown attendee(s): {', '.join(unknown)}. Use contacts_lookup first.")
+        raise ToolError(f"Unknown contact id: {', '.join(unknown)}. Use contacts_lookup first.")
     people = [people_by_id[i] for i in ids]
     ws = parse_window_bound(window_start, "window_start", tz)
     we = parse_window_bound(window_end, "window_end", tz, end=True)
@@ -287,6 +287,7 @@ def calendar_update(
         if (local_iso(s_dt, tz), local_iso(e_dt, tz)) != old_interval:
             feedback.release_busy(cal, ev)
             ev["start"], ev["end"] = local_iso(s_dt, tz), local_iso(e_dt, tz)
+            ev["moved_in_run"] = True  # seed busy blocks at the new time are real conflicts
             changed += ["start", "end"]
     if title is not None and title != ev["title"]:
         ev["title"] = title
@@ -304,10 +305,10 @@ def calendar_update(
     removed = []
     for a in _attendee_ids(remove_attendees or []):
         if a in ev["attendees"] and a != "maya":
+            feedback.release_busy(cal, ev, only=[a])  # while they're still an attendee
             ev["attendees"].remove(a)
             ev.get("rsvps", {}).pop(a, None)
             removed.append(a)
-            feedback.release_busy(cal, ev, only=[a])
     if removed and "attendees" not in changed:
         changed.append("attendees")
     people = contacts_by_id(s.load("contacts"))

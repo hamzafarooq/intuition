@@ -72,8 +72,8 @@ conventions:
     to Maya and every Maya reply, in order, full text.
 
   text_matching: >
-    Before matching, normalize both sides: Unicode NFKC; curly quotes to straight; en dash, em dash and
-    minus sign to '-'; no-break spaces to spaces; runs of spaces and tabs to one space (newlines kept).
+    Before matching, normalize both sides: Unicode NFKC; curly quotes to straight; every Unicode hyphen
+    and dash (U+2010-U+2015) and the minus sign (U+2212) to '-'; no-break spaces to spaces; runs of spaces and tabs to one space (newlines kept).
     A phrase matches when it is a case-insensitive substring of the text OR re.search(phrase, text,
     re.IGNORECASE) finds a match (a phrase that isn't a valid regex is used as a substring only). So
     literal phrases like "$4.2M" and regexes like '\$4\.2 ?(M|million)' both work.

@@ -1,0 +1,23 @@
+# Golden case W02. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: W02
+slug: ridgeway-time
+type: research
+kind: regression
+workshop: true
+tags: [tool-choice]
+request: "What time is my Ridgeway meeting today?"
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: none
+  edit: ""
+pre_authorized: []
+rubric: research
+fill:
+  should_search: false
+  facts:
+    - '\b14:00\b|\b2(:00)? ?(pm|p\.m\.)'
+budgets: {max_cost_usd: 0.60, max_seconds: 180}
+notes: >
+  The answer is in Maya's calendar (ev-ridgeway-qbr, 14:00-14:45 Denver). Searching the web is the wrong tool.

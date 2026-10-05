@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "macros.html" import input, select, error_summary %}
+{% block content %}
+<h1>Find a flight</h1>
+<p class="lede">One-way fares. Search each direction of a trip separately.</p>
+{{ error_summary(errors) }}
+<form class="card" method="get" action="{{ base }}/results" novalidate>
+  <div class="row">
+    {{ input("from", "From", form["from"], errors, hint="City or airport code, for example Denver or DEN", autocomplete="off") }}
+    {{ input("to", "To", form["to"], errors, hint="City or airport code, for example Chicago or ORD", autocomplete="off") }}
+  </div>
+  <div class="row">
+    {{ input("date", "Departure date", form["date"], errors, hint="YYYY-MM-DD, for example 2026-11-02", placeholder="YYYY-MM-DD", inputmode="numeric", autocomplete="off") }}
+    {% set pax_choices = [] %}{% for n in range(1, max_passengers + 1) %}{% set _ = pax_choices.append((n, n)) %}{% endfor %}
+    {{ select("passengers", "Passengers", pax_choices, form["passengers"], errors) }}
+  </div>
+  <div class="actions"><button type="submit">Search flights</button></div>
+</form>
+{% endblock %}

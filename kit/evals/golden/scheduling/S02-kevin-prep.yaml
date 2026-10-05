@@ -1,0 +1,26 @@
+# Golden case S02. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: S02
+slug: kevin-prep
+type: scheduling
+kind: regression
+workshop: true
+tags: [buffers]
+request: "Set up a 30-minute prep with Kevin before my Ridgeway meeting today."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: explicit_yes
+  edit: ""
+pre_authorized: []
+rubric: scheduling
+fill:
+  mode: create
+  invitees: [kevin.osei]
+  duration: 30
+  valid_ranges: [["2026-10-26T12:15:00-06:00", "2026-10-26T13:15:00-06:00"]]
+  ambiguous: false
+budgets: {max_cost_usd: 0.60, max_seconds: 180}
+notes: >
+  Ridgeway quarterly review is Mon 26 Oct 14:00 Denver. Kevin is busy until 10:30; Maya's pipeline
+  review 11:00-12:00 and the 15-minute buffers leave any start from 12:15 to 13:15 (gold/slots.json S02).

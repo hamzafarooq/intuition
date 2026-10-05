@@ -1,0 +1,26 @@
+# Golden case W04. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: W04
+slug: summit-venue
+type: research
+kind: regression
+workshop: false
+tags: [web]
+request: "Where's the summit venue and how far is it from my hotel?"
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: none
+  edit: ""
+pre_authorized: []
+rubric: research
+fill:
+  facts:
+    - '400 E(ast|\.)? Harbor Way'
+    - '0\.4[- ]?mi'
+  cite_kinds: [web, email]
+budgets: {max_cost_usd: 0.60, max_seconds: 180}
+notes: >
+  Lakeshore Convention Center, 400 E Harbor Way, Chicago; Harbor Point Hotel (the summit block) is
+  0.4 miles away. Both facts are in em-06 and on midwestbuild.example/2026, so searching is optional
+  (should_search absent) and citing either the registration email or the page passes.

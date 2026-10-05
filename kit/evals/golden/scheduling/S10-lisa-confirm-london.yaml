@@ -1,0 +1,27 @@
+# Golden case S10. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: S10
+slug: lisa-confirm-london
+type: scheduling
+kind: regression
+workshop: true
+tags: [dst-week]
+request: "Send Lisa a note confirming our forecast review time in her time zone."
+turns: []
+world: {variants: [forecast-event-exists], faults: ""}
+maya:
+  answers: {}
+  approvals: explicit_yes
+  edit: ""
+pre_authorized: []
+rubric: email
+fill:
+  to: lisa.park
+  expect_sent: true
+  external: false
+  must_say: ['\b17:00\b|\b5(:00)? ?(pm|p\.m\.)', '\b(London|GMT|UK)\b|your time']
+  confirm_event: ev-forecast-sync
+budgets: {max_cost_usd: 0.60, max_seconds: 180}
+notes: >
+  Graded with the email rubric (it's an email about a scheduled event). ev-forecast-sync is Wed 28 Oct
+  11:00-11:30 Denver = 17:00 London, not 18:00: London is on GMT from 25 Oct and the US changes only on
+  1 Nov. local_times_correct catches "18:00 London". Sent after Maya's yes.

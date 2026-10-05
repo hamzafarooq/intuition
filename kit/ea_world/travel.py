@@ -121,7 +121,7 @@ def _travelers(values: list[str] | None) -> list[str]:
     out = []
     for v in values or ["maya"]:
         if v not in people:
-            raise ToolError(f"Unknown traveller: {v}. Use contact ids such as 'maya'.")
+            raise ToolError(f"Unknown contact id: {v}. Travellers are contact ids such as 'maya'.")
         if v not in out:
             out.append(v)
     return out
@@ -198,7 +198,8 @@ def travel_book(
         if kind == "hotel":
             ci, co = _day(det.get("check_in"), "check_in"), _day(det.get("check_out"), "check_out")
             booking.update(check_in=ci.isoformat() if ci else None, check_out=co.isoformat() if co else None,
-                           nights=(co - ci).days if ci and co else None, unit_price_usd=opt["price_usd"])
+                           nights=(co - ci).days if ci and co else None, unit_price_usd=opt["price_usd"],
+                           rooms=int(det.get("rooms") or len(booking["travelers"]) or 1))
         else:
             booking.update(date=opt["date"], unit_price_usd=opt["price_usd"])
         h["status"] = "confirmed"

@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eval report · {{ meta.run_id }}</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+  --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,.10);
+  --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a;
+  --good: #0ca30c; --good-ink: #006300; --critical: #d03b3b; --critical-ink: #b22b2b; --warning: #fab219;
+  --chip: #f0efec;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,.10);
+    --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70;
+    --good-ink: #0ca30c; --critical-ink: #ef7b7b; --chip: #2a2a28;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+  --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,.10);
+  --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70;
+  --good-ink: #0ca30c; --critical-ink: #ef7b7b; --chip: #2a2a28;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+header.top { padding: 28px 16px 8px; max-width: 1200px; margin: 0 auto; }
+h1 { font-size: 26px; margin: 0 0 4px; }
+h2 { font-size: 20px; margin: 36px 0 10px; }
+h3 { font-size: 16px; margin: 18px 0 6px; }
+main { max-width: 1200px; margin: 0 auto; padding: 0 16px 80px; }
+nav.toc { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; margin: 8px 0 0; }
+nav.toc a { color: var(--ink-2); }
+.meta { color: var(--ink-2); font-size: 13.5px; display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 6px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+.chart-row { display: grid; grid-template-columns: minmax(0, 560px) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 900px) { .chart-row { grid-template-columns: 1fr; } }
+.banner { border-left: 4px solid var(--critical); background: color-mix(in srgb, var(--critical) 8%, var(--surface)); padding: 10px 14px; border-radius: 6px; margin: 0 0 12px; font-size: 14px; }
+.banner strong { color: var(--critical-ink); }
+.banner.ok { border-color: var(--good); background: color-mix(in srgb, var(--good) 8%, var(--surface)); }
+.banner.warn { border-color: var(--warning); background: color-mix(in srgb, var(--warning) 10%, var(--surface)); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+thead th { color: var(--ink-2); font-weight: 600; border-bottom: 1px solid var(--axis); }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.nums td { font-variant-numeric: tabular-nums; }
+.n { color: var(--muted); font-size: 12px; }
+.up { color: var(--good-ink); } .down { color: var(--critical-ink); }
+.scroll { overflow-x: auto; }
+.pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; background: var(--chip); color: var(--ink-2); white-space: nowrap; }
+.pill.pass::before { content: "✓ "; } .pill.pass { color: var(--good-ink); }
+.pill.fail::before { content: "✗ "; } .pill.fail { color: var(--critical-ink); }
+.pill.na { color: var(--muted); }
+.grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+.stat .v { font-size: 24px; font-weight: 650; }
+.stat .l { color: var(--ink-2); font-size: 13px; }
+details { margin: 8px 0; }
+summary { cursor: pointer; color: var(--ink-2); }
+input[type=search] { width: 100%; max-width: 420px; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--axis); background: var(--surface); color: var(--ink); font: inherit; }
+tr.trial { cursor: pointer; } tr.trial:hover { background: var(--chip); }
+#viewer { margin-top: 14px; }
+.tl { list-style: none; padding: 0; margin: 0; font-size: 13.5px; }
+.tl li { padding: 6px 8px; border-left: 3px solid var(--grid); margin: 0 0 4px; background: var(--surface); border-radius: 0 6px 6px 0; overflow-wrap: anywhere; }
+.tl li .k { font-weight: 600; margin-right: 6px; }
+.tl li.user { border-color: var(--series-1); } .tl li.assistant { border-color: var(--ink-2); }
+.tl li.tool_call, .tl li.tool_result { border-color: var(--axis); } .tl li.check { border-color: var(--series-3); }
+.tl li.approval_request, .tl li.approval_response { border-color: var(--series-2); }
+.tl li.signal, .tl li.stop_check_block, .tl li.error { border-color: var(--critical); }
+.tl li.delegate, .tl li.handoff_result, .tl li.skill_loaded { border-color: var(--series-1); }
+.tl pre, .world pre { white-space: pre-wrap; margin: 4px 0 0; font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink-2); }
+.viewer-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 900px) { .viewer-grid { grid-template-columns: 1fr; } }
+code.cmd { display: block; padding: 8px 10px; background: var(--chip); border-radius: 6px; font-size: 12.5px; overflow-x: auto; }
+.theme-toggle { float: right; font: inherit; font-size: 13px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--axis); background: var(--surface); color: var(--ink-2); cursor: pointer; }
+{{ radar_css }}
+</style>
+</head>
+<body>
+<header class="top">
+  <button class="theme-toggle" type="button" id="theme">Theme</button>
+  <h1>Eval report: {{ meta.run_id }}</h1>
+  <div class="meta">
+    <span>{{ meta.started or "" }}{% if meta.ended %} → {{ meta.ended }}{% endif %}</span>
+    <span>harness {{ (meta.harnesses or ["claude-code"])|join(", ") }}</span>
+    <span>variants {{ (meta.variants or ["default"])|join(", ") }}</span>
+    <span>models: Claude {{ meta.models.claude if meta.models else "" }} · judge {{ (meta.models.judge if meta.models else None) or "off" }} · simulated Maya {{ meta.models.sim if meta.models else "" }}</span>
+    {% if meta.effort %}<span>effort {{ meta.effort }}</span>{% endif %}
+    <span>rubrics {% for k, v in (meta.rubric_versions or {}).items() %}{{ k }} v{{ v }}{% if not loop.last %}, {% endif %}{% endfor %}</span>
+    <span>{{ summary.trials }} trials · ${{ "%.2f"|format(summary.total_cost_usd) }} API-equivalent Claude · ${{ "%.2f"|format((meta.costs or {}).get("openai_usd", 0)) }} OpenAI · {{ "%.0f"|format(summary.total_seconds / 60) }} min</span>
+    {% if meta.git_commit %}<span>commit {{ meta.git_commit }}</span>{% endif %}
+  </div>
+  {% if meta.status and meta.status != "complete" %}<div class="banner warn" style="margin-top:10px"><strong>Partial run ({{ meta.status }}).</strong> {{ meta.pause_reason or "" }} Resume with <code>uv run ea-eval resume {{ meta.run_id }}</code>.</div>{% endif %}
+  {% if meta.personal_settings and (meta.personal_settings.claude_md or meta.personal_settings.user_hooks) %}<div class="banner warn" style="margin-top:10px">Personal Claude Code settings were present on this machine (~/.claude). Runs use <code>--setting-sources project,local</code>, but compare with care.</div>{% endif %}
+  <nav class="toc"><a href="#overview">Overview</a><a href="#by-type">By type</a>{% if team %}<a href="#team">Team</a>{% endif %}{% if comparisons %}<a href="#comparisons">Comparisons</a>{% endif %}<a href="#safety">Safety</a><a href="#selfchecks">Self-checks</a><a href="#criteria">Criteria</a><a href="#trials">Trials</a></nav>
+</header>
+<main>
+
+<section id="overview">
+  <h2>Overview</h2>
+  {% if must_failures %}
+  <div class="banner"><strong>{{ must_failures|length }} must-pass failure{{ "s" if must_failures|length != 1 }}</strong>: {% for f in must_failures[:6] %}{{ f.case_id }} {{ f.criterion }}{% if not loop.last %}; {% endif %}{% endfor %}{% if must_failures|length > 6 %} …{% endif %}. A big shape with a must-pass failure is still a failing assistant.</div>
+  {% else %}<div class="banner ok"><strong>No must-pass failures.</strong></div>{% endif %}
+  <div class="grid3">
+    <div class="stat"><div class="v">{{ "%.0f"|format((summary.pass_rate or 0) * 100) }}%</div><div class="l">trials passed ({{ summary.trials }})</div></div>
+    <div class="stat"><div class="v">{{ "—" if summary.overclaim_rate is none else "%.0f%%"|format(summary.overclaim_rate * 100) }}</div><div class="l">overclaim rate (said done, wasn't)</div></div>
+    <div class="stat"><div class="v">{{ "—" if summary.attack_success_rate is none else "%.0f%%"|format(summary.attack_success_rate * 100) }}</div><div class="l">attack success</div></div>
+    <div class="stat"><div class="v">${{ "%.2f"|format(summary.mean_cost_usd) }}</div><div class="l">mean API-equivalent cost a trial</div></div>
+    <div class="stat"><div class="v">{{ "%.0f"|format(summary.mean_seconds) }} s</div><div class="l">mean time a trial (p90 {{ "%.0f"|format(summary.p90_seconds) }} s)</div></div>
+    {% for k, s in kinds.items() %}<div class="stat"><div class="v">{{ "%.0f"|format((s.pass_rate or 0) * 100) }}%</div><div class="l">{{ k }} cases passed ({{ s.trials }})</div></div>{% endfor %}
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="chart-row">
+      <div>{{ overview.legend|safe }}{{ overview.svg|safe }}</div>
+      <div class="scroll"><h3>{{ overview.title }}: exact values</h3>{{ overview.table|safe }}<p class="n">Each axis is the share of applicable criterion checks that passed; Cost and Speed are the share of trials within their case's budget. Shapes exaggerate differences; read the numbers.</p></div>
+    </div>
+  </div>
+  <h3>Thresholds (written before the first run)</h3>
+  <div class="scroll"><table><thead><tr><th>Metric</th><th class="num">Value</th><th class="num">Target</th><th>Met</th></tr></thead><tbody>
+  {% for t in thresholds %}<tr><td>{{ t.metric }}</td><td class="num">{{ "—" if t.value is none else ("%.2f"|format(t.value)) }}</td><td class="num">{% if t.min is not none %}≥ {{ t.min }}{% endif %}{% if t.max is not none %}≤ {{ t.max }}{% endif %}</td><td>{% if t.met is none %}<span class="pill na">not measured</span>{% elif t.met %}<span class="pill pass">met</span>{% else %}<span class="pill fail">not met</span>{% endif %}</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+
+<section id="by-type">
+  <h2>By type</h2>
+  {% for b in by_type %}
+  <div class="card" style="margin-bottom:14px">
+    <h3>{{ b.title }} <span class="n">({{ b.trials[0] }} trials)</span></h3>
+    {% if b.banner %}<div class="banner"><strong>{{ b.banner|length }} must-pass failure{{ "s" if b.banner|length != 1 }}</strong>: {% for f in b.banner[:4] %}{{ f.case_id }} {{ f.criterion }}{% if not loop.last %}; {% endif %}{% endfor %}</div>{% endif %}
+    <div class="chart-row">
+      <div>{{ b.legend|safe }}{{ b.svg|safe }}</div>
+      <div class="scroll">{{ b.table|safe }}
+        <h3>Cases</h3>
+        <table><thead><tr><th>Case</th><th>Variant</th><th class="num">Trials</th><th class="num">pass@1</th><th class="num">pass^k</th></tr></thead><tbody>
+        {% for c in b.cases %}<tr><td>{{ c.case_id }}</td><td>{{ c.variant }}</td><td class="num">{{ c.n }}</td><td class="num">{{ "%.0f%%"|format(c["pass@1"] * 100) }}</td><td class="num">{{ "%.0f%%"|format(c.pass_hat_n * 100) }}</td></tr>{% endfor %}
+        </tbody></table>
+      </div>
+    </div>
+    <details><summary>Every criterion's pass rate</summary><div class="scroll"><table><thead><tr><th>Criterion</th><th>Level</th><th>Grader</th><th class="num">Pass rate</th><th>Failed in</th></tr></thead><tbody>
+    {% for r in b.criteria %}<tr><td>{{ r.criterion }}</td><td>{{ r.level }}</td><td>{{ r.grader }}</td><td class="num">{{ "%.0f%%"|format(r.rate * 100) }} <span class="n">{{ r.yes }}/{{ r.n }}</span></td><td>{{ r.failed_trials[:4]|join(", ") }}</td></tr>{% endfor %}
+    </tbody></table></div></details>
+  </div>
+  {% endfor %}
+</section>
+
+{% if team %}
+<section id="team">
+  <h2>Team</h2>
+  <div class="card"><div class="chart-row"><div>{{ team.legend|safe }}{{ team.svg|safe }}</div><div class="scroll">{{ team.table|safe }}</div></div></div>
+</section>
+{% endif %}
+
+{% if comparisons %}
+<section id="comparisons">
+  <h2>Comparisons</h2>
+  {% for c in comparisons %}
+  <div class="card" style="margin-bottom:14px">
+    <h3>{{ c.title }}</h3>
+    <div class="chart-row">
+      <div>{{ c.legend|safe }}{{ c.svg|safe }}</div>
+      <div class="scroll">{{ c.table|safe }}
+        <table style="margin-top:10px"><thead><tr><th></th><th class="num">A</th><th class="num">B</th></tr></thead><tbody>
+        {% for name, a, b, kind in c.stats %}<tr><td>{{ name }}</td>
+          {% for v in (a, b) %}<td class="num">{% if v is none %}—{% elif kind == "pct" %}{{ "%.0f%%"|format(v * 100) }}{% elif kind == "usd" %}${{ "%.2f"|format(v) }}{% elif kind == "s" %}{{ "%.0f"|format(v) }} s{% else %}{{ v }}{% endif %}</td>{% endfor %}</tr>{% endfor %}
+        </tbody></table>
+      </div>
+    </div>
+    {% if c.team %}<div class="chart-row"><div>{{ c.team.legend|safe }}{{ c.team.svg|safe }}</div><div class="scroll">{{ c.team.table|safe }}</div></div>{% endif %}
+  </div>
+  {% endfor %}
+</section>
+{% endif %}
+
+<section id="safety">
+  <h2>Safety</h2>
+  <div class="grid3">
+    <div class="stat"><div class="v">{{ "—" if summary.attack_success_rate is none else "%.0f%%"|format(summary.attack_success_rate * 100) }}</div><div class="l">attack success (lower is better)</div></div>
+    <div class="stat"><div class="v">{{ "—" if summary.task_success_under_attack is none else "%.0f%%"|format(summary.task_success_under_attack * 100) }}</div><div class="l">task success under attack</div></div>
+    <div class="stat"><div class="v">{{ "—" if summary.false_block_rate is none else "%.0f%%"|format(summary.false_block_rate * 100) }}</div><div class="l">false blocks on harmless look-alikes</div></div>
+    <div class="stat"><div class="v">{{ "—" if summary.gate_pass_hat_k is none else "%.0f%%"|format(summary.gate_pass_hat_k * 100) }}</div><div class="l">gate pass^k (E02, E07, E08, R05)</div></div>
+  </div>
+  {% set sf = must_failures|selectattr("axis", "equalto", "safety")|list %}
+  {% if sf %}<div class="banner" style="margin-top:12px"><strong>Safety must-pass failures</strong><ul>{% for f in sf %}<li>{{ f.case_id }} t{{ f.trial }} ({{ f.variant }}): {{ f.criterion }} — {{ f.evidence }}</li>{% endfor %}</ul></div>{% endif %}
+</section>
+
+<section id="selfchecks">
+  <h2>Self-checks</h2>
+  <p class="n">Overclaim: the assistant said <em>done</em> and the graders said it failed (the dangerous case). Underclaim: it said partial, failed or waiting, and it had passed.</p>
+  <div class="scroll"><table><thead><tr><th>Variant</th><th class="num">Trials</th><th class="num">Pass</th><th class="num">Overclaim</th><th class="num">Underclaim</th><th class="num">Mean cost</th><th class="num">Mean time</th></tr></thead><tbody>
+  {% for r in selfcheck %}<tr><td>{{ r.variant }}</td><td class="num">{{ r.trials }}</td><td class="num">{{ "%.0f%%"|format((r.pass or 0) * 100) }}</td><td class="num">{{ "—" if r.overclaim is none else "%.0f%%"|format(r.overclaim * 100) }}</td><td class="num">{{ "—" if r.underclaim is none else "%.0f%%"|format(r.underclaim * 100) }}</td><td class="num">${{ "%.2f"|format(r.cost) }}</td><td class="num">{{ "%.0f"|format(r.seconds) }} s</td></tr>{% endfor %}
+  </tbody></table></div>
+  <p class="n">Judge stability: {{ "not measured" if summary.judge_stability is none else "%.0f%% agreement on %d re-judged criteria"|format(summary.judge_stability * 100, summary.judge_rejudged) }}. Judge calls: {{ summary.judge_calls }}.</p>
+</section>
+
+<section id="criteria">
+  <h2>Every criterion</h2>
+  <div class="scroll"><table><thead><tr><th>Criterion</th><th>Level</th><th>Axis</th><th>Grader</th><th class="num">Pass rate</th><th>Failed in</th></tr></thead><tbody>
+  {% for r in criteria %}<tr><td>{{ r.criterion }}</td><td>{{ r.level }}</td><td>{{ r.axis }}</td><td>{{ r.grader }}</td><td class="num">{{ "%.0f%%"|format(r.rate * 100) }} <span class="n">{{ r.yes }}/{{ r.n }}</span></td><td>{% for t in r.failed_trials[:6] %}<a href="#t={{ t }}" class="jump">{{ t }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+
+<section id="trials">
+  <h2>Trials</h2>
+  <input type="search" id="filter" placeholder="Filter: case, variant, status, pass or fail…" aria-label="Filter trials">
+  <div class="scroll"><table id="trial-table"><thead><tr><th>Case</th><th>Harness</th><th>Variant</th><th class="num">Trial</th><th>Result</th><th>Status</th><th>Overclaim</th><th class="num">Cost</th><th class="num">Time</th></tr></thead><tbody>
+  {% for t in trials %}<tr class="trial" data-key="{{ t.key }}" data-text="{{ t.case_id }} {{ t.variant }} {{ t.status }} {{ 'pass' if t.passed else 'fail' }}"><td>{{ t.case_id }}</td><td>{{ t.harness }}</td><td>{{ t.variant }}</td><td class="num">{{ t.trial }}</td><td><span class="pill {{ 'pass' if t.passed else 'fail' }}">{{ "pass" if t.passed else "fail" }}</span></td><td>{{ t.status }}</td><td>{{ "yes" if t.overclaim else ("no" if t.overclaim is not none else "—") }}</td><td class="num">${{ "%.2f"|format(t.usage.cost_usd or 0) }}</td><td class="num">{{ "%.0f"|format(t.usage.seconds or 0) }} s</td></tr>{% endfor %}
+  </tbody></table></div>
+  <div id="viewer" class="card" hidden></div>
+</section>
+</main>
+<script id="trial-data" type="application/json">{{ trials_json|safe }}</script>
+<script>
+(function () {
+  var root = document.documentElement;
+  try { var saved = localStorage.getItem("ea-report-theme"); if (saved) root.setAttribute("data-theme", saved); } catch (e) {}
+  document.getElementById("theme").addEventListener("click", function () {
+    var dark = root.getAttribute("data-theme") === "dark" || (!root.getAttribute("data-theme") && matchMedia("(prefers-color-scheme: dark)").matches);
+    root.setAttribute("data-theme", dark ? "light" : "dark");
+    try { localStorage.setItem("ea-report-theme", root.getAttribute("data-theme")); } catch (e) {}
+  });
+  var trials = JSON.parse(document.getElementById("trial-data").textContent);
+  var byKey = {}; trials.forEach(function (t) { byKey[t.key] = t; });
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+  function j(v) { return typeof v === "string" ? v : JSON.stringify(v, null, 1); }
+  function line(e) {
+    var who = e.agent && e.agent !== "main" ? " [" + esc(e.agent) + "]" : "";
+    var t = e.type, body = "";
+    if (t === "user") body = "<span class=k>Maya" + (e.source === "sim_maya" ? " (simulated)" : "") + "</span>" + esc(e.text);
+    else if (t === "assistant") body = "<span class=k>Assistant" + who + "</span><pre>" + esc(e.text) + "</pre>";
+    else if (t === "thinking_summary") body = "<span class=k>Thinking" + who + "</span>" + esc(e.text);
+    else if (t === "tool_call") body = "<details><summary><span class=k>→ " + esc(e.tool) + who + "</span></summary><pre>" + esc(j(e.input)) + "</pre></details>";
+    else if (t === "tool_result") body = "<details><summary><span class=k>" + (e.ok ? "✓" : "✗") + " " + esc(e.tool) + who + "</span>" + (e.ok ? "" : esc(e.error)) + "</summary><pre>" + esc(j(e.output)) + "</pre></details>";
+    else if (t === "skill_loaded") body = "<span class=k>Skill</span>" + esc(e.skill);
+    else if (t === "delegate") body = "<details><summary><span class=k>Hand-off → " + esc(e.to) + "</span></summary><pre>" + esc(e.task) + "</pre></details>";
+    else if (t === "handoff_result") body = "<details><summary><span class=k>" + esc(e.to) + " returned</span></summary><pre>" + esc(e.text) + "</pre></details>";
+    else if (t === "approval_request") body = "<span class=k>Approval asked</span>" + esc(e.summary);
+    else if (t === "approval_response") body = "<span class=k>Approval " + esc(e.decision) + "</span>by " + esc(e.by) + ": " + esc(e.reason);
+    else if (t === "check") body = "<span class=k>" + (e.ok ? "✓ " : "✗ ") + esc(e.verifier) + "</span>" + esc(e.object_id) + (e.problems && e.problems.length ? "<pre>" + esc(e.problems.map(function (p) { return p.code + ": " + p.detail; }).join("\n")) + "</pre>" : "");
+    else if (t === "signal") body = "<span class=k>Signal: " + esc(e.kind) + "</span>" + esc(e.detail);
+    else if (t === "stop_check_block") body = "<span class=k>Stop check blocked</span>" + esc(e.reason);
+    else if (t === "status") body = "<span class=k>Status</span>" + esc(e.status) + (e.reason ? " — " + esc(e.reason) : "");
+    else if (t === "usage") body = "<span class=k>Usage</span>$" + (e.cost_usd || 0).toFixed(3) + " · " + (e.seconds || 0) + " s · " + (e.num_turns || 0) + " model turns";
+    else if (t === "error") body = "<span class=k>Error</span>" + esc(e.message);
+    else if (t === "turn_end") return "";
+    else body = "<span class=k>" + esc(t) + "</span>" + esc(j(e));
+    return "<li class='" + esc(t) + "'>" + body + "</li>";
+  }
+  function world(w) {
+    if (!w || !Object.keys(w).length) return "<p class=n>No world snapshot.</p>";
+    var out = "";
+    function list(title, items, fmt) { if (!items || !items.length) return ""; return "<h3>" + title + "</h3><ul class=tl>" + items.map(function (x) { return "<li>" + fmt(x) + "</li>"; }).join("") + "</ul>"; }
+    out += list("Events", w.events, function (e) { return "<span class=k>" + esc(e.change) + "</span>" + esc(e.title) + " · " + esc(e.start) + " – " + esc(e.end) + "<pre>" + esc(j({attendees: e.attendees, rsvps: e.rsvps, was: e.was})) + "</pre>"; });
+    out += list("Emails sent", w.sent, function (m) { return "<span class=k>to " + esc((m.to || []).join(", ")) + "</span>" + esc(m.subject) + "<pre>" + esc(m.body) + "</pre>"; });
+    out += list("Drafts", w.drafts, function (d) { return "<span class=k>" + esc(d.status) + "</span>to " + esc((d.to || []).join(", ")) + ": " + esc(d.subject); });
+    out += list("Bookings", w.bookings, function (b) { return "<span class=k>" + esc(b.change) + "</span>" + esc(b.kind) + " " + esc(b.option_id) + " · $" + esc(b.total_usd); });
+    out += list("Arrived in the inbox", w.inbox_arrivals, function (m) { return esc(m.from) + ": " + esc(m.subject); });
+    if (w.connectors && Object.keys(w.connectors).length) out += "<h3>Connectors</h3><pre>" + esc(j(w.connectors)) + "</pre>";
+    return out || "<p class=n>Nothing in the world changed.</p>";
+  }
+  function show(key) {
+    var t = byKey[key]; if (!t) return;
+    var v = document.getElementById("viewer"); v.hidden = false;
+    var grades = "<table><thead><tr><th>Criterion</th><th>Level</th><th>Verdict</th><th>Evidence</th></tr></thead><tbody>" + t.criteria.map(function (c) {
+      var cls = c.verdict === "yes" ? "pass" : (c.verdict === "na" || c.verdict === "skipped" ? "na" : "fail");
+      return "<tr><td>" + esc(c.rubric + "/" + c.id) + "</td><td>" + esc(c.level) + "</td><td><span class='pill " + cls + "'>" + esc(c.verdict) + "</span></td><td>" + esc(c.evidence) + (c.reason ? " <span class=n>" + esc(c.reason) + "</span>" : "") + "</td></tr>";
+    }).join("") + "</tbody></table>";
+    v.innerHTML = "<h3>" + esc(t.key) + " · " + (t.passed ? "passed" : "failed") + " · status " + esc(t.status) + (t.overclaim ? " · <strong>overclaim</strong>" : "") + "</h3>" +
+      "<div class=viewer-grid><div><h3>Timeline</h3><ol class=tl>" + t.trace.map(line).join("") + "</ol></div>" +
+      "<div class=world><h3>What changed in the world</h3>" + world(t.world) + "</div></div>" +
+      "<h3>Grades</h3><div class=scroll>" + grades + "</div>" +
+      "<h3>Turn this trial into a golden case</h3><code class=cmd>" + esc(t.promote) + "</code><p class=n>" + esc(t.path) + "</p>";
+    v.scrollIntoView({behavior: "smooth", block: "start"});
+  }
+  document.querySelectorAll("tr.trial").forEach(function (tr) { tr.addEventListener("click", function () { show(tr.dataset.key); history.replaceState(null, "", "#t=" + tr.dataset.key); }); });
+  document.getElementById("filter").addEventListener("input", function (e) {
+    var q = e.target.value.toLowerCase();
+    document.querySelectorAll("tr.trial").forEach(function (tr) { tr.hidden = q && tr.dataset.text.toLowerCase().indexOf(q) < 0; });
+  });
+  function fromHash() {
+    var m = location.hash.match(/^#t=(.+)$/); if (!m) return;
+    var k = decodeURIComponent(m[1]);
+    var parts = k.split("/");  // case/variant/tN from the criteria table
+    if (!byKey[k] && parts.length === 3) { var hit = trials.find(function (t) { return t.case_id === parts[0] && t.variant === parts[1] && "t" + t.trial === parts[2]; }); if (hit) k = hit.key; }
+    show(k);
+  }
+  window.addEventListener("hashchange", fromHash); fromHash();
+  var firstFail = trials.find(function (t) { return !t.passed; });
+  if (!location.hash && firstFail) { /* failing trials first: open the first one */ show(firstFail.key); window.scrollTo(0, 0); }
+})();
+</script>
+</body>
+</html>

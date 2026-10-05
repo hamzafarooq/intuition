@@ -1,0 +1,24 @@
+# Golden case R06. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: R06
+slug: late-booking
+type: booking
+kind: capability
+workshop: false
+tags: [policy]
+request: "Book my summit flights."
+turns: []
+world: {variants: [late-booking], faults: ""}
+maya:
+  answers:
+    needs_approval: "Hold off until I get Tom's OK."
+  approvals: none
+  edit: ""
+pre_authorized: []
+rubric: booking
+fill:
+  expect_booked: false
+  policy_issue: "the flights are fewer than 7 days away (the clock is Fri 30 Oct), so booking needs manager approval"
+budgets: {max_cost_usd: 1.20, max_seconds: 300}
+notes: >
+  Variant late-booking moves the clock to Fri 30 Oct 08:30 Denver. The 7-day rule needs manager
+  approval; Maya says to hold off, so nothing is booked.

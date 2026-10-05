@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% from "macros.html" import facts, price_lines %}
+{% block content %}
+{% if elsewhere %}
+<h1>This hold is on {{ elsewhere.name }}</h1>
+<div class="card">
+  <p>{{ hold.hold_id }} is a {{ elsewhere.noun }} hold. <a href="{{ elsewhere.url }}">See {{ hold.hold_id }} on {{ elsewhere.name }}</a>.</p>
+</div>
+{% else %}
+{% if mode == "review" %}
+<h1>Review your {{ site.noun }}</h1>
+{% else %}
+<h1>Hold {{ hold.hold_id }}</h1>
+{% endif %}
+<section class="hold-box" aria-labelledby="hold-title">
+  <h2 id="hold-title">Hold reference</h2>
+  <p class="ref">{{ hold.hold_id }}</p>
+  <p>Status:
+    {% if status == "confirmed" %}<span class="status confirmed">Confirmed</span>
+    {% elif status == "expired" %}<span class="status expired">Expired</span>
+    {% else %}<span class="status held">Held</span>{% endif %}
+  </p>
+  {% if status == "held" %}
+  <p><strong>Held for 30 minutes; your assistant will confirm.</strong></p>
+  <p class="hint">Nothing is booked or charged yet. Your assistant confirms this hold with the reference above.</p>
+  {% elif status == "confirmed" %}
+  <p>Your assistant confirmed this hold. Booking reference <strong>{{ hold.booking_id }}</strong>.</p>
+  {% else %}
+  <p>This hold has expired. Search again to make a new one.</p>
+  {% endif %}
+</section>
+<section class="card" aria-labelledby="trip-title">
+  <h2 id="trip-title">{{ desc.title }}</h2>
+  {{ facts(desc.facts) }}
+  {{ price_lines(desc.lines, total, "Estimated total" if desc.estimate else "Total") }}
+  {% if desc.estimate %}<p class="hint">Pay at the restaurant. This estimate is about the bill, including tip.</p>{% endif %}
+</section>
+<div class="actions">
+  {% if booking_url %}<a class="button" href="{{ booking_url }}">View booking {{ hold.booking_id }}</a>{% endif %}
+  {% if mode == "review" %}<a class="secondary" href="{{ hold_url }}">Check hold status</a>{% endif %}
+  <a class="secondary" href="{{ base }}/">Start a new search</a>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Hotels in {{ city }}</h1>
+<p class="lede">{{ check_in | day }} to {{ check_out | day }} · {{ nights }} night{{ "s" if nights != 1 }} · {{ rooms }} room{{ "s" if rooms != 1 }} · <a href="{{ change_url }}">Change search</a></p>
+{% if hotels %}
+<p>{{ hotels | length }} hotel{{ "s" if hotels | length != 1 }} with rooms. Prices are per room, per night, including taxes.</p>
+{% for h in hotels %}
+<article class="card result" aria-labelledby="hotel-{{ h.id }}">
+  <div class="info">
+    <h2 id="hotel-{{ h.id }}">{{ h.name }}</h2>
+    <p class="meta">{{ h.address }}</p>
+    <p class="meta">{{ h.distance_miles }} miles to {{ h.distance_to }}</p>
+    {% if h.block_code %}<p class="meta">Group rate code: <strong>{{ h.block_code }}</strong></p>{% endif %}
+    {% if h.tags %}
+    <ul class="tags" aria-label="Notes">{% for t in h.tags %}<li>{{ t }}</li>{% endfor %}</ul>
+    {% endif %}
+  </div>
+  <div class="buy">
+    <div class="price">{{ h.price_usd | money }}</div>
+    <div class="per">a night, taxes included</div>
+    <div class="per">{{ h.stay_total | money }} for {{ nights }} night{{ "s" if nights != 1 }}{% if rooms > 1 %}, {{ rooms }} rooms{% endif %}</div>
+    <form method="get" action="{{ base }}/guests">
+      <input type="hidden" name="hotel" value="{{ h.id }}">
+      <input type="hidden" name="check_in" value="{{ check_in }}">
+      <input type="hidden" name="check_out" value="{{ check_out }}">
+      <input type="hidden" name="rooms" value="{{ rooms }}">
+      <button type="submit">Select {{ h.name }}, {{ h.price_usd | money }} a night</button>
+    </form>
+  </div>
+</article>
+{% endfor %}
+{% else %}
+<div class="card">
+  <h2>No hotels found in {{ city }}</h2>
+  {% if cities %}<p>We have hotels in: {{ cities | join(", ") }}. <a href="{{ change_url }}">Search again</a>.</p>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

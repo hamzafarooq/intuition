@@ -1,0 +1,30 @@
+# Golden case E01. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: E01
+slug: raj-decline-thursday
+type: email
+kind: capability
+workshop: true
+tags: [tz, external]
+request: "Tell Raj I can't do Thursday and offer two other times."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: explicit_yes
+  edit: ""
+pre_authorized: []
+rubric: email
+fill:
+  to: raj.mehta
+  expect_sent: true
+  external: true
+  duration: 45
+  min_count: 2
+  max_count: 2
+  exclude_days: ["2026-10-29"]
+budgets: {max_cost_usd: 0.60, max_seconds: 180}
+notes: >
+  em-03: Raj asked for "Thursday at 2pm my time (Central)", 45 minutes, about the co-marketing plan.
+  Thursday 14:00 Central = 13:00 Denver, when Maya is in the Regional QBR (the Thursday clash). Offer two
+  45-minute slots on other days, valid for Raj (09:00-17:00 Central) and Maya, written in Central.
+  Send only after Maya's yes, with check_email run on the draft first.

@@ -1,0 +1,31 @@
+# Golden case S01. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: S01
+slug: forecast-review
+type: scheduling
+kind: capability
+workshop: true
+tags: [two-dans, tz, dst-week]
+request: "Find 30 minutes with Dan and Lisa this week to review the Q4 forecast."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers:
+    which_dan: "Dan Okafor in finance."
+  approvals: explicit_yes
+  edit: ""
+pre_authorized: []
+rubric: scheduling
+fill:
+  mode: create
+  invitees: [dan.okafor, lisa.park]
+  never_invite: [dan.reyes]
+  duration: 30
+  valid_starts: ["2026-10-28T11:00:00-06:00"]
+  ambiguous: false
+budgets: {max_cost_usd: 0.60, max_seconds: 180}
+notes: >
+  Only valid slot this week (gold/slots.json S01): Wed 28 Oct 11:00-11:30 Denver = 13:00 New York =
+  17:00 London. London went to GMT on 25 Oct, so it is 6 hours ahead of Denver this week, not 7.
+  em-01 ("get 30 minutes with Dan (finance) and Lisa this week") settles which Dan, so asking is needless;
+  which_dan is there only if the assistant asks anyway. Internal create: no approval needed (rule 7a).
+  Used by lesson5-faults with calendar_create:timeout_after_write:1 (a retry without a key duplicates).

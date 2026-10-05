@@ -8,7 +8,7 @@ from zoneinfo import ZoneInfo
 
 from . import core
 from .common import next_id
-from .rules import contacts_by_id, resolve_person, rsvp_for
+from .rules import contacts_by_id, is_own_block, resolve_person, rsvp_for
 from .timeutil import fmt_local, parse_dt
 
 
@@ -42,16 +42,13 @@ def add_inbox_email(
 
 
 def release_busy(cal: dict[str, Any], ev: dict[str, Any], only: list[str] | None = None) -> None:
-    """Remove the busy blocks an event put in its attendees' calendars (before a move or cancel)."""
-    start, end = parse_dt(ev["start"]), parse_dt(ev["end"])
+    """Remove the busy blocks an event put in its attendees' calendars (before a move, cancel or removal).
+
+    Call it while the attendees are still on the event."""
     for pid, blocks in cal.get("busy", {}).items():
         if only is not None and pid not in only:
             continue
-        if pid not in ev.get("attendees", []):
-            continue
-        cal["busy"][pid] = [
-            b for b in blocks if not (parse_dt(b["start"]) == start and parse_dt(b["end"]) == end and not b.get("ooo"))
-        ]
+        cal["busy"][pid] = [b for b in blocks if not is_own_block(b, pid, ev)]
 
 
 def rsvps_for_event(cal: dict[str, Any], ev: dict[str, Any], attendee_ids: list[str]) -> None:
@@ -78,7 +75,7 @@ def rsvps_for_event(cal: dict[str, Any], ev: dict[str, Any], attendee_ids: list[
             reasons.pop(pid, None)
         if status == "accepted":
             busy = cal.setdefault("busy", {}).setdefault(pid, [])
-            if not any(b["start"] == ev["start"] and b["end"] == ev["end"] for b in busy):
+            if not any(is_own_block(b, pid, ev) for b in busy):
                 busy.append({"start": ev["start"], "end": ev["end"], "event_id": ev["id"]})
         else:
             when = fmt_local(start, p["timezone"])

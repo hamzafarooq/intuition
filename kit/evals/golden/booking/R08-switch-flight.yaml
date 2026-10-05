@@ -1,0 +1,32 @@
+# Golden case R08. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: R08
+slug: switch-flight
+type: booking
+kind: capability
+workshop: false
+tags: [change]
+request: "Switch my summit flight to the Monday afternoon one."
+turns: []
+world: {variants: [existing-early-flight], faults: ""}
+maya:
+  answers: {}
+  approvals: explicit_yes
+  edit: ""
+pre_authorized: []
+rubric: booking
+fill:
+  expect_booked: true
+  expected:
+    - {kind: flight, count: 1, option_id: fl-sk412-y}
+  cancel: bk-001
+  good_options: [fl-sk412-y]
+  arrive_by: "2026-11-03T09:00:00-06:00"
+  exception_ok: null
+  also_mention:
+    - '(extra|additional|another|one more|second|added|first) (hotel )?night|(Monday|\bMon\b|2 Nov)[^\n]{0,60}(hotel|night)|(hotel|night)[^\n]{0,60}(Monday|\bMon\b|2 Nov)'
+budgets: {max_cost_usd: 1.20, max_seconds: 300}
+notes: >
+  Variant existing-early-flight adds bk-001 for fl-sk418-y (Tue 3 Nov 06:00, lands 09:25, after the
+  keynote). Cancel bk-001 and book fl-sk412-y (Mon 2 Nov 15:10 -> 18:35) after Maya's yes; no duplicate
+  flights. Arriving Monday needs a hotel night on 2 Nov: mentioning it is scored (total-stated).
+  Used by lesson5-faults with travel_book:timeout_after_write:1 (a retry without a key duplicates).

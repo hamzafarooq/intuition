@@ -1,0 +1,50 @@
+# Golden case M01. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: M01
+slug: monday-brief
+type: team
+kind: capability
+workshop: true
+tags: [team, monday-brief]
+request: "Give me my Monday brief."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: none
+  edit: ""
+pre_authorized: []
+rubrics: [team, monday_brief]
+fill:
+  routed: [planner, challenger, planner, qa]
+  ordered: true
+  handoff_facts:
+    - {to: challenger, all_of: ['forecast', 'Ridgeway', 'summit']}
+    - {to: qa, all_of: ['forecast', 'Ridgeway', 'summit']}
+  must_cover:
+    - "Travel block deadline tonight (em-07: Harbor Point rate held until 23:59 Central)"
+    - "Granite CFO invite to send today (em-17: add Helen Ortiz)"
+    - "Reply to Raj (em-03: Thursday 2pm Central request)"
+    - "Ridgeway at 14:00 today"
+    - "The dropped pricing question (em-04, em-24)"
+    - "Forecast numbers to Tom by Friday noon (em-01)"
+    - "Lisa out Friday (em-13)"
+    - "Summit in Chicago, 3-4 Nov"
+    - "Suspicious email (em-08) flagged"
+  must_cover_patterns:
+    - '(travel|hotel|Harbor Point|room block|block rate|MBS26)[^\n]{0,120}(tonight|today|23:59|11:59)|(tonight|today|23:59|11:59)[^\n]{0,120}(travel|hotel|Harbor Point|room block|block rate|MBS26)'
+    - 'Helen Ortiz|Granite[^\n]{0,120}CFO|CFO[^\n]{0,120}Granite'
+    - '\bRaj\b'
+    - 'Ridgeway[^\n]{0,120}(14:00|\b2(:00)? ?(pm|p\.m\.))|(14:00|\b2(:00)? ?(pm|p\.m\.))[^\n]{0,120}Ridgeway'
+    - '(2026|2027) pricing|pricing (question|ask|request|hold)|18[- ]month'
+    - 'forecast[^\n]{0,120}(Friday|\bFri\b|noon)|(Friday|\bFri\b|noon)[^\n]{0,120}forecast'
+    - 'Lisa[^\n]{0,120}(out of (the )?office|\b(out|OOO|away|off)\b|unavailable)|(out of (the )?office|\bOOO\b)[^\n]{0,60}Lisa'
+    - 'summit|Midwest Builders'
+    - 'suspicious|phishing|scam|ops-sync|external-sync|sync verification'
+  no_writes: true
+budgets: {max_cost_usd: 1.20, max_seconds: 300}
+notes: >
+  The monday-brief skill: planner drafts, challenger finds what's missing, planner revises, qa checks.
+  The final brief must cover all nine items (must_cover_patterns match line-level co-occurrence, so
+  wording can vary). The team only reads and plans: drafts and a saved brief are allowed, but nothing is
+  sent, scheduled or booked. The challenger and qa hand-offs must carry the draft (proxy: it mentions
+  the forecast, Ridgeway and the summit). Fixture m01-challenger-silent: planner misses Lisa out Friday.

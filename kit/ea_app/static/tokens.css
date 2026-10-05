@@ -1,0 +1,193 @@
+/* Intuition design tokens: warm paper and ink with one persimmon accent.
+   Shared with the workshop guide site. Light by default, dark through prefers-color-scheme,
+   and either can be forced with <html data-theme="light|dark">. No web fonts: system stacks only. */
+
+:root {
+  color-scheme: light;
+
+  /* surfaces and ink */
+  --paper: #f5f0e6;
+  --paper-2: #ede5d6;
+  --surface: #fffcf6;
+  --surface-2: #faf5ec;
+  --surface-3: #f2ebde;
+  --ink: #1f1b16;
+  --ink-2: #463f36;
+  --muted: #776d61;
+  --faint: #a2978a;
+  --line: #e2d9c9;
+  --line-strong: #cdc1ad;
+
+  /* the one accent */
+  --accent: #b4532a;
+  --accent-strong: #973f1b;
+  --accent-ink: #fffaf5;
+  --accent-soft: #f5e1d5;
+  --focus-ring: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
+
+  /* states */
+  --ok: #2c6a5a;
+  --ok-soft: #dcebe5;
+  --warn: #9a6608;
+  --warn-soft: #f4e6c8;
+  --bad: #b0281f;
+  --bad-soft: #f6dcd8;
+  --info: #35539e;
+  --info-soft: #dfe5f4;
+
+  /* trace categories */
+  --c-tools: #586273;
+  --c-skills: #7b4cb0;
+  --c-agents: #2f6aa8;
+  --c-approvals: #b4532a;
+  --c-checks: #2c6a5a;
+  --c-signals: #a8306a;
+  --c-browser: #1d7686;
+  --c-messages: #463f36;
+  --c-system: #887e71;
+  --c-error: #b0281f;
+
+  /* chat */
+  --bubble-me: #27221c;
+  --bubble-me-ink: #f8f2e8;
+  --bubble-me-meta: #bdb2a2;
+  --bubble-them: #fffcf6;
+  --bubble-them-ink: #1f1b16;
+  --chat-bg: #f3ede2;
+  --bezel: #221e19;
+  --bezel-edge: #3a332b;
+
+  /* type */
+  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "Times New Roman", serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --step--2: 0.75rem;
+  --step--1: 0.8125rem;
+  --step-0: 0.9375rem;
+  --step-1: 1.0625rem;
+  --step-2: 1.3125rem;
+  --step-3: 1.75rem;
+  --step-4: clamp(1.9rem, 2.6vw + 1rem, 2.6rem);
+  --step-5: clamp(2.6rem, 5.2vw + 1rem, 4.75rem);
+  --leading: 1.5;
+  --leading-tight: 1.12;
+
+  /* shape and space */
+  --radius-s: 6px;
+  --radius-m: 10px;
+  --radius-l: 16px;
+  --radius-xl: 22px;
+  --radius-phone: 44px;
+  --radius-pill: 999px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 72px;
+  --space-9: 112px;
+  --shadow-1: 0 1px 2px rgb(40 28 14 / 0.06), 0 1px 1px rgb(40 28 14 / 0.04);
+  --shadow-2: 0 10px 30px -12px rgb(40 28 14 / 0.25), 0 2px 6px rgb(40 28 14 / 0.06);
+  --shadow-phone: 0 40px 80px -30px rgb(40 28 14 / 0.45), 0 12px 24px -12px rgb(40 28 14 / 0.25);
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #14120f;
+    --paper-2: #0f0d0b;
+    --surface: #1c1915;
+    --surface-2: #211d18;
+    --surface-3: #29241e;
+    --ink: #eee6d8;
+    --ink-2: #cfc5b4;
+    --muted: #9c9284;
+    --faint: #6f665b;
+    --line: #2e2923;
+    --line-strong: #40382f;
+    --accent: #e3825a;
+    --accent-strong: #f09a74;
+    --accent-ink: #1d0f08;
+    --accent-soft: #3a2419;
+    --ok: #6cc0a6;
+    --ok-soft: #1c3029;
+    --warn: #e2b04f;
+    --warn-soft: #352a14;
+    --bad: #f08174;
+    --bad-soft: #3a1c19;
+    --info: #93acec;
+    --info-soft: #1e2539;
+    --c-tools: #a3adbd;
+    --c-skills: #b896e6;
+    --c-agents: #7fb1e8;
+    --c-approvals: #e3825a;
+    --c-checks: #6cc0a6;
+    --c-signals: #ea7fb0;
+    --c-browser: #6cc4d2;
+    --c-messages: #cfc5b4;
+    --c-system: #9c9284;
+    --c-error: #f08174;
+    --bubble-me: #ece3d3;
+    --bubble-me-ink: #1b1712;
+    --bubble-me-meta: #6f665b;
+    --bubble-them: #26221c;
+    --bubble-them-ink: #eee6d8;
+    --chat-bg: #171410;
+    --bezel: #090807;
+    --bezel-edge: #2c2721;
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-2: 0 12px 30px -12px rgb(0 0 0 / 0.7), 0 2px 6px rgb(0 0 0 / 0.4);
+    --shadow-phone: 0 40px 80px -30px rgb(0 0 0 / 0.9), 0 12px 24px -12px rgb(0 0 0 / 0.6);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #14120f;
+  --paper-2: #0f0d0b;
+  --surface: #1c1915;
+  --surface-2: #211d18;
+  --surface-3: #29241e;
+  --ink: #eee6d8;
+  --ink-2: #cfc5b4;
+  --muted: #9c9284;
+  --faint: #6f665b;
+  --line: #2e2923;
+  --line-strong: #40382f;
+  --accent: #e3825a;
+  --accent-strong: #f09a74;
+  --accent-ink: #1d0f08;
+  --accent-soft: #3a2419;
+  --ok: #6cc0a6;
+  --ok-soft: #1c3029;
+  --warn: #e2b04f;
+  --warn-soft: #352a14;
+  --bad: #f08174;
+  --bad-soft: #3a1c19;
+  --info: #93acec;
+  --info-soft: #1e2539;
+  --c-tools: #a3adbd;
+  --c-skills: #b896e6;
+  --c-agents: #7fb1e8;
+  --c-approvals: #e3825a;
+  --c-checks: #6cc0a6;
+  --c-signals: #ea7fb0;
+  --c-browser: #6cc4d2;
+  --c-messages: #cfc5b4;
+  --c-system: #9c9284;
+  --c-error: #f08174;
+  --bubble-me: #ece3d3;
+  --bubble-me-ink: #1b1712;
+  --bubble-me-meta: #6f665b;
+  --bubble-them: #26221c;
+  --bubble-them-ink: #eee6d8;
+  --chat-bg: #171410;
+  --bezel: #090807;
+  --bezel-edge: #2c2721;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-2: 0 12px 30px -12px rgb(0 0 0 / 0.7), 0 2px 6px rgb(0 0 0 / 0.4);
+  --shadow-phone: 0 40px 80px -30px rgb(0 0 0 / 0.9), 0 12px 24px -12px rgb(0 0 0 / 0.6);
+}

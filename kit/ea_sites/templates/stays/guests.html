@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from "macros.html" import input, error_summary %}
+{% block content %}
+<h1>Guest details</h1>
+<div class="card">
+  <h2>{{ hotel.name }}</h2>
+  <p class="meta">{{ hotel.address }} · {{ hotel.distance_miles }} miles to {{ hotel.distance_to }}</p>
+  <p class="meta">{{ check_in | day }} to {{ check_out | day }} · {{ nights }} night{{ "s" if nights != 1 }} · {{ rooms }} room{{ "s" if rooms != 1 }}</p>
+  <p class="meta"><strong>{{ hotel.price_usd | money }}</strong> a night, taxes included · {{ hotel.stay_total | money }} for the stay</p>
+</div>
+{{ error_summary(errors) }}
+<form method="post" action="{{ base }}/review" novalidate>
+  <input type="hidden" name="hotel" value="{{ hotel.id }}">
+  <input type="hidden" name="check_in" value="{{ check_in }}">
+  <input type="hidden" name="check_out" value="{{ check_out }}">
+  <input type="hidden" name="rooms" value="{{ rooms }}">
+  <p class="hint">One guest per room. Guests must be travellers on your company account.</p>
+  {% for row in rows %}
+  <fieldset>
+    <legend>Room {{ row.n }} guest</legend>
+    <div class="row">
+      {{ input(row.name_id, "Full name", row.name, errors, autocomplete="name" if row.n == 1 else "off", prefix="Room " ~ row.n ~ " guest") }}
+      {{ input(row.email_id, "Email", row.email, errors, type="email", optional=True, autocomplete="email" if row.n == 1 else "off", prefix="Room " ~ row.n ~ " guest") }}
+    </div>
+  </fieldset>
+  {% endfor %}
+  {% if add_url %}<p><a href="{{ add_url }}">Add another room</a></p>{% endif %}
+  <div class="actions">
+    <button type="submit">Continue to review</button>
+    <a class="secondary" href="{{ back_url }}">Back to hotels</a>
+  </div>
+  <p class="hint">Continuing holds this rate for 30 minutes. Nothing is booked or charged until your assistant confirms it.</p>
+</form>
+{% endblock %}

@@ -66,6 +66,23 @@ def maya_events(cal: dict[str, Any], exclude: set[str] | None = None) -> list[di
     return [e for e in cal.get("maya", []) if e.get("status", "active") == "active" and e["id"] not in exclude]
 
 
+def is_own_block(block: dict[str, Any], person: str, ev: dict[str, Any]) -> bool:
+    """Whether a busy block in `person`'s calendar is the entry for Maya's event `ev` itself.
+
+    Blocks written during a run carry the event's id. Seed calendars list the meetings people share
+    with Maya as plain blocks, so a plain block counts only for an unmoved seed event that person
+    attends, at exactly its time. A plain block at the same time as a new or moved event is a real
+    conflict, not the event's own entry.
+    """
+    if block.get("event_id"):
+        return block["event_id"] == ev.get("id")
+    if block.get("ooo") or ev.get("created_in_run") or ev.get("moved_in_run"):
+        return False
+    if person not in ev.get("attendees", []):
+        return False
+    return (parse_dt(block["start"]), parse_dt(block["end"])) == (parse_dt(ev["start"]), parse_dt(ev["end"]))
+
+
 def busy_blocks(
     cal: dict[str, Any], person: str, exclude_event: dict[str, Any] | None = None
 ) -> list[dict[str, Any]]:
@@ -80,15 +97,12 @@ def busy_blocks(
             for s, e in event_blocks(ev):
                 out.append({"start": s, "end": e, "event_id": ev["id"], "ooo": False})
         return out
-    own = None
-    if exclude_event is not None:
-        own = (parse_dt(exclude_event["start"]), parse_dt(exclude_event["end"]))
     out = []
     for b in cal.get("busy", {}).get(person, []):
-        s, e = parse_dt(b["start"]), parse_dt(b["end"])
-        if own is not None and (s, e) == own:
+        if exclude_event is not None and is_own_block(b, person, exclude_event):
             continue
-        out.append({"start": s, "end": e, "event_id": None, "ooo": bool(b.get("ooo"))})
+        s, e = parse_dt(b["start"]), parse_dt(b["end"])
+        out.append({"start": s, "end": e, "event_id": b.get("event_id"), "ooo": bool(b.get("ooo"))})
     return out
 
 

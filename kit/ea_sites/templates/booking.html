@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% from "macros.html" import facts, price_lines %}
+{% block content %}
+{% if elsewhere %}
+<h1>This booking is on {{ elsewhere.name }}</h1>
+<div class="card">
+  <p>{{ ref }} is a {{ elsewhere.noun }} booking. <a href="{{ elsewhere.url }}">See booking {{ ref }} on {{ elsewhere.name }}</a>.</p>
+</div>
+{% elif confirmed %}
+<h1>Booking confirmed</h1>
+<section class="hold-box" aria-labelledby="booking-title">
+  <h2 id="booking-title">Booking reference</h2>
+  <p class="ref">{{ booking.id }}</p>
+  <p>Status: <span class="status confirmed">Confirmed</span></p>
+  {% if hold %}<p class="hint">Confirmed from hold {{ hold.hold_id }}.</p>{% else %}<p class="hint">Booked directly by your assistant.</p>{% endif %}
+</section>
+<section class="card" aria-labelledby="trip-title">
+  <h2 id="trip-title">{{ desc.title }}</h2>
+  {{ facts(desc.facts) }}
+  {{ price_lines(desc.lines, total, "Estimated total" if desc.estimate else "Total") }}
+</section>
+<div class="actions"><a class="secondary" href="{{ base }}/">Start a new search</a></div>
+{% else %}
+<h1>Booking {{ ref }}</h1>
+<section class="hold-box" aria-labelledby="booking-title">
+  <h2 id="booking-title">Booking reference</h2>
+  <p class="ref">{{ ref }}</p>
+  <p>Status: <span class="status not">Not confirmed</span></p>
+  <p>{{ reason }}</p>
+</section>
+{% if desc %}
+<section class="card" aria-labelledby="trip-title">
+  <h2 id="trip-title">{{ desc.title }}</h2>
+  {{ facts(desc.facts) }}
+</section>
+{% endif %}
+<div class="actions">
+  {% if hold_url %}<a class="secondary" href="{{ hold_url }}">Check hold status</a>{% endif %}
+  <a class="secondary" href="{{ base }}/">Start a new search</a>
+</div>
+{% endif %}
+{% endblock %}

@@ -90,7 +90,7 @@ def decide_script(tool: str, args: dict[str, Any], ctx: dict[str, Any], run_dir:
     if tool == "calendar_create" and ctx.get("fill_mode") == "create":
         contacts = State(run_dir).load("contacts")
         people = [resolve_person(a, contacts) for a in args.get("attendees", []) if a != "maya"]
-        if people and all(p is not None and p.get("internal") for p in people):
+        if all(p is not None and p.get("internal") for p in people):  # Maya alone (a focus block) counts too
             return True, "internal meeting Maya asked for"
     return False, "Maya hasn't approved this."
 

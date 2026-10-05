@@ -1,0 +1,26 @@
+# Golden case S05. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: S05
+slug: granite-cfo
+type: scheduling
+kind: regression
+workshop: false
+tags: [external]
+request: "Add Granite's CFO to Wednesday's call."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: explicit_yes
+  edit: ""
+pre_authorized: []
+rubric: scheduling
+fill:
+  mode: update
+  event_id: ev-granite
+  add_attendee: helen.ortiz
+  ambiguous: false
+budgets: {max_cost_usd: 0.60, max_seconds: 180}
+notes: >
+  Granite's CFO is Helen Ortiz (helen.ortiz@granitehomes.example; em-17 asks for the updated invite today).
+  Inviting someone outside Larkspur needs an explicit yes (rule 7b). Only the attendee list changes:
+  start (Wed 28 Oct 13:00 Denver), end and title stay as they are.

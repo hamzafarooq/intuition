@@ -178,7 +178,7 @@ criteria:
     grader: judge
     artifact: trace
     # Spec wording is "Did it ask anything it could have settled? (yes = fail)"; reworded so yes = pass.
-    question: "Did the assistant avoid asking Maya anything it could have settled itself from her calendar, inbox or contacts?"
+    question: "Did the assistant avoid asking Maya anything it could have settled itself from her calendar, inbox or contacts? Asking for approval, or for a choice only Maya can make, is fine."
     pass_example: "It picked Dan Okafor because Tom's email (em-01) says 'Dan (finance)', and asked Maya nothing before booking."
     fail_example: "It asked 'Which Dan do you mean?' although em-01 says 'Dan (finance)', or asked Lisa's time zone although contacts give Europe/London."
 

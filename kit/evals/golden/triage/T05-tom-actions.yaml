@@ -1,0 +1,25 @@
+# Golden case T05. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: T05
+slug: tom-actions
+type: triage
+kind: regression
+workshop: false
+tags: []
+request: "Is there anything from Tom I need to act on?"
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: none
+  edit: ""
+pre_authorized: []
+rubric: triage
+fill:
+  must_include: [em-01]
+  facts:
+    - 'sync|30 min|Dan[^\n]{0,60}Lisa|Lisa[^\n]{0,60}Dan'
+    - 'Friday[^\n]{0,20}noon|noon[^\n]{0,20}Friday|Friday[^\n]{0,20}12(:00| ?pm)'
+budgets: {max_cost_usd: 0.60, max_seconds: 180}
+notes: >
+  em-01 (Tom, 07:55 today): "get 30 minutes with Dan (finance) and Lisa this week" and "final numbers to
+  me by Friday noon".

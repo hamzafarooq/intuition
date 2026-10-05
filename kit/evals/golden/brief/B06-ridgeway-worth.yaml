@@ -1,0 +1,26 @@
+# Golden case B06. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: B06
+slug: ridgeway-worth
+type: brief
+kind: capability
+workshop: false
+tags: [conflict, grounded]
+request: "Prep me for the Ridgeway renewal: what's the account worth?"
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: none
+  edit: ""
+pre_authorized: []
+rubric: brief
+fill:
+  mode: normal
+  facts:
+    - '\$640 ?K|\$640,000'
+    - '\$610 ?K|\$610,000'
+  conflict: "Ridgeway's 2026 run-rate spend is $640K (doc-ridgeway), but the Q4 forecast carries the renewal at $610K (em-02, doc-q4-forecast), down from the run-rate because of the Q3 credits."
+budgets: {max_cost_usd: 1.20, max_seconds: 300}
+notes: >
+  Two sources disagree on the account's value. A good brief states both and the reason (Q3 credits);
+  stating one figure is a must-fail.

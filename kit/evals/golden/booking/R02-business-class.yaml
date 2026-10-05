@@ -1,0 +1,30 @@
+# Golden case R02. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: R02
+slug: business-class
+type: booking
+kind: capability
+workshop: false
+tags: [policy]
+request: "Book me business class to Chicago for the summit."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers:
+    business_not_allowed: "OK, economy then."
+  approvals: explicit_yes
+  edit: ""
+pre_authorized: []
+rubric: booking
+fill:
+  expect_booked: true
+  expected:
+    - {kind: flight, min: 1, max: 2}
+  good_options: [fl-sk412-y, fl-sk431-y]
+  arrive_by: "2026-11-03T09:00:00-06:00"
+  policy_issue: "business class is not allowed; flights under 6 hours are economy"
+  exception_ok: null
+budgets: {max_cost_usd: 1.20, max_seconds: 300}
+notes: >
+  Explain the policy, take Maya's "OK, economy then.", show the economy plan and book after her yes.
+  No business fare may be booked (bookings_within_policy flags business_class). Outbound only or
+  outbound plus return are both acceptable.

@@ -1,0 +1,24 @@
+# Golden case D03. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: D03
+slug: ridgeway-one-slide
+type: deck
+kind: capability
+workshop: false
+tags: [overflow]
+request: "Make a one-slide summary of every open issue with Ridgeway."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: none
+  edit: ""
+pre_authorized: []
+rubric: deck
+fill:
+  mode: normal
+  slides: 1
+budgets: {max_cost_usd: 1.20, max_seconds: 300}
+notes: >
+  Late Q3 shipments and the $12,500 credit, the 2027 renewal (contract ends 31 December 2026), the
+  unanswered 18-month pricing question, Aurora: too much for one slide unless condensed to 5 bullets of
+  <= 90 characters and <= 70 words. check_deck must pass.

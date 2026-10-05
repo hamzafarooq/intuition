@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Booking sites</h1>
+<p class="lede">Practice booking sites for the Intuition workshop. They show the current world's flights, hotels and restaurants. A review page holds an option; only the assistant's booking tools confirm it.</p>
+{% for s in sites %}
+<article class="card" aria-labelledby="site-{{ s.key }}">
+  <h2 id="site-{{ s.key }}"><a href="{{ s.host_url }}">{{ s.name }}</a></h2>
+  <p class="meta">{{ s.tagline }} · <a href="{{ s.path_url }}">open by path</a></p>
+</article>
+{% endfor %}
+<p class="hint">{% if run_dir %}World: {{ run_dir.name }}{% if variants %} · variants: {{ variants | join(", ") }}{% endif %}{% else %}No world is loaded yet.{% endif %}</p>
+{% endblock %}

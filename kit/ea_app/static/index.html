@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Intuition</title>
+  <meta name="description" content="Message it. It handles the rest. A personal assistant you text, built for the evals workshop.">
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/tokens.css">
+  <link rel="stylesheet" href="/static/app.css">
+  <script>
+    try { var t = localStorage.getItem("intuition:theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+</head>
+<body data-view="landing">
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav" id="nav">
+    <a class="wordmark" href="#top" data-action="home" aria-label="Intuition home">
+      <svg class="mark" aria-hidden="true"><use href="/static/icons.svg#i-mark"/></svg>
+      <span class="wordmark-text" data-app-name>Intuition</span>
+    </a>
+    <div class="nav-session" id="nav-session" hidden>
+      <span class="run-pill" id="run-pill" title="This session's run directory"></span>
+    </div>
+    <div class="nav-right">
+      <button class="icon-btn" id="theme-btn" type="button" aria-label="Theme: match the system" title="Theme">
+        <svg class="icon" aria-hidden="true"><use href="/static/icons.svg#i-auto"/></svg>
+      </button>
+      <a class="nav-link" href="#setup" id="nav-cta" data-action="get-started">Get started</a>
+      <button class="nav-link" id="nav-new" type="button" hidden>New session</button>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ======================================================= landing -->
+    <div id="landing">
+      <section class="hero" id="top">
+        <div class="hero-copy">
+          <p class="eyebrow">A personal assistant you text</p>
+          <h1 class="display">Message it.<br>It handles the&nbsp;rest.</h1>
+          <p class="lede">Your assistant reads your inbox and calendar, gets things done, and asks before anything it can't undo.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary btn-pill" href="#setup" id="hero-cta" data-action="get-started">Get started</a>
+            <button class="btn btn-quiet btn-pill" type="button" id="hero-resume" hidden>Back to your messages</button>
+          </div>
+          <p class="hero-note">Built for a workshop. Maya, her company and her week are fictional.</p>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="hero-glow"></div>
+          <div class="phone phone--hero">
+            <div class="phone-frame"><div class="phone-screen">
+              <div class="island"></div>
+              <div class="statusbar">
+                <span class="sb-time">08:30</span>
+                <span class="sb-glyphs">
+                  <svg class="g-signal"><use href="/static/icons.svg#i-signal"/></svg>
+                  <svg class="g-wifi"><use href="/static/icons.svg#i-wifi"/></svg>
+                  <svg class="g-battery"><use href="/static/icons.svg#i-battery"/></svg>
+                </span>
+              </div>
+              <div class="chat-head">
+                <span class="chat-back"><svg class="icon"><use href="/static/icons.svg#i-back"/></svg></span>
+                <span class="avatar"><svg class="mark"><use href="/static/icons.svg#i-mark"/></svg></span>
+                <span class="chat-id"><span class="chat-name">Intuition</span><span class="chat-sub">online</span></span>
+              </div>
+              <div class="chat-wall"><div class="chat-body">
+                <div class="day-chip">Today</div>
+                <div class="row me"><div class="bubble me tail"><div class="txt"><p>Find 30 minutes with Dan and Lisa this week</p></div><span class="meta">08:31 <svg class="tick read"><use href="/static/icons.svg#i-read"/></svg></span></div></div>
+                <div class="row them"><div class="bubble them tail"><div class="txt"><p>Wednesday 11:00 works for all three: 13:00 for Dan in New York, 17:00 for Lisa in London.</p></div><span class="meta">08:31</span></div></div>
+                <div class="row them"><div class="approval mini">
+                  <div class="ap-head"><svg class="icon"><use href="/static/icons.svg#i-shield"/></svg> Needs your OK</div>
+                  <div class="ap-title">Create this event?</div>
+                  <div class="ap-rows"><div><span>Event</span><b>Forecast sync</b></div><div><span>When</span><b>Wed 28 Oct, 11:00–11:30</b></div></div>
+                  <div class="ap-actions"><span class="btn btn-ghost btn-s">Deny</span><span class="btn btn-primary btn-s">Approve</span></div>
+                </div></div>
+                <div class="row them"><div class="bubble them tail"><div class="txt"><p>Done. Dan and Lisa both accepted.</p></div><span class="meta">08:32</span></div></div>
+                <div class="row them under"><span class="chip chip-done"><i></i>Done</span></div>
+              </div></div>
+              <div class="composer static">
+                <span class="comp-plus"><svg class="icon"><use href="/static/icons.svg#i-plus"/></svg></span>
+                <span class="comp-field">Message</span>
+                <span class="comp-send"><svg class="icon"><use href="/static/icons.svg#i-mic"/></svg></span>
+              </div>
+              <div class="home-bar"></div>
+            </div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="how" id="how" aria-labelledby="how-title">
+        <h2 class="section-title" id="how-title">How it works</h2>
+        <ol class="steps">
+          <li><span class="step-n">01</span><h3>Connect your accounts</h3><p>Choose what it can see: email, calendar, contacts, documents, the web and travel.</p></li>
+          <li><span class="step-n">02</span><h3>Message it like a person</h3><p>Ask in your own words. It reads, plans and drafts, and you can watch every step behind the scenes.</p></li>
+          <li><span class="step-n">03</span><h3>Approve anything it can't undo</h3><p>Emails, invitations and bookings wait for your OK. Nothing leaves without it.</p></li>
+        </ol>
+      </section>
+
+      <section class="setup" id="setup" aria-labelledby="setup-title">
+        <div class="setup-intro">
+          <h2 class="section-title" id="setup-title">Set up</h2>
+          <p class="muted">Three choices, then say hello.</p>
+        </div>
+        <div class="setup-grid">
+          <div class="card persona-card">
+            <p class="card-kicker">You are</p>
+            <div class="persona">
+              <span class="initials" id="persona-initials">MC</span>
+              <div>
+                <div class="persona-name" id="persona-name">Maya Chen</div>
+                <div class="persona-role" id="persona-role">Regional Sales Director at Larkspur Supply</div>
+                <div class="persona-meta" id="persona-meta"></div>
+              </div>
+            </div>
+            <p class="fine">A fictional persona. Her week starts on Monday 26 October 2026 in Denver; the clock in her world stands still at the start of it.</p>
+          </div>
+
+          <div class="card connect-card">
+            <div class="card-row">
+              <p class="card-kicker">Connect accounts</p>
+              <button class="btn btn-quiet btn-s btn-pill" type="button" id="connect-all">Connect all</button>
+            </div>
+            <ul class="connectors" id="connector-list"></ul>
+            <p class="fine">These connections are part of the mock world. Turning one off later can't be undone in that session.</p>
+          </div>
+
+          <div class="card options-card">
+            <p class="card-kicker">Options</p>
+            <div class="opt" id="opt-harness-row" hidden>
+              <div class="opt-label"><span>Assistant</span><small id="harness-note"></small></div>
+              <div class="seg" role="radiogroup" aria-label="Assistant" id="opt-harness"></div>
+            </div>
+            <div class="opt">
+              <div class="opt-label"><span>Search</span><small id="search-note"></small></div>
+              <div class="seg" role="radiogroup" aria-label="Search">
+                <label><input type="radio" name="search" value="live"><span>Live</span></label>
+                <label><input type="radio" name="search" value="mock"><span>Mock</span></label>
+              </div>
+            </div>
+            <div class="opt">
+              <div class="opt-label"><span>Claude model</span><small>Opus is the reference. Sonnet is quicker and uses less of your plan.</small></div>
+              <div class="seg" role="radiogroup" aria-label="Claude model" id="opt-model"></div>
+            </div>
+            <div class="opt">
+              <div class="opt-label"><span>Book through the browser</span><small id="browser-note">Opens Brave so you can watch it fill in the booking sites.</small></div>
+              <label class="switch"><input type="checkbox" role="switch" id="opt-browser"><span class="track" aria-hidden="true"></span><span class="sr">Book through the browser</span></label>
+            </div>
+            <div class="opt">
+              <div class="opt-label"><span>Auto-approve after I say yes</span><small>When your latest message is a clear yes ("yes", "go ahead", "send it", "book it"), the actions you agreed to go through. Off: every action waits for a tap.</small></div>
+              <label class="switch"><input type="checkbox" role="switch" id="opt-auto" checked><span class="track" aria-hidden="true"></span><span class="sr">Auto-approve after I say yes</span></label>
+            </div>
+          </div>
+        </div>
+        <div class="start-row">
+          <div class="notice" id="claude-notice" hidden></div>
+          <button class="btn btn-primary btn-pill btn-l" type="button" id="start-btn">Start messaging</button>
+          <p class="form-error" id="start-error" role="alert"></p>
+        </div>
+      </section>
+
+      <footer class="site-foot">
+        <span class="foot-brand"><svg class="mark" aria-hidden="true"><use href="/static/icons.svg#i-mark"/></svg> <span data-app-name>Intuition</span></span>
+        <span class="foot-links"><a id="guide-link" href="/guide/">Workshop guide</a></span>
+      </footer>
+    </div>
+
+    <!-- ======================================================= workspace -->
+    <div id="workspace" hidden>
+      <section class="bts" id="bts" aria-labelledby="bts-title">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="bts-head">
+          <div>
+            <h2 class="bts-title" id="bts-title">Behind the scenes</h2>
+            <p class="bts-sub" id="bts-sub">Everything the assistant does, as it happens.</p>
+          </div>
+          <button class="icon-btn sheet-close" type="button" id="sheet-close" aria-label="Close behind the scenes">
+            <svg class="icon" aria-hidden="true"><use href="/static/icons.svg#i-x"/></svg>
+          </button>
+        </div>
+        <div class="browser-banner" id="bts-browser-banner" hidden>
+          <svg class="icon" aria-hidden="true"><use href="/static/icons.svg#i-browser"/></svg>
+          <span><b>Working in the browser…</b> Bring the Brave window to the front to watch.</span>
+        </div>
+        <div class="tabs" role="tablist" aria-label="Behind the scenes">
+          <button role="tab" id="tab-trace" aria-controls="panel-trace" aria-selected="true" type="button">Live trace <span class="count" id="trace-count">0</span></button>
+          <button role="tab" id="tab-world" aria-controls="panel-world" aria-selected="false" type="button">Maya's world <span class="count dot" id="world-dot" hidden></span></button>
+        </div>
+        <div class="panel" role="tabpanel" id="panel-trace" aria-labelledby="tab-trace">
+          <div class="filters" id="filters" role="group" aria-label="Filter the trace"></div>
+          <ol class="trace" id="trace-list" aria-live="off"></ol>
+          <p class="empty-note" id="trace-empty">Nothing yet. Send a message and watch the skills, specialists, tools and checks appear here.</p>
+          <button class="jump" id="trace-jump" type="button" hidden><svg class="icon" aria-hidden="true"><use href="/static/icons.svg#i-arrow-down"/></svg> Latest</button>
+        </div>
+        <div class="panel" role="tabpanel" id="panel-world" aria-labelledby="tab-world" hidden>
+          <div class="world" id="world"></div>
+        </div>
+      </section>
+
+      <div class="dock">
+        <div class="phone phone--live" id="phone">
+          <div class="phone-frame"><div class="phone-screen">
+            <div class="island" aria-hidden="true"></div>
+            <div class="statusbar" aria-hidden="true">
+              <span class="sb-time" id="sb-time">08:30</span>
+              <span class="sb-glyphs">
+                <svg class="g-signal"><use href="/static/icons.svg#i-signal"/></svg>
+                <svg class="g-wifi"><use href="/static/icons.svg#i-wifi"/></svg>
+                <svg class="g-battery"><use href="/static/icons.svg#i-battery"/></svg>
+              </span>
+            </div>
+            <header class="chat-head">
+              <button class="chat-back" type="button" id="chat-back" aria-label="Back to setup">
+                <svg class="icon" aria-hidden="true"><use href="/static/icons.svg#i-back"/></svg>
+              </button>
+              <span class="avatar" aria-hidden="true"><svg class="mark"><use href="/static/icons.svg#i-mark"/></svg><i class="presence" id="presence"></i></span>
+              <span class="chat-id">
+                <span class="chat-name" data-app-name>Intuition</span>
+                <span class="chat-sub" id="chat-sub" aria-live="polite">online</span>
+              </span>
+              <span class="chat-tools">
+                <button class="icon-btn" type="button" id="speak-btn" aria-pressed="false" aria-label="Read replies aloud" title="Read replies aloud" hidden>
+                  <svg class="icon" aria-hidden="true"><use href="/static/icons.svg#i-speaker-off"/></svg>
+                </button>
+                <button class="icon-btn bts-open" type="button" id="bts-open" aria-label="Behind the scenes" title="Behind the scenes">
+                  <svg class="icon" aria-hidden="true"><use href="/static/icons.svg#i-layers"/></svg>
+                </button>
+                <button class="icon-btn" type="button" id="menu-btn" aria-haspopup="true" aria-expanded="false" aria-label="More" title="More">
+                  <svg class="icon" aria-hidden="true"><use href="/static/icons.svg#i-dots"/></svg>
+                </button>
+              </span>
+              <div class="menu" id="menu" role="menu" hidden>
+                <label class="menu-item switch-row" role="menuitemcheckbox">
+                  <span>Auto-approve after I say yes</span>
+                  <span class="switch s"><input type="checkbox" id="menu-auto"><span class="track" aria-hidden="true"></span></span>
+                </label>
+                <button class="menu-item" role="menuitem" type="button" id="menu-reset"><svg class="icon" aria-hidden="true"><use href="/static/icons.svg#i-refresh"/></svg> Reset world</button>
+                <button class="menu-item" role="menuitem" type="button" id="menu-new"><svg class="icon" aria-hidden="true"><use href="/static/icons.svg#i-plus"/></svg> New session</button>
+              </div>
+            </header>
+            <div class="browser-banner in-phone" id="phone-browser-banner" hidden>
+              <svg class="icon" aria-hidden="true"><use href="/static/icons.svg#i-browser"/></svg>
+              <span><b>Working in the browser…</b> Bring Brave to the front.</span>
+            </div>
+            <div class="chat-wall">
+              <div class="chat-body" id="chat-body" aria-live="polite" aria-label="Conversation">
+                <div class="day-chip">Today</div>
+                <div class="chat-empty" id="chat-empty">
+                  <div class="avatar xl" aria-hidden="true"><svg class="mark"><use href="/static/icons.svg#i-mark"/></svg></div>
+                  <p class="hello">Hi Maya. I can see <span id="hello-connected">your accounts</span>. What can I take off your plate?</p>
+                </div>
+                <div id="chat-log"></div>
+                <div id="chat-outbox"></div>
+              </div>
+              <button class="jump in-chat" id="chat-jump" type="button" hidden aria-label="Jump to the latest message"><svg class="icon" aria-hidden="true"><use href="/static/icons.svg#i-arrow-down"/></svg></button>
+            </div>
+            <div class="suggestions" id="suggestions" aria-label="Suggested messages"></div>
+            <form class="composer" id="composer" autocomplete="off">
+              <button class="comp-plus" type="button" id="plus-btn" aria-label="Suggested messages" aria-expanded="false" title="Suggested messages">
+                <svg class="icon" aria-hidden="true"><use href="/static/icons.svg#i-plus"/></svg>
+              </button>
+              <label class="comp-field">
+                <span class="sr">Message</span>
+                <textarea id="composer-input" rows="1" placeholder="Message" enterkeyhint="send"></textarea>
+              </label>
+              <button class="comp-send" type="submit" id="send-btn" aria-label="Send" title="Send">
+                <svg class="icon" aria-hidden="true"><use href="/static/icons.svg#i-send" id="send-glyph"/></svg>
+              </button>
+            </form>
+            <div class="home-bar" aria-hidden="true"></div>
+          </div></div>
+        </div>
+      </div>
+      <div class="sheet-backdrop" id="sheet-backdrop" hidden></div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

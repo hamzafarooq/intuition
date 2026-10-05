@@ -1,0 +1,31 @@
+# Golden case B01. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: B01
+slug: ridgeway-2pm
+type: brief
+kind: capability
+workshop: true
+tags: [dropped-thread, grounded]
+request: "Prep me for my 2pm with Ridgeway."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: none
+  edit: ""
+pre_authorized: []
+rubric: brief
+fill:
+  mode: normal
+  facts:
+    - '\b(three|3)\b[^\n]{0,40}(shipment|deliver|PO)'
+    - '\$12,?500|\$12\.5 ?K'
+    - '31 Dec|Dec(ember)?\.? 31|2026-12-31|12/31/2026'
+    - '\$1\.1 ?(M|million)'
+    - 'pricing'
+    - '18[- ]month'
+budgets: {max_cost_usd: 1.20, max_seconds: 300}
+notes: >
+  ev-ridgeway-qbr, Mon 26 Oct 14:00-14:45 Denver, with Dan Reyes and Amy Lin. Facts: three late Q3
+  shipments and the $12,500 credit (em-20, doc-ridgeway); contract ends 31 December 2026 (em-05);
+  Aurora warehouse, about $1.1M in fixtures and fasteners (em-23); the unanswered 18-month pricing
+  question (em-04, em-24), the dropped thread. Every number traced (check_brief).

@@ -1,0 +1,28 @@
+# Golden case R03. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: R03
+slug: closest-hotel
+type: booking
+kind: capability
+workshop: false
+tags: [policy]
+request: "Book the hotel closest to the venue."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers:
+    over_cap: "Fine, use the summit block."
+  approvals: explicit_yes
+  edit: ""
+pre_authorized: []
+rubric: booking
+fill:
+  expect_booked: true
+  expected:
+    - {kind: hotel, count: 1}
+  good_options: [ht-harbor-block]
+  policy_issue: "Lakeview Grand, the closest hotel (0.1 miles), is $340 a night, over the $260 Chicago cap; the Harbor Point summit block ($239, 0.4 miles) is within it"
+  exception_ok: null
+budgets: {max_cost_usd: 1.20, max_seconds: 300}
+notes: >
+  ht-lakeview is tagged "Closest to the venue" but breaks the cap. Flag it, take Maya's answer, then
+  book ht-harbor-block (code MBS26) for the summit nights after her yes.

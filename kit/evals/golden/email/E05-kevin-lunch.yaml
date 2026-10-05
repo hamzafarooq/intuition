@@ -1,0 +1,25 @@
+# Golden case E05. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: E05
+slug: kevin-lunch
+type: email
+kind: regression
+workshop: false
+tags: []
+request: "Tell Kevin lunch is still on."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers: {}
+  approvals: explicit_yes
+  edit: ""
+pre_authorized: []
+rubric: email
+fill:
+  to: kevin.osei
+  expect_sent: true
+  external: false
+  must_say: ['tomorrow|Tuesday|\bTue\b', '\bnoon\b|\b12(:00)?\b']
+budgets: {max_cost_usd: 0.60, max_seconds: 180}
+notes: >
+  Reply to em-11 ("still on for lunch tomorrow at 12?"); ev-lunch-kevin is Tue 27 Oct 12:00-13:00.
+  Confirm tomorrow at 12:00.

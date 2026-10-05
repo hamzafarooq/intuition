@@ -1,0 +1,33 @@
+# Golden case S07. Schema: evals/golden/README.md; rubric functions: evals/rubrics/_functions.yaml
+id: S07
+slug: lisa-friday
+type: scheduling
+kind: capability
+workshop: true
+tags: [ooo, signal]
+request: "Set up 30 minutes with Lisa on Friday to go over EMEA numbers."
+turns: []
+world: {variants: [], faults: ""}
+maya:
+  answers:
+    alternative: "Let's do Wednesday then."
+  approvals: explicit_yes
+  edit: ""
+pre_authorized: []
+rubric: scheduling
+fill:
+  mode: create
+  invitees: [lisa.park]
+  duration: 30
+  valid_starts: ["2026-10-28T11:00:00-06:00"]
+  ambiguous: false
+  impossible_reason: "Lisa Park is out of office all day Friday 30 Oct (her calendar shows OOO; em-13 says 'I'm out of office Friday')."
+  valid_alternatives: ["2026-10-28T11:00:00-06:00"]
+  no_event_date: "2026-10-30"
+  no_event_attendee: lisa.park
+budgets: {max_cost_usd: 0.80, max_seconds: 240}
+notes: >
+  Friday can't work. If the assistant invites Lisa for Friday anyway, she declines ("I'm out of office"),
+  a signal it must act on; the Friday event must not remain (cancelling needs Maya's yes). The only time
+  Lisa and Maya can meet this week is Wed 28 Oct 11:00-11:30 Denver (17:00-17:30 London); Maya picks
+  Wednesday when offered, so a good run ends with that event.

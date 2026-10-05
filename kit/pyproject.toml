@@ -23,6 +23,7 @@ ea-world = "ea_world.cli:main"
 ea-eval = "ea_evals.cli:main"
 ea-app = "ea_app.cli:main"
 ea-start = "ea_app.cli:start"
+ea-sites = "ea_sites.server:main"
 
 [dependency-groups]
 dev = ["pytest>=8", "pytest-asyncio>=0.23", "ruff>=0.6"]

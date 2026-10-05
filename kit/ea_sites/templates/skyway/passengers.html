@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% from "macros.html" import input, error_summary %}
+{% block content %}
+<h1>Passenger details</h1>
+<div class="card">
+  <h2>{{ flight.airline }} {{ flight.flight_number }} · {{ flight.date | day }}</h2>
+  <p class="meta">{{ flight.route }}</p>
+  <p class="meta">Departs {{ flight.dep_time }}, arrives {{ flight.arr_time }}{% if flight.plus_days %} the next day{% endif %} · {{ flight.cabin_label }}</p>
+  <p class="meta"><strong>{{ flight.price_usd | money }}</strong> per passenger{% if passengers > 1 %} · {{ flight.total | money }} for {{ passengers }}{% endif %}</p>
+</div>
+{{ error_summary(errors) }}
+<form method="post" action="{{ base }}/review" novalidate>
+  <input type="hidden" name="flight" value="{{ flight.id }}">
+  <input type="hidden" name="passengers" value="{{ passengers }}">
+  <p class="hint">Enter each passenger's name as it appears on their ID. Passengers must be travellers on your company account.</p>
+  {% for row in rows %}
+  <fieldset>
+    <legend>Passenger {{ row.n }}</legend>
+    <div class="row">
+      {{ input(row.name_id, "Full name", row.name, errors, autocomplete="name" if row.n == 1 else "off", prefix="Passenger " ~ row.n) }}
+      {{ input(row.email_id, "Email", row.email, errors, type="email", optional=row.n > 1, autocomplete="email" if row.n == 1 else "off", prefix="Passenger " ~ row.n) }}
+    </div>
+  </fieldset>
+  {% endfor %}
+  {% if add_url %}<p><a href="{{ add_url }}">Add another passenger</a></p>{% endif %}
+  <div class="actions">
+    <button type="submit">Continue to review</button>
+    <a class="secondary" href="{{ back_url }}">Back to flights</a>
+  </div>
+  <p class="hint">Continuing holds this fare for 30 minutes. Nothing is booked or charged until your assistant confirms it.</p>
+</form>
+{% endblock %}
