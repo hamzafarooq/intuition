@@ -19,8 +19,8 @@
         <ol class="chat-body">
           {% for m in page.hero.chat %}
           <li class="msg msg-{{ m.from }}">
-            {% if m.from == 'trace' %}<span class="msg-trace">{{ m.text|mdi }}</span>
-            {% elif m.from == 'approval' %}<div class="msg-approval"><span class="kicker">Needs your yes</span><p>{{ m.text|mdi }}</p><span class="msg-buttons"><span class="fake-btn fake-yes">Approve</span><span class="fake-btn">Deny</span></span></div>
+            {% if m.from == 'trace' %}<span class="chat-trace">{{ m.text|mdi }}</span>
+            {% elif m.from == 'approval' %}<div class="chat-approval"><span class="kicker">Needs your yes</span><p>{{ m.text|mdi }}</p><span class="msg-buttons"><span class="fake-btn fake-yes">Approve</span><span class="fake-btn">Deny</span></span></div>
             {% else %}<p>{{ m.text|mdi }}</p>{% endif %}
           </li>
           {% endfor %}

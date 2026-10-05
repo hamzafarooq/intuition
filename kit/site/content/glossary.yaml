@@ -1,0 +1,56 @@
+title: Glossary
+eyebrow: Reference
+lede: "The words this workshop uses, in plain language. The first list is the project's own glossary; the second adds terms you'll meet in the lessons."
+
+sections:
+  - id: terms
+    heading: Core terms
+    terms:
+      - {term: "Eval", meaning: "A test for an AI system: an input, and a way of grading what it did."}
+      - {term: "Golden dataset", meaning: "The set of written use cases that define what good looks like, used to test the assistant again and again."}
+      - {term: "Case", meaning: "One use case in the golden dataset, with its request, starting world and success criteria."}
+      - {term: "Trial", meaning: "One attempt at a case. Cases are run several times because answers vary."}
+      - {term: "Grader", meaning: "The logic that scores a trial: code, a model judge, or a person."}
+      - {term: "Rubric", meaning: "A list of yes/no criteria that a good result must meet; each is graded by code or a model judge."}
+      - {term: "Spider chart", meaning: "A chart with one axis per rubric dimension; each run is drawn as a shape, so versions can be compared at a glance."}
+      - {term: "Outcome, process and team rubrics", meaning: "Criteria about what changed in the world, about how the assistant got there, and about how several agents worked together."}
+      - {term: "Must-pass criterion", meaning: "A rubric criterion that fails the whole case if it fails, such as sending without approval."}
+      - {term: "Definition of done", meaning: "The outcome rubric for a type of task, plus the signals to watch for afterwards."}
+      - {term: "Verifier", meaning: "A tool the assistant calls to check its own work, which returns a list of problems rather than an opinion."}
+      - {term: "Signal", meaning: "Something that happens after the assistant acts and suggests whether it did well, such as an attendee declining or Maya editing a draft."}
+      - {term: "Overclaim", meaning: "The assistant says it succeeded when the graders say it didn't."}
+      - {term: "Trace", meaning: "The full record of a trial: messages, tool calls, checks and results."}
+      - {term: "Outcome", meaning: "What actually changed in the world by the end of a trial."}
+      - {term: "pass@k", meaning: "The chance that at least one of k tries succeeds."}
+      - {term: "pass^k", meaning: "The chance that all k tries succeed. What matters when users rely on it every time."}
+      - {term: "Harness", meaning: "The software around the model that runs the loop, calls tools and enforces permissions. Here, Claude Code."}
+      - {term: "Skill", meaning: "A packaged set of instructions the assistant loads when a request calls for it."}
+      - {term: "Sub-agent", meaning: "A specialist the main assistant hands work to, with its own tools."}
+      - {term: "Agent team", meaning: "Several agents working on one deliverable, checking each other."}
+      - {term: "MCP server", meaning: "A program that gives the assistant tools. Here, the mock world."}
+      - {term: "Prompt injection", meaning: "Instructions hidden in content the assistant reads, such as an email or web page, trying to make it do something the user didn't ask for."}
+      - {term: "Intuition", meaning: "The workshop's web app for meeting and messaging the assistant."}
+
+  - id: more
+    heading: More terms from the lessons
+    terms:
+      - {term: "Tool", meaning: "A function the model can call, with a name, a description and typed arguments. The model chooses tools from their descriptions alone."}
+      - {term: "Selection accuracy", meaning: "In the tool-use suite, the share of probes where the first tool called was a right one."}
+      - {term: "Argument accuracy", meaning: "The share of probes where the first tool was right and its arguments were right too, with times compared as instants."}
+      - {term: "Precision and recall", meaning: "For skill triggers: when the skill loaded, how often that was right (precision); when it should have loaded, how often it did (recall)."}
+      - {term: "Simulated Maya", meaning: "A scripted stand-in for Maya in evals. She answers questions and approves, denies, edits or replies with a thumbs-up, exactly as each case says."}
+      - {term: "Approval gate", meaning: "Settings that make Claude Code stop and ask before a tool that changes the world runs, whatever the model decides. The tools sit in the `ask` list of `assistant/.claude/settings.json`."}
+      - {term: "Status line", meaning: "The last line of every reply: `STATUS: done`, `partial`, `failed` or `waiting`. Graders compare it with what really happened."}
+      - {term: "Stop hook", meaning: "A small program Claude Code runs when the assistant tries to finish. Here it sends the assistant back if a write has no check after it."}
+      - {term: "Judge", meaning: "A model (here from OpenAI, a different family from the assistant) that answers one rubric question about a trial: yes, no or can't tell, with the evidence."}
+      - {term: "Calibration", meaning: "Comparing the judge's answers with human labels on the same items, then rewording criteria until they agree."}
+      - {term: "TPR and TNR", meaning: "True positive rate: how often the judge says yes when people said yes. True negative rate: how often it says no when people said no."}
+      - {term: "Underclaim", meaning: "The assistant says it isn't sure or couldn't finish when the graders say it succeeded. Annoying, but safe."}
+      - {term: "Capability and regression cases", meaning: "Capability cases are hard on purpose and measure progress. Regression cases are things the assistant should always get right."}
+      - {term: "Slice", meaning: "A lesson-sized set of cases, trials and variants, listed in `evals/golden/slices.yaml`."}
+      - {term: "Variant", meaning: "One configuration of the assistant or harness for a run, such as `skills=off`, `gate=off` or `model=sonnet`."}
+      - {term: "Idempotency key", meaning: "A unique label sent with a write. If the same key arrives twice, the tool does nothing new, so a retry can't create a duplicate."}
+      - {term: "Fault injection", meaning: "Making a tool fail on purpose (a timeout, a rate limit, a broken response) to see whether the assistant recovers honestly."}
+      - {term: "Least privilege", meaning: "Giving each agent only the tools it needs, so one mistake can do only limited damage."}
+      - {term: "False block", meaning: "Refusing a harmless request because it looks like an attack. Measured on the harmless twin of every attack case."}
+      - {term: "stream-json", meaning: "The stream of JSON events Claude Code prints when run headless with `claude -p`. The kit's adapter turns it into the trace."}

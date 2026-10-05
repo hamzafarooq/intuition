@@ -159,19 +159,31 @@
     return out;
   }
   function md(text) {
-    let html = "", list = null, para = [];
+    let html = "", list = null, para = [], table = [];
     const flushP = () => { if (para.length) { html += `<p>${para.map(inline).join("<br>")}</p>`; para = []; } };
     const flushL = () => { if (list) { html += `</${list}>`; list = null; } };
+    const cells = (row) => row.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((c) => c.trim());
+    const flushT = () => {
+      if (!table.length) return;
+      const sep = table.length > 1 && /^\s*\|?\s*:?-{2,}/.test(table[1]);
+      const head = sep ? cells(table[0]) : null;
+      const body = (sep ? table.slice(2) : table).map(cells);
+      html += `<div class="md-table"><table>${head ? `<thead><tr>${head.map((c) => `<th>${inline(c)}</th>`).join("")}</tr></thead>` : ""}` +
+        `<tbody>${body.map((r) => `<tr>${r.map((c) => `<td>${inline(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+      table = [];
+    };
     for (const raw of String(text || "").replace(/\r/g, "").split("\n")) {
       const line = raw.replace(/\s+$/, "");
       let m;
+      if (/^\s*\|.*\|\s*$/.test(line)) { flushP(); flushL(); table.push(line); continue; }
+      flushT();
       if (!line.trim()) { flushP(); flushL(); continue; }
       if ((m = line.match(/^\s*[-*•]\s+(.*)$/))) { flushP(); if (list !== "ul") { flushL(); html += "<ul>"; list = "ul"; } html += `<li>${inline(m[1])}</li>`; continue; }
       if ((m = line.match(/^\s*(\d+)[.)]\s+(.*)$/))) { flushP(); if (list !== "ol") { flushL(); html += `<ol start="${m[1]}">`; list = "ol"; } html += `<li>${inline(m[2])}</li>`; continue; }
       if ((m = line.match(/^#{1,6}\s+(.*)$/))) { flushP(); flushL(); html += `<h4>${inline(m[1])}</h4>`; continue; }
       flushL(); para.push(line);
     }
-    flushP(); flushL();
+    flushT(); flushP(); flushL();
     return html || "<p></p>";
   }
   const plain = (s) => String(s || "").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/[*_`#>]/g, "").replace(/\s+/g, " ").trim();

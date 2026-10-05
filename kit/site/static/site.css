@@ -230,9 +230,9 @@ code, pre, kbd { font-family: var(--font-mono); }
 .msg-maya { justify-self: end; display: flex; justify-content: flex-end; }
 .msg-maya p { background: var(--bubble-me); color: var(--bubble-me-ink); border-bottom-right-radius: 6px; }
 .msg-assistant p { background: var(--bubble-them); color: var(--bubble-them-ink); border: 1px solid var(--line); border-bottom-left-radius: 6px; }
-.msg-trace { display: inline-block; font-family: var(--font-mono); font-size: var(--step--2); color: var(--muted); padding: 2px 10px; border-left: 2px solid var(--c-tools); }
-.msg-approval { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--c-approvals); border-radius: var(--radius-m); padding: 12px 14px; max-width: 92%; }
-.msg-approval p { padding: 0; max-width: none; color: var(--ink); }
+.chat-trace { display: inline-block; font-family: var(--font-mono); font-size: var(--step--2); color: var(--muted); padding: 2px 10px; border-left: 2px solid var(--c-tools); }
+.chat-approval { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--c-approvals); border-radius: var(--radius-m); padding: 12px 14px; max-width: 92%; }
+.chat-approval p { padding: 0; max-width: none; color: var(--ink); }
 .msg-buttons { display: flex; gap: 8px; margin-top: 10px; }
 .fake-btn { font-size: var(--step--2); font-weight: 700; padding: 5px 12px; border-radius: var(--radius-pill); border: 1px solid var(--line-strong); color: var(--ink-2); }
 .fake-yes { background: var(--ink); color: var(--paper); border-color: var(--ink); }
@@ -439,7 +439,8 @@ code, pre, kbd { font-family: var(--font-mono); }
 .tracker-group h3 .muted { font-weight: 500; font-size: var(--step--1); }
 .tracker-group ul { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 6px; }
 .tracker-group li { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: var(--step--1); color: var(--ink-2); }
-.tracker-file { flex: 1 1 160px; min-width: 0; overflow-wrap: anywhere; }
+.tracker-file { flex: 1 1 180px; min-width: 0; overflow-wrap: break-word; }
+.tracker-file code { overflow-wrap: break-word; }
 .tracker-step { font-size: var(--step--2); color: var(--muted); text-decoration: none; }
 .tracker-step:hover { color: var(--accent); }
 .pill { flex: none; font-size: var(--step--2); font-weight: 700; padding: 1px 8px; border-radius: var(--radius-pill); background: var(--surface-3); color: var(--muted); min-width: 58px; text-align: center; }

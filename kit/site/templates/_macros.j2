@@ -9,7 +9,7 @@
 
 {% macro build_item(text) -%}
 {%- set parts = text.split(" (", 1) -%}
-<code>{{ parts[0] }}</code>{% if parts|length > 1 %} <span class="muted">({{ parts[1] }}</span>{% endif %}
+<code>{{ parts[0]|wbr }}</code>{% if parts|length > 1 %} <span class="muted">({{ parts[1] }}</span>{% endif %}
 {%- endmacro %}
 
 {% macro replay(r) -%}

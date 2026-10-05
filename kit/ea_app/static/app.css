@@ -726,3 +726,12 @@ body.popped .dock { padding-left: 4px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* Markdown tables inside chat bubbles: compact, scroll sideways on a narrow phone */
+.md-table { overflow-x: auto; margin: 6px 0; max-width: 100%; }
+.md-table table { border-collapse: collapse; font-size: 12.5px; line-height: 1.35; min-width: 100%; }
+.md-table th, .md-table td { text-align: left; vertical-align: top; padding: 4px 6px; border-bottom: 1px solid color-mix(in srgb, currentColor 14%, transparent); }
+.md-table th { font-weight: 600; white-space: nowrap; }
+.md-table td:last-child, .md-table th:last-child { text-align: right; white-space: nowrap; }
+.md-table td:first-child { white-space: nowrap; }
+.md-table td { overflow-wrap: normal; word-break: normal; hyphens: none; }

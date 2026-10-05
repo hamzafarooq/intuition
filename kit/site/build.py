@@ -21,7 +21,7 @@ from typing import Any
 
 import markdown as md
 import yaml
-from jinja2 import Environment, FileSystemLoader, StrictUndefined
+from jinja2 import Environment, FileSystemLoader, Undefined
 from markupsafe import Markup, escape
 
 SITE = Path(__file__).resolve().parent
@@ -253,7 +253,7 @@ def replay_rows(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 continue  # the handoff_result row says the same, more readably
             ok = bool(e.get("ok"))
             out = e.get("output") if ok else (e.get("error") or e.get("output"))
-            row.update(cat="tools" if ok else "error", label="Result" if ok else "Failed",
+            row.update(cat="tools" if ok else "error", label="Result",
                        html=Markup(f"<code>{escape(e.get('tool', ''))}</code> <span class=\"args\">{escape(_short(out, 120))}</span>"),
                        detail=_pretty(out), tone="result", badge="ok" if ok else "error", badge_text="ok" if ok else "failed")
         elif t == "skill_loaded":
@@ -327,11 +327,12 @@ def replay_stats(events: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def build_env() -> Environment:
-    env = Environment(loader=FileSystemLoader(str(TEMPLATES)), autoescape=True, undefined=StrictUndefined,
+    env = Environment(loader=FileSystemLoader(str(TEMPLATES)), autoescape=True, undefined=Undefined,
                       trim_blocks=True, lstrip_blocks=True)
     env.filters["md"] = render_md
     env.filters["mdi"] = render_inline
     env.filters["as_list"] = as_list
+    env.filters["wbr"] = lambda text: Markup(str(escape(text)).replace("/", "/<wbr>"))
     env.filters["anchor"] = lambda sid: "step-" + re.sub(r"[^A-Za-z0-9]+", "-", str(sid)).strip("-").lower()
     return env
 
