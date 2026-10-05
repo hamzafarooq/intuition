@@ -5,6 +5,8 @@
   // ------------------------------------------------------------------ helpers
 
   const $ = (sel, root = document) => root.querySelector(sel);
+  const PHONE = document.body.dataset.page === "phone"; // /phone/<session>: the phone on its own
+  const chan = "BroadcastChannel" in window ? new BroadcastChannel("intuition-phone") : null;
   const ICONS = "/static/icons.svg";
   const icon = (name, cls = "icon") => `<svg class="${cls}" aria-hidden="true"><use href="${ICONS}#i-${name}"/></svg>`;
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -138,7 +140,15 @@
   }
   function outputSummary(tool, out) {
     if (out == null) return "";
-    if (typeof out === "string") return clip(out, 120);
+    if (typeof out === "string") {
+      const t = out.trim();
+      if (t.startsWith("{") || t.startsWith("[")) {
+        try { return outputSummary(tool, JSON.parse(t)); } catch { /* truncated JSON */ }
+        const n = (t.match(/"id":/g) || []).length;
+        return `long result${n ? `, ${n}+ items` : ""} (${t.length.toLocaleString()} characters, cut short)`;
+      }
+      return clip(t, 120);
+    }
     if (Array.isArray(out.results)) return `${out.results.length} result${out.results.length === 1 ? "" : "s"}${out.total != null ? ` of ${out.total}` : ""}`;
     if (Array.isArray(out.events)) return `${out.events.length} events`;
     if (Array.isArray(out.slots)) return out.slots.length ? `${out.slots.length} slot${out.slots.length === 1 ? "" : "s"}, first ${hm(out.slots[0].start)}` : "no slots";
@@ -183,7 +193,7 @@
       case "browser_step": return `${a}<b>${esc((e.action || e.tool || "step").replace(/_page$/, ""))}</b> <span class="sub">${esc(clip(e.url || "", 90))}${e.target ? " · " + esc(e.target) : ""}${e.value ? " · “" + esc(e.value) + "”" : ""}</span>`;
       case "site_event": return `${a}<b>${esc(e.kind || e.event || "event")}</b> <span class="sub">${esc(e.site || "")} ${esc(e.hold_id || "")}${e.total_usd != null ? " · $" + esc(e.total_usd) : ""} ${esc(clip(e.url || "", 60))}</span>`;
       case "user": return `${e.source && e.source !== "maya" ? `<span class="agent-tag">${esc(e.source)}</span>` : ""}${esc(clip(e.text, 240))}`;
-      case "assistant": return `${a}${esc(clip(splitStatus(e.text).body, 240))}`;
+      case "assistant": return `${a}${esc(clip(plain(splitStatus(e.text).body), 240))}`;
       case "thinking_summary": return `${a}<em>${esc(clip(e.text, 240))}</em>`;
       case "status": return `${chipHtml(e.status, e.reason)}`;
       case "usage": return usageLine(e);
@@ -236,7 +246,7 @@
   }
   function nearBottom(n) { return n.scrollHeight - n.scrollTop - n.clientHeight < 80; }
   function traceAppend(e) {
-    if (e.type === "reset") return;
+    if (e.type === "reset" || PHONE) return;
     const panel = $("#panel-trace");
     const stick = S.replaying || nearBottom(panel);
     const list = $("#trace-list");
@@ -297,7 +307,7 @@
     const open = $("#plus-btn").getAttribute("aria-expanded") === "true";
     const list = [...(S.cfg?.suggestions || []), ...(open ? S.cfg?.extra_suggestions || [] : [])];
     box.hidden = !(empty || open);
-    box.classList.toggle("wrap", open);
+    box.classList.toggle("wrap", open || empty);
     box.innerHTML = list.map((s) => `<button class="suggestion" type="button">${esc(s)}</button>`).join("");
   }
   function textHtml(t) { return esc(t).replace(/\n/g, "<br>"); }
@@ -438,7 +448,7 @@
     const chip = t.done ? chipHtml(status ? status.status : "missing", status ? status.reason : "") : "";
     const u = t.usage;
     const bits = [`${steps} step${steps === 1 ? "" : "s"}${t.done ? "" : " so far"}`];
-    if (t.done && u) { if (u.seconds != null) bits.push(`${Number(u.seconds).toFixed(1)} s`); if (u.cost_usd != null) bits.push(`$${Number(u.cost_usd).toFixed(u.cost_usd < 0.1 ? 3 : 2)}`); }
+    if (t.done && u && u.seconds != null) bits.push(`${Number(u.seconds).toFixed(1)} s`);
     t.under.innerHTML = `${chip}<button class="hood-toggle" type="button" aria-expanded="${t.open}" data-turn="${t.n}">Under the hood · ${esc(bits.join(" · "))} ${icon("chevron")}</button>`;
     t.under.hidden = !t.done && steps === 0;
   }
@@ -501,7 +511,7 @@
   };
   function stepHtml(s, idx) {
     const e = s.e, r = s.res;
-    let ic = STEP_ICON[e.type] || "dots", main = "", sub = "";
+    let ic = STEP_ICON[e.type] || "dots", main = "", sub = "", extra = "";
     const who = e.agent && e.agent !== "main" ? `<span class="agent-tag">${esc(e.agent)}</span>` : "";
     switch (e.type) {
       case "tool_call": {
@@ -530,7 +540,7 @@
       case "check": {
         ic = e.ok ? "check" : "x";
         main = `${who}${e.ok ? '<span class="ok">✓</span>' : '<span class="bad">✗</span>'} <b>${esc(e.verifier)}</b> ${esc(e.object_id || "")}`;
-        if (!e.ok && (e.problems || []).length) sub = `</span><ul class="problems">${e.problems.map((p) => `<li>${esc(p.detail || p.code)}</li>`).join("")}</ul><span>`;
+        if (!e.ok && (e.problems || []).length) extra = `<ul class="problems">${e.problems.map((p) => `<li>${esc(p.detail || p.code)}</li>`).join("")}</ul>`;
         break;
       }
       case "stop_check_block": main = "Stop check sent it back"; sub = esc(e.reason); break;
@@ -539,7 +549,7 @@
         main = `${who}Browser: <b>${esc((e.action || e.tool || "step").replace(/_page$/, "").replace(/_/g, " "))}</b>`;
         sub = esc(clip(e.url || "", 90)) + (e.target ? " · " + esc(e.target) : "") + (e.value ? " · “" + esc(e.value) + "”" : "");
         const shot = screenshotPath(e);
-        if (shot) sub += `</span><img class="thumb" loading="lazy" alt="Screenshot" src="${esc(outputUrl(shot))}"><span>`;
+        if (shot) extra = `<img class="thumb" loading="lazy" alt="Screenshot of ${esc(e.url || "the page")}" src="${esc(outputUrl(shot))}">`;
         break;
       }
       case "site_event": main = `${who}Site: <b>${esc((e.kind || e.event || "event").replace(/_/g, " "))}</b> ${esc(e.hold_id || "")}${e.total_usd != null ? " · $" + esc(e.total_usd) : ""}`; sub = esc(clip(e.url || "", 90)); break;
@@ -553,7 +563,7 @@
     }
     const cat = catOf(r && r.ok === false ? r : e);
     const nested = e.agent && e.agent !== "main" ? " nested" : "";
-    return `<li class="step cat-${cat}${nested}"><button class="step-line" type="button" data-step="${idx}" aria-expanded="false">${icon(ic)}<span class="s-main">${main}${sub ? `<span class="s-sub">${sub}</span>` : ""}</span></button></li>`;
+    return `<li class="step cat-${cat}${nested}"><button class="step-line" type="button" data-step="${idx}" aria-expanded="false">${icon(ic)}<span class="s-main">${main}${sub ? `<span class="s-sub">${sub}</span>` : ""}${extra}</span></button></li>`;
   }
   function signalLabel(kind) {
     return { decline: "Declined", reply: "Reply", travel_flag: "Travel desk flag", disconnect: "Disconnected", edit: "Edited", deny: "Denied", correction: "Correction" }[kind] || kind;
@@ -639,7 +649,7 @@
     const p = $("#panel-trace"); p.scrollTop = p.scrollHeight;
     for (const t of S.turns.values()) { if (!t.done) t.typing.hidden = false; }
     updateEmpty();
-    loadWorld();
+    loadWorld(true);
   }
   function resetUI() {
     S.events = []; chatClear(); traceClear(); browserBanner(false);
@@ -671,6 +681,11 @@
     };
   }
   function sessionGone() {
+    if (PHONE) {
+      S.online = false; renderPresence();
+      log().append(el("div", "day-chip", "This conversation has ended. Start a new one from the main window."));
+      return;
+    }
     store.set("intuition:session", null);
     S.sid = null;
     toast("That session has ended (the app restarted). Start a new one.");
@@ -682,14 +697,14 @@
 
   function scheduleWorld() {
     clearTimeout(S.worldTimer);
-    S.worldTimer = setTimeout(loadWorld, 250);
+    S.worldTimer = setTimeout(() => loadWorld(false), 250);
   }
-  async function loadWorld() {
-    if (!S.sid) return;
+  async function loadWorld(quiet) {
+    if (!S.sid || PHONE) return;
     try { S.world = await api("GET", `/api/sessions/${S.sid}/world`); }
     catch { return; }
     renderWorld();
-    if ($("#tab-world").getAttribute("aria-selected") !== "true" && !S.replaying) $("#world-dot").hidden = false;
+    if (!quiet && $("#tab-world").getAttribute("aria-selected") !== "true" && !S.replaying) $("#world-dot").hidden = false;
   }
   function nameOf(id) { return S.world?.contacts?.[id]?.name || id; }
   function firstName(id) { return nameOf(id).split(" ")[0]; }
@@ -823,6 +838,7 @@
   // ------------------------------------------------------------------ views
 
   function showView(v) {
+    if (PHONE) v = "chat";
     S.view = v;
     document.body.dataset.view = v;
     $("#landing").hidden = v !== "landing";
@@ -841,7 +857,7 @@
       $(`#tab-${t}`).setAttribute("aria-selected", String(t === which));
       $(`#panel-${t}`).hidden = t !== which;
     }
-    if (which === "world") { $("#world-dot").hidden = true; loadWorld(); }
+    if (which === "world") { $("#world-dot").hidden = true; loadWorld(true); }
   }
 
   // ------------------------------------------------------------------ setup
@@ -935,7 +951,7 @@
     const btn = $("#start-btn"); btn.disabled = true; $("#start-error").textContent = "";
     const label = btn.textContent; btn.textContent = "Starting…";
     try {
-      if (S.sid) { try { await api("DELETE", `/api/sessions/${S.sid}`); } catch { /* already gone */ } }
+      if (S.sid) { bringBack(); try { await api("DELETE", `/api/sessions/${S.sid}`); } catch { /* already gone */ } }
       const r = await api("POST", "/api/sessions", body);
       S.sid = r.session_id; store.set("intuition:session", S.sid);
       S.events = []; chatClear(); traceClear(); S.world = null;
@@ -948,12 +964,60 @@
   }
   async function newSession() {
     if (!confirm("Start a new session? This conversation ends and the next one starts in a fresh world.")) return;
+    bringBack();
     try { if (S.sid) await api("DELETE", `/api/sessions/${S.sid}`); } catch { /* gone */ }
     if (S.es) S.es.close();
     S.sid = null; store.set("intuition:session", null);
     showView("landing");
     $("#setup").scrollIntoView();
   }
+
+  // ------------------------------------------------------------------ pop-out phone
+
+  let popup = null, popPoll = 0;
+  function setFull() {
+    const q = PHONE ? "(max-width: 409px), (max-height: 699px)" : "(max-width: 860px)";
+    document.body.classList.toggle("phone-full", matchMedia(q).matches);
+  }
+  function setPopped(on) {
+    if (PHONE) return;
+    document.body.classList.toggle("popped", on);
+    $("#popout-bar").hidden = !on;
+    $("#phone").hidden = on;
+    clearInterval(popPoll);
+    if (on && popup) popPoll = setInterval(() => { if (!popup || popup.closed) { popup = null; setPopped(false); } }, 1000);
+    if (!on) { const b = $("#chat-body"); b.scrollTop = b.scrollHeight; }
+  }
+  function popOut() {
+    if (!S.sid) return;
+    const url = `/phone/${encodeURIComponent(S.sid)}`;
+    if (popup && !popup.closed) { popup.focus(); return; }
+    const w = window.open(url, "intuition-phone", "width=430,height=880");
+    if (!w) { toast(`Your browser blocked the pop-up. Allow pop-ups here, or open ${location.origin}${url}`); return; }
+    popup = w;
+    try { w.focus(); } catch { /* ignore */ }
+    setPopped(true);
+  }
+  function bringBack() {
+    if (popup && !popup.closed) popup.close();
+    else if (chan) chan.postMessage({ type: "close-request", sid: S.sid });
+    popup = null;
+    setPopped(false);
+  }
+  if (chan) {
+    chan.onmessage = (ev) => {
+      const m = ev.data || {};
+      if (!S.sid || m.sid !== S.sid) return;
+      if (PHONE) {
+        if (m.type === "close-request") window.close();
+        if (m.type === "who") chan.postMessage({ type: "here", sid: S.sid });
+      } else {
+        if (m.type === "open" || m.type === "here") setPopped(true);
+        if (m.type === "closed") { popup = null; setPopped(false); }
+      }
+    };
+  }
+  window.addEventListener("pagehide", () => { if (PHONE && chan && S.sid) chan.postMessage({ type: "closed", sid: S.sid }); });
 
   // ------------------------------------------------------------------ theme
 
@@ -1006,7 +1070,13 @@
       try { await api("POST", `/api/sessions/${S.sid}/options`, { auto_approve: ev.target.checked }); toast(`Auto-approve after a yes is ${ev.target.checked ? "on" : "off"}.`); }
       catch (err) { ev.target.checked = !ev.target.checked; toast(err.message); }
     });
-    $("#chat-back").addEventListener("click", () => { showView("landing"); window.scrollTo(0, 0); });
+    $("#chat-back").addEventListener("click", () => {
+      if (PHONE) { if (chan) chan.postMessage({ type: "closed", sid: S.sid }); window.close(); return; }
+      showView("landing"); window.scrollTo(0, 0);
+    });
+    $("#popout-btn").addEventListener("click", popOut);
+    $("#popout-back").addEventListener("click", bringBack);
+    window.addEventListener("resize", setFull);
     $("#bts-open").addEventListener("click", openSheet);
     $("#sheet-close").addEventListener("click", closeSheet);
     $("#sheet-backdrop").addEventListener("click", closeSheet);
@@ -1051,13 +1121,22 @@
 
   async function boot() {
     applyTheme(document.documentElement.dataset.theme || "auto");
+    setFull();
     wire();
     traceInit();
+    if (PHONE) $("#chat-back").setAttribute("aria-label", "Close this window");
     try { S.cfg = await api("GET", "/api/config"); }
     catch (err) { $("#start-error").textContent = `The app's server didn't answer: ${err.message}`; return; }
     setupInit();
     await initVoice();
     updateSend();
+    if (PHONE) {
+      S.sid = document.body.dataset.session;
+      showView("chat");
+      connect();
+      if (chan) chan.postMessage({ type: "open", sid: S.sid });
+      return;
+    }
     const saved = store.get("intuition:session");
     if (saved) {
       try {
@@ -1065,6 +1144,7 @@
         S.sid = saved;
         showView("chat");
         connect();
+        if (chan) chan.postMessage({ type: "who", sid: S.sid });
         return;
       } catch { store.set("intuition:session", null); }
     }

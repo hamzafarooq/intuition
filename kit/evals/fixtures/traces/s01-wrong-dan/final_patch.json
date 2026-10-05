@@ -1,0 +1,4 @@
+[
+{"file": "calendars.json", "op": "append", "path": ["maya"], "value": {"id": "ev-n1", "title": "Q4 forecast review", "start": "2026-10-28T11:00:00-06:00", "end": "2026-10-28T11:30:00-06:00", "attendees": ["maya", "dan.reyes", "lisa.park"], "rsvps": {"maya": "accepted", "dan.reyes": "needs_action", "lisa.park": "accepted"}, "organizer": "maya", "description": "Review the Q4 forecast together before the numbers go to Tom on Friday.", "location": "", "private": false, "tentative": false, "all_day": false, "external": true, "status": "active", "recurring": false, "created_in_run": true, "rsvp_reasons": {}}},
+{"file": "calendars.json", "op": "append", "path": ["busy", "lisa.park"], "value": {"start": "2026-10-28T11:00:00-06:00", "end": "2026-10-28T11:30:00-06:00", "event_id": "ev-n1"}}
+]

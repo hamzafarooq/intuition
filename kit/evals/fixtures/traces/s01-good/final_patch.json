@@ -1,0 +1,8 @@
+[
+{"file": "calendars.json", "op": "append", "path": ["maya"], "value": {"id": "ev-n1", "title": "Q4 forecast review", "start": "2026-10-28T11:00:00-06:00", "end": "2026-10-28T11:30:00-06:00", "attendees": ["maya", "dan.okafor", "lisa.park"], "rsvps": {"maya": "accepted", "dan.okafor": "accepted", "lisa.park": "accepted"}, "organizer": "maya", "description": "Walk through West and EMEA Q4 forecasts side by side; Dan to pressure-test the commit before final numbers go to Tom by Friday noon.", "location": "", "private": false, "tentative": false, "all_day": false, "external": false, "status": "active", "recurring": false, "created_in_run": true, "rsvp_reasons": {}}},
+{"file": "calendars.json", "op": "append", "path": ["busy", "dan.okafor"], "value": {"start": "2026-10-28T11:00:00-06:00", "end": "2026-10-28T11:30:00-06:00", "event_id": "ev-n1"}},
+{"file": "calendars.json", "op": "append", "path": ["busy", "lisa.park"], "value": {"start": "2026-10-28T11:00:00-06:00", "end": "2026-10-28T11:30:00-06:00", "event_id": "ev-n1"}},
+{"file": "idempotency.json", "op": "set", "path": ["calendar_create:q4-forecast-review-2026-10-28"], "value": {"event_id": "ev-n1", "start": "2026-10-28T11:00:00-06:00", "end": "2026-10-28T11:30:00-06:00", "rsvps": {"maya": "accepted", "dan.okafor": "accepted", "lisa.park": "accepted"}, "_object_id": "ev-n1"}},
+{"file": "inbox.json", "op": "set", "path": ["emails", {"id": "em-01"}, "unread"], "value": false},
+{"file": "inbox.json", "op": "set", "path": ["emails", {"id": "em-13"}, "unread"], "value": false}
+]

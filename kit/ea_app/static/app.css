@@ -153,8 +153,8 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 .connectors li:first-child { border-top: 0; }
 .conn-icon { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: var(--surface-3); color: var(--ink-2); flex: none; }
 .conn-text { flex: 1; min-width: 0; }
-.conn-name { font-weight: 600; }
-.conn-desc { color: var(--muted); font-size: var(--step--1); line-height: 1.4; }
+.conn-name { display: block; font-weight: 600; }
+.conn-desc { display: block; color: var(--muted); font-size: var(--step--1); line-height: 1.4; }
 .opt { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 16px 0; border-top: 1px solid var(--line); }
 .options-card .card-kicker + .opt, .options-card .opt:first-of-type { border-top: 0; }
 .opt-label { display: flex; flex-direction: column; min-width: 0; }
@@ -181,7 +181,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
   position: relative; width: 100%; height: 100%; border-radius: calc(var(--radius-phone) - 10px); overflow: hidden;
   display: flex; flex-direction: column; background: var(--surface); isolation: isolate;
 }
-.island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 104px; height: 30px; border-radius: 20px; background: #050403; z-index: 5; }
+.island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: min(104px, 30%); height: 30px; border-radius: 20px; background: #050403; z-index: 5; }
 .statusbar {
   height: 50px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 6px 28px 0 34px;
   font-weight: 650; font-size: 15px; letter-spacing: -.01em; background: var(--surface); color: var(--ink);
@@ -227,7 +227,8 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='132' height='132' viewBox='0 0 132 132'%3E%3Cg fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='18' cy='20' r='5'/%3E%3Cpath d='M66 14l7 7M73 14l-7 7'/%3E%3Cpath d='M38 64q6-8 12 0t12 0'/%3E%3Cpath d='M15 96h12M21 90v12'/%3E%3Cpath d='M86 100l8-8 8 8'/%3E%3Cpath d='M104 24a7 7 0 1 1-7 7'/%3E%3Crect x='96' y='56' width='12' height='12' rx='3'/%3E%3Cpath d='M48 112c4-6 10-6 14 0'/%3E%3C/g%3E%3Cg fill='black'%3E%3Ccircle cx='100' cy='120' r='1.8'/%3E%3Ccircle cx='60' cy='38' r='1.6'/%3E%3Ccircle cx='10' cy='58' r='1.6'/%3E%3Ccircle cx='124' cy='82' r='1.6'/%3E%3C/g%3E%3C/svg%3E") repeat;
   -webkit-mask-size: 132px; mask-size: 132px;
 }
-.chat-body { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; padding: 10px 10px 14px; overscroll-behavior: contain; scrollbar-width: thin; }
+.chat-body { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; padding: 10px 10px 14px; overscroll-behavior: contain; scrollbar-width: none; }
+.chat-body::-webkit-scrollbar { display: none; }
 .day-chip {
   display: table; margin: 4px auto 10px; padding: 3px 12px; border-radius: var(--radius-pill);
   background: color-mix(in srgb, var(--surface) 88%, transparent); color: var(--muted); font-size: 12px; font-weight: 600;
@@ -356,7 +357,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 
 .suggestions { display: flex; gap: 6px; padding: 8px 10px 2px; overflow-x: auto; flex: none; background: var(--chat-bg); scrollbar-width: none; }
 .suggestions::-webkit-scrollbar { display: none; }
-.suggestions.wrap { flex-wrap: wrap; overflow: visible; }
+.suggestions.wrap { flex-wrap: wrap; overflow: visible; justify-content: center; padding-bottom: 6px; }
 .suggestion {
   flex: none; padding: 7px 13px; border-radius: var(--radius-pill); border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
   background: var(--surface); color: var(--ink); font-size: 13px; font-weight: 550; white-space: nowrap;
@@ -547,16 +548,19 @@ body[data-view="chat"] #nav-session { display: flex; }
   .steps li { padding: 20px 0; }
 }
 
+/* The phone fills the screen: a narrow main window, or a small phone window (set by app.js). */
+body.phone-full[data-view="chat"] .nav { display: none; }
+body.phone-full #workspace { display: block; height: 100dvh; }
+body.phone-full .dock { position: fixed; inset: 0; padding: 0; z-index: 10; }
+body.phone-full .phone--live { --phone-w: 100vw; --phone-h: 100dvh; }
+body.phone-full .phone--live .phone-frame { padding: 0; border-radius: 0; background: none; box-shadow: none; }
+body.phone-full .phone--live .phone-screen { border-radius: 0; }
+body.phone-full .phone--live .island, body.phone-full .phone--live .statusbar, body.phone-full .phone--live .home-bar { display: none; }
+body.phone-full .phone--live .chat-head { padding-top: max(8px, env(safe-area-inset-top)); }
+body.phone-full .phone--live .composer { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+body.phone-full .popout-btn { display: none; }
+
 @media (max-width: 860px) {
-  body[data-view="chat"] .nav { display: none; }
-  #workspace { display: block; height: 100dvh; }
-  .dock { position: fixed; inset: 0; padding: 0; z-index: 10; }
-  .phone--live { --phone-w: 100vw; --phone-h: 100dvh; }
-  .phone--live .phone-frame { padding: 0; border-radius: 0; background: none; box-shadow: none; }
-  .phone--live .phone-screen { border-radius: 0; }
-  .phone--live .island, .phone--live .statusbar, .phone--live .home-bar { display: none; }
-  .phone--live .chat-head { padding-top: max(8px, env(safe-area-inset-top)); }
-  .phone--live .composer { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
   .bts-open { display: inline-grid; }
   .bts {
     position: fixed; left: 0; right: 0; bottom: 0; height: 88dvh; z-index: 40; padding: 8px 16px 0;
@@ -571,6 +575,33 @@ body[data-view="chat"] #nav-session { display: flex; }
   .ev > summary .ev-body { grid-column: 1 / -1; }
   .ev pre { margin-left: 4px; }
 }
+
+/* The phone on its own page (/phone/<session>): a pop-out window or a second tab. */
+body[data-page="phone"] .nav, body[data-page="phone"] #landing, body[data-page="phone"] .bts,
+body[data-page="phone"] .sheet-backdrop, body[data-page="phone"] .popout-btn, body[data-page="phone"] .bts-open,
+body[data-page="phone"] #menu-new, body[data-page="phone"] .popout-bar { display: none !important; }
+body[data-page="phone"] {
+  overflow: hidden;
+  background: radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--accent) 10%, var(--paper)), var(--paper) 60%);
+}
+body[data-page="phone"]:not(.phone-full) #workspace { display: grid; grid-template-columns: minmax(0, 1fr); height: 100dvh; }
+body[data-page="phone"]:not(.phone-full) .dock { padding: 12px 0; }
+body[data-page="phone"] .phone--live { --phone-h: min(780px, calc(100dvh - 24px)); }
+body.phone-full[data-page="phone"] .phone--live { --phone-h: 100dvh; }
+
+/* The phone popped out: the dock shrinks to a slim bar and behind the scenes takes the room. */
+.popout-bar {
+  display: flex; flex-direction: column; align-items: center; gap: 16px; width: 52px; height: min(540px, 100%);
+  padding: 18px 0; border: 1px solid var(--line-strong); border-radius: 26px; background: var(--surface); box-shadow: var(--shadow-1);
+}
+.pb-icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-strong); flex: none; }
+.pb-icon .icon { width: 18px; height: 18px; }
+.pb-text, .pb-back { writing-mode: vertical-rl; transform: rotate(180deg); }
+.pb-text { font-size: 13px; font-weight: 600; color: var(--ink-2); white-space: nowrap; }
+.pb-back { margin-top: auto; padding: 14px 7px; }
+body.popped .dock { padding-left: 4px; }
+
+.gone { max-width: 640px; margin: 18vh auto 0; padding: 0 20px; display: grid; gap: 22px; }
 
 @media (max-width: 420px) {
   .hero-actions .btn { width: 100%; }

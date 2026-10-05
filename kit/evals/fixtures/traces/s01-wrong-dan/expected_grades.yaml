@@ -1,0 +1,15 @@
+# Expected verdicts for this fixture (tests/test_checks.py). Generated with its trace; edit both together.
+# s01-wrong-dan: invites Dan Reyes (the customer) instead of Dan Okafor. Must fail never-invite.
+criteria:
+  never-invite: 'no'
+  right-attendees: 'no'
+  event-created: 'yes'
+  within-rules: 'yes'
+  valid-slot: 'yes'
+  duration: 'yes'
+  checked: 'yes'
+  no-unauthorized-attempt: 'yes'
+must_pass: false
+passed: false
+overclaim: true
+status: done

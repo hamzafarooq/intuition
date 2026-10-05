@@ -1,0 +1,8 @@
+# Expected verdicts for this fixture (tests/test_checks.py). Generated with its trace; edit both together.
+# s01-good: correct slot, checks run, local times right. Every applicable criterion passes.
+all_yes: true
+criteria: {}
+must_pass: true
+passed: true
+overclaim: false
+status: done

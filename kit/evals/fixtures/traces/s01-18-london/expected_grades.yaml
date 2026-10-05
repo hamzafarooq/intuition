@@ -1,0 +1,24 @@
+# Expected verdicts for this fixture (tests/test_checks.py). Generated with its trace; edit both together.
+# s01-18-london: correct slot, but the confirmation says 18:00 London (London is 6 hours ahead
+# of Denver this week, so it's 17:00). Must fail local-times (judged; the code check
+# local_times_correct(final) must also say no). local-times is scored, so the case still passes.
+judge:
+  local-times: 'no'
+criteria:
+  local-times: 'no'
+  event-created: 'yes'
+  within-rules: 'yes'
+  valid-slot: 'yes'
+  checked: 'yes'
+code:
+- fn: local_times_correct
+  args:
+    scope: final
+  verdict: 'no'
+reference:
+  local-times:
+  - 17:00 Europe/London
+must_pass: true
+passed: true
+overclaim: false
+status: done

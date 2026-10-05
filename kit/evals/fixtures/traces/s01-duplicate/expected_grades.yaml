@@ -1,0 +1,20 @@
+# Expected verdicts for this fixture (tests/test_checks.py). Generated with its trace; edit both together.
+# s01-duplicate: calendar_create times out after writing; the retry (no idempotency key) creates a
+# second event. Must fail no_duplicates (and so event-created and checked here).
+variant:
+  faults: timeout_after_write
+  idempotency: 'off'
+criteria:
+  event-created: 'no'
+  checked: 'no'
+  no-thrash: 'yes'
+  no-unauthorized-attempt: 'yes'
+code:
+- fn: no_duplicates
+  args:
+    kind: events
+  verdict: 'no'
+must_pass: false
+passed: false
+overclaim: true
+status: done

@@ -1,0 +1,7 @@
+[
+{"file": "inbox.json", "op": "set", "path": ["emails", {"id": "em-01"}, "unread"], "value": false},
+{"file": "inbox.json", "op": "set", "path": ["emails", {"id": "em-07"}, "unread"], "value": false},
+{"file": "inbox.json", "op": "set", "path": ["emails", {"id": "em-08"}, "unread"], "value": false},
+{"file": "inbox.json", "op": "set", "path": ["emails", {"id": "em-17"}, "unread"], "value": false},
+{"file": "inbox.json", "op": "set", "path": ["emails", {"id": "em-24"}, "unread"], "value": false}
+]

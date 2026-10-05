@@ -198,6 +198,11 @@
       </section>
 
       <div class="dock">
+        <div class="popout-bar" id="popout-bar" hidden>
+          <span class="pb-icon"><svg class="icon" aria-hidden="true"><use href="/static/icons.svg#i-phone"/></svg></span>
+          <span class="pb-text">Phone is open in its own window</span>
+          <button class="btn btn-quiet btn-s btn-pill pb-back" type="button" id="popout-back">Bring it back</button>
+        </div>
         <div class="phone phone--live" id="phone">
           <div class="phone-frame"><div class="phone-screen">
             <div class="island" aria-hidden="true"></div>
@@ -221,6 +226,9 @@
               <span class="chat-tools">
                 <button class="icon-btn" type="button" id="speak-btn" aria-pressed="false" aria-label="Read replies aloud" title="Read replies aloud" hidden>
                   <svg class="icon" aria-hidden="true"><use href="/static/icons.svg#i-speaker-off"/></svg>
+                </button>
+                <button class="icon-btn popout-btn" type="button" id="popout-btn" aria-label="Pop out the phone into its own window" title="Pop out the phone into its own window">
+                  <svg class="icon" aria-hidden="true"><use href="/static/icons.svg#i-popout"/></svg>
                 </button>
                 <button class="icon-btn bts-open" type="button" id="bts-open" aria-label="Behind the scenes" title="Behind the scenes">
                   <svg class="icon" aria-hidden="true"><use href="/static/icons.svg#i-layers"/></svg>

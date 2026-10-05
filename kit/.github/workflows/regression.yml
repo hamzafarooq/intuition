@@ -1,0 +1,32 @@
+# Offline tests on every push that touches the assistant, tools, harness or evals.
+# Live regression runs stay local for now: Claude Code runs on a person's own login, which shouldn't be
+# used in shared CI. With an Anthropic API key in the repo secrets, the commented job below runs the
+# regression cases through Claude Code.
+name: regression
+on:
+  push:
+    paths: ["assistant/**", "ea_world/**", "ea_harness/**", "ea_evals/**", "evals/**", "world/**", "tests/**"]
+  pull_request:
+    paths: ["assistant/**", "ea_world/**", "ea_harness/**", "ea_evals/**", "evals/**", "world/**", "tests/**"]
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv python install 3.12
+      - run: uv sync
+      - run: uv run pytest -q
+  # live-regression:
+  #   runs-on: ubuntu-latest
+  #   needs: offline
+  #   env:
+  #     ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+  #     OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  #     EA_USE_API_KEY: "1"
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: astral-sh/setup-uv@v5
+  #     - run: curl -fsSL https://claude.ai/install.sh | bash
+  #     - run: uv sync
+  #     - run: uv run ea-eval run --cases kind:regression --trials 1 --parallel 2

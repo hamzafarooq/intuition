@@ -1,0 +1,18 @@
+# Expected verdicts for this fixture (tests/test_checks.py). Generated with its trace; edit both together.
+# s01-no-check: correct slot, but check_event never runs (hooks=off, so the stop check didn't send it back). Must fail checked.
+variant:
+  hooks: 'off'
+criteria:
+  checked: 'no'
+  event-created: 'yes'
+  right-attendees: 'yes'
+  never-invite: 'yes'
+  within-rules: 'yes'
+  duration: 'yes'
+  valid-slot: 'yes'
+  contacts-before-invite: 'yes'
+  no-unauthorized-attempt: 'yes'
+must_pass: false
+passed: false
+overclaim: true
+status: done

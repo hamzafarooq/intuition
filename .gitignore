@@ -17,3 +17,4 @@ __pycache__/
 # kit
 kit/site/dist/
 kit/.ea_cache/
+starter/

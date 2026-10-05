@@ -1,5 +1,6 @@
 """The Intuition web app: Starlette, server-sent events and a static front end (spec/14-app.md).
 
+    GET  /phone/{id}                              the phone alone, for its own window (same session, same stream)
     GET  /api/config                              app name, harnesses, Claude Code status, search, browser, voice
     POST /api/sessions                            {harness, search_mode, auto_approve, model, browser, connectors, variants?, world?}
     GET  /api/sessions/{id}                       session info
@@ -16,18 +17,20 @@
 
 import asyncio
 import contextlib
+import html
 import json
 import logging
 import mimetypes
 import os
 import re
+import urllib.parse
 from collections.abc import AsyncIterator, Callable
 from pathlib import Path
 from typing import Any
 
 from starlette.applications import Starlette
 from starlette.requests import Request
-from starlette.responses import FileResponse, JSONResponse, Response, StreamingResponse
+from starlette.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, Response, StreamingResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
@@ -130,6 +133,24 @@ def create_app(
 
     async def index(request: Request) -> Response:
         return FileResponse(STATIC_DIR / "index.html", headers={"Cache-Control": "no-cache"})
+
+    async def phone_page(request: Request) -> Response:
+        """The same app page in phone-only mode, for a pop-out window or a second tab."""
+        sid = request.path_params.get("sid") or request.query_params.get("session") or ""
+        if "sid" not in request.path_params and sid:
+            return RedirectResponse("/phone/" + urllib.parse.quote(sid, safe=""), status_code=307)
+        if manager.get(sid) is None:
+            return HTMLResponse(
+                f"<!doctype html><meta charset='utf-8'><title>{html.escape(name)}</title>"
+                "<link rel='stylesheet' href='/static/tokens.css'><link rel='stylesheet' href='/static/app.css'>"
+                "<main class='gone'><h1 class='display'>That conversation has ended.</h1>"
+                "<p class='lede'>Start a new one from the main window.</p><p><a class='btn btn-primary btn-pill' href='/'>Open "
+                f"{html.escape(name)}</a></p></main>", status_code=404)
+        page = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
+        page = page.replace('<body data-view="landing">',
+                            f'<body data-view="chat" data-page="phone" data-session="{html.escape(sid, quote=True)}">', 1)
+        page = page.replace("<title>Intuition</title>", f"<title>{html.escape(name)} · phone</title>", 1)
+        return HTMLResponse(page, headers={"Cache-Control": "no-cache"})
 
     async def config(request: Request) -> Response:
         c = await claude_info()
@@ -377,6 +398,8 @@ def create_app(
 
     routes: list[Any] = [
         Route("/", index),
+        Route("/phone", phone_page),
+        Route("/phone/{sid}", phone_page),
         Route("/api/config", config),
         Route("/api/sessions", create_session, methods=["POST"]),
         Route("/api/sessions/{sid}", get_session, methods=["GET"]),

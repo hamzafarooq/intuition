@@ -1,0 +1,4 @@
+[
+{"file": "inbox.json", "op": "set", "path": ["emails", {"id": "em-01"}, "unread"], "value": false},
+{"file": "inbox.json", "op": "set", "path": ["emails", {"id": "em-13"}, "unread"], "value": false}
+]

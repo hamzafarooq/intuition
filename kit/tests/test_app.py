@@ -147,6 +147,17 @@ def test_session_creation_rejects_bad_options(client, body, status):
     assert client.post("/api/sessions", json=body).status_code == status
 
 
+def test_phone_page_serves_the_phone_alone(client):
+    sid = start(client)
+    r = client.get(f"/phone/{sid}")
+    assert r.status_code == 200 and r.headers["content-type"].startswith("text/html")
+    assert 'data-page="phone"' in r.text and f'data-session="{sid}"' in r.text
+    assert 'id="phone"' in r.text and 'id="composer"' in r.text
+    assert client.get(f"/phone?session={sid}", follow_redirects=False).headers["location"] == f"/phone/{sid}"
+    assert client.get("/phone/no-such-session").status_code == 404
+    assert client.get("/phone?session=nope").status_code == 404
+
+
 def test_unknown_session_is_404(client):
     assert client.get("/api/sessions/nope/world").status_code == 404
     assert client.post("/api/sessions/nope/messages", json={"text": "hi"}).status_code == 404

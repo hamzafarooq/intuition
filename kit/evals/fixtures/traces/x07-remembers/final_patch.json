@@ -1,0 +1,4 @@
+[
+{"file": "connectors.json", "op": "set", "path": ["email"], "value": "disconnected"},
+{"file": "inbox.json", "op": "set", "path": ["emails", {"id": "em-24"}, "unread"], "value": false}
+]
