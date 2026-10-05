@@ -271,14 +271,18 @@ class Grade:
     scored: float | None = None
     passed: bool = False
     judge_calls: int = 0
+    missing_rubrics: list[str] = field(default_factory=list)
 
 
 def grade_trial(ctx: TrialContext, judge: Any | None = None, rubric_folder: Path | None = None) -> Grade:
     """Grade one trial against the case's rubrics plus conduct."""
     names = case_rubrics(ctx.case)
-    rubrics = {n: load_rubric(n, rubric_folder) for n in names}
+    folder = Path(rubric_folder or rubrics_dir())
+    # A rubric students haven't written yet (email.yaml before Lesson 3) is skipped and recorded, not a crash.
+    missing = [n for n in names if not (folder / f"{n}.yaml").exists()]
+    rubrics = {n: load_rubric(n, rubric_folder) for n in names if n not in missing}
     scope = scope_for(ctx)
-    grade = Grade(rubric_versions={n: int(r.get("version", 1)) for n, r in rubrics.items()})
+    grade = Grade(rubric_versions={n: int(r.get("version", 1)) for n, r in rubrics.items()}, missing_rubrics=missing)
     deferred: list[tuple[str, dict[str, Any]]] = []
     for name, rub in rubrics.items():
         for c in rub.get("criteria", []):

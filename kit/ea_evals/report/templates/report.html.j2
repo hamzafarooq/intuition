@@ -98,6 +98,7 @@ code.cmd { display: block; padding: 8px 10px; background: var(--chip); border-ra
     {% if meta.git_commit %}<span>commit {{ meta.git_commit }}</span>{% endif %}
   </div>
   {% if meta.status and meta.status != "complete" %}<div class="banner warn" style="margin-top:10px"><strong>Partial run ({{ meta.status }}).</strong> {{ meta.pause_reason or "" }} Resume with <code>uv run ea-eval resume {{ meta.run_id }}</code>.</div>{% endif %}
+  {% if missing_rubrics %}<div class="banner warn" style="margin-top:10px"><strong>Not graded yet:</strong> {{ missing_rubrics|join(", ") }} (the rubric file isn't written yet; you write <code>evals/rubrics/email.yaml</code> in Lesson 3). Those cases were graded by the conduct rubric only.</div>{% endif %}
   {% if meta.personal_settings and (meta.personal_settings.claude_md or meta.personal_settings.user_hooks) %}<div class="banner warn" style="margin-top:10px">Personal Claude Code settings were present on this machine (~/.claude). Runs use <code>--setting-sources project,local</code>, but compare with care.</div>{% endif %}
   <nav class="toc"><a href="#overview">Overview</a><a href="#by-type">By type</a>{% if team %}<a href="#team">Team</a>{% endif %}{% if comparisons %}<a href="#comparisons">Comparisons</a>{% endif %}<a href="#safety">Safety</a><a href="#selfchecks">Self-checks</a><a href="#criteria">Criteria</a><a href="#trials">Trials</a></nav>
 </header>

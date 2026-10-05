@@ -235,7 +235,7 @@ class Runner:
                       "input_tokens": usage.input_tokens + usage.cache_read_tokens + usage.cache_write_tokens,
                       "output_tokens": usage.output_tokens, "claude_seconds": round(usage.seconds, 1)},
             "budget": {"cost_ok": cost <= float(budgets.get("max_cost_usd", 1e9)), "time_ok": seconds <= float(budgets.get("max_seconds", 1e9))},
-            "judge_calls": g.judge_calls, "stopped_by": stopped, "error": error[:500], "sim_classifier": classifier,
+            "judge_calls": g.judge_calls, "missing_rubrics": g.missing_rubrics, "stopped_by": stopped, "error": error[:500], "sim_classifier": classifier,
             "model": V.model_for(spec.variant, self.o.claude_model),
             "path": str(tdir.relative_to(self.run_dir)),
         }

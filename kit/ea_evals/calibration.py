@@ -63,7 +63,14 @@ def calibrate(run_id: str, rubric: str) -> dict[str, Any]:
     doc = yaml.safe_load(labels_path(rubric).read_text(encoding="utf-8"))
     per: dict[str, dict[str, int]] = {}
     for it in doc.get("items", []):
-        h, j = (str(it.get("human") or "").lower(), str(it.get("judge") or "").lower())
+        h = str(it.get("human") or "").lower()
+        # Compare with the judge's CURRENT verdict, so label -> reword -> regrade -> calibrate reuses your labels.
+        j = str(it.get("judge") or "").lower()
+        gp = results_dir() / run_id / it.get("trial", "") / "grades.json"
+        if gp.exists():
+            for c in json.loads(gp.read_text(encoding="utf-8")).get("criteria", []):
+                if c.get("rubric") == rubric and c.get("id") == it.get("criterion") and c.get("verdict") not in ("na", "skipped"):
+                    j = str(c["verdict"]).lower()
         if h not in ("yes", "no"):
             continue
         row = per.setdefault(it["criterion"], {"tp": 0, "fn": 0, "tn": 0, "fp": 0})

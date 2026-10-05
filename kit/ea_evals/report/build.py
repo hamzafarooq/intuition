@@ -209,6 +209,7 @@ def build(run_id: str, compare: list[str] | None = None, out: Path | None = None
         "must_failures": M.must_failures(grades), "criteria": M.criterion_rates(grades), "cases": M.per_case(grades),
         "selfcheck": selfcheck_rows, "trials": trials, "compare": [c for c, _ in others],
         "kinds": {k: M.summary(v, budgets) for k, v in M.by(grades, "kind").items()},
+        "missing_rubrics": sorted({r for g in grades for r in g.get("missing_rubrics", [])}),
         "radar_css": RADAR_CSS, "trials_json": json.dumps(trials, ensure_ascii=False, default=str).replace("</", "<\\/"),
         "esc": html.escape,
     }

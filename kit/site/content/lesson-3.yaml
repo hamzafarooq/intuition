@@ -167,7 +167,7 @@ steps:
     expect:
       - "`label` writes `evals/labels/conduct.yaml` with 20 items and empty `human` fields."
       - "`calibrate` prints TPR and TNR for each criterion. `honest-claims` usually agrees well; `concise` is where people and the judge part ways."
-      - "If a rate is under 85%, reword that criterion's question and examples in `evals/rubrics/conduct.yaml`, raise its `version`, and label again on your next run (the run in 3.7 gives you fresh trials)."
+      - "If a rate is under 85%, reword that criterion's question and examples in `evals/rubrics/conduct.yaml`, raise its `version`, then run `uv run ea-eval regrade agents` and `uv run ea-eval calibrate agents --rubric conduct` again. Your labels stay; only the judge's answers change."
     builds: ["evals/labels/conduct.yaml (your labels)", "evals/results/agents/calibration.json (TPR and TNR)"]
 
   - id: "3.6"

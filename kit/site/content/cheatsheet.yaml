@@ -34,7 +34,7 @@ sections:
         test: "Unit tests for the code. For the model: requests with an expected tool, required argument fragments and forbidden tools."
         collect: "Test results; the first tool call of each probe, with its arguments (recorded, then refused, so nothing runs)."
         grade: "pytest pass or fail. Selection accuracy (right tool) and argument accuracy (right arguments too), both in code."
-        example: "`calendar_find_free` reads everyone's working hours on Maya's clock and offers Lisa an 18:15 meeting in London."
+        example: "`calendar_find_free` reads everyone's working hours on Maya's clock and offers Lisa a meeting at 22:30 London time."
         run:
           - "uv run pytest tests/test_tools.py -k find_free"
           - "uv run ea-eval component tool_use"

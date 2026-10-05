@@ -112,6 +112,41 @@ def cmd_resume(args: argparse.Namespace) -> int:
     return cmd_run(args, resume_meta=meta)
 
 
+def cmd_regrade(args: argparse.Namespace) -> int:
+    """Grade a run's saved trials again with the current rubrics (after you reword a criterion)."""
+    from ea_harness.base import Usage
+
+    from .cases import load_all
+    from .report.build import build
+    from .runner import Runner, RunOptions, TrialSpec, results_dir
+
+    run_dir = results_dir() / args.run_id
+    if not (run_dir / "run.json").exists():
+        print(f"No run {args.run_id}", file=sys.stderr)
+        return 2
+    meta = json.loads((run_dir / "run.json").read_text())
+    judge, meter = _judge(args)
+    runner = Runner(RunOptions(run_id=args.run_id, claude_model=(meta.get("models") or {}).get("claude") or "opus", rejudge_fraction=0),
+                    judge=judge, meter=meter)
+    cases = load_all()
+    n = 0
+    for p in sorted(run_dir.glob("*/*/*/t*/grades.json")):
+        old = json.loads(p.read_text())
+        if old.get("skipped"):
+            continue
+        spec = TrialSpec(cases[old["case_id"]], old.get("variant_set") or {}, int(old["trial"]), old.get("harness", "claude-code"))
+        u = old.get("usage", {})
+        usage = Usage(api_equivalent_cost_usd=u.get("cost_usd", 0), num_turns=u.get("model_calls", 0), output_tokens=u.get("output_tokens", 0))
+        g = runner.grade(spec, p.parent, usage, u.get("seconds", 0), old.get("stopped_by", "end_turn"), old.get("error", ""), old.get("sim_classifier", ""))
+        p.write_text(json.dumps(g, indent=2, ensure_ascii=False))
+        n += 1
+        changed = sum(1 for a, b in zip(old.get("criteria", []), g["criteria"]) if a.get("verdict") != b.get("verdict"))
+        print(f"  {spec.key}: {'PASS' if g['passed'] else 'FAIL'}" + (f" ({changed} verdicts changed)" if changed else ""))
+    print(f"Re-graded {n} trials · OpenAI ${meter.openai_usd:.2f} (unchanged judgements come from the cache)")
+    print(f"Report: {build(args.run_id)}")
+    return 0
+
+
 def cmd_report(args: argparse.Namespace) -> int:
     from .report.build import build
 
@@ -224,6 +259,12 @@ def build_parser() -> argparse.ArgumentParser:
     rs.add_argument("run_id")
     run_args(rs)
     rs.set_defaults(fn=cmd_resume)
+    rg = sub.add_parser("regrade", help="Grade a run's trials again with the current rubrics")
+    rg.add_argument("run_id")
+    rg.add_argument("--judge-model", default=None)
+    rg.add_argument("--max-cost", default=os.environ.get("EA_MAX_COST_USD", "5.00"))
+    rg.add_argument("--no-judge", action="store_true")
+    rg.set_defaults(fn=cmd_regrade)
     rp = sub.add_parser("report", help="Build or rebuild a report")
     rp.add_argument("run_id")
     rp.add_argument("--compare", action="append", default=[])

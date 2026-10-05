@@ -209,4 +209,4 @@ G8:
   manual: "voice in Chrome and Safari (Brave hides the mic: no speech recognition)"
 G9:
   live: [{run: live-r01-browser, case: R01, passed: true}]
-  pending: "the same R01 demo from inside the app, with Brave beside it"
+  check: app_booked_through_browser

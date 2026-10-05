@@ -35,12 +35,12 @@ steps:
   - id: "1.2"
     title: Run the tool unit tests, and fix what fails
     why: |
-      Unit tests check the code with no model involved: the same input always gives the same answer. At
-      least one `find_free` test fails in your kit. The free-slot finder reads everyone's working hours on
-      Maya's clock, so it offers slots that are evenings in London. This week makes it worse: London
-      changed its clocks on 25 October and Denver hasn't yet.
+      Unit tests check the code with no model involved: the same input always gives the same answer.
+      Several `find_free` tests fail in your kit. The free-slot finder reads everyone's working hours on a
+      fixed "Maya clock" (UTC−6), so it offers slots that are late evening in London. A fixed offset is
+      wrong twice this fortnight: London changed its clocks on 25 October, and Denver changes on 1 November.
     prompt: |
-      Run `uv run pytest tests/test_tools.py -k find_free`. At least one test fails.
+      Run `uv run pytest tests/test_tools.py -k find_free`. Some tests fail.
 
       1. Read the failing test in tests/test_tools.py and tell me in plain words what it expects and what the tool returned instead.
       2. Find the cause in ea_world/calendar.py (calendar_find_free and the helpers it calls).
@@ -51,7 +51,7 @@ steps:
       - uv run pytest tests/test_tools.py -k find_free
       - uv run pytest tests/test_tools.py
     expect:
-      - "Before the fix, one or more `find_free` tests fail. The S01 test is the clearest: it expects one slot this week (Wed 28 Oct, 11:00 Denver) and gets several."
+      - "Before the fix, several `find_free` tests fail. The S01 test is the clearest: it expects one slot this week (Wed 28 Oct, 11:00 Denver) and also gets Monday 16:30 Denver, which is 22:30 in London."
       - "The fix is small: hours are read in each attendee's own zone."
       - "After the fix every `find_free` test passes, and the rest of `tests/test_tools.py` still does."
     builds: ["ea_world/calendar.py (time-zone bug fixed)"]

@@ -14,10 +14,10 @@ lesson1-find-free.jsonl:
   title: "Claude Code finds and fixes the time-zone bug"
   source: example
   caption: >
-    A session at the kit root, not the assistant. The find_free tests fail because working hours are read
-    on Maya's clock instead of each person's own. One change fixes it, and the tests pass. Your session
-    will look different: the point is the loop of test, read, fix, test.
-  origin: "Written by hand for this guide. The passing test line matches the kit's real output."
+    A session at the kit root, not the assistant. Nine find_free tests fail because working hours are
+    read on a fixed "Maya clock" (UTC−6) instead of each person's own time zone. A small change fixes it,
+    and the tests pass. Your session will look different: the point is the loop of test, read, fix, test.
+  origin: "The session is written by hand for this guide. The test output is real: the kit's tests run against the starter's `calendar.py`."
 
 lesson1-tool-use-probe.jsonl:
   title: "One tool-use probe: right tool, wrong arguments"

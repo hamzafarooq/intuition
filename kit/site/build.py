@@ -142,7 +142,9 @@ def validate(pages: dict[str, dict[str, Any]]) -> list[str]:
                     problems.append(f"{where}: missing {key}")
             for cmd in run_commands(s):
                 if first_token(cmd) not in RUN_FIRST_TOKENS:
-                    problems.append(f"{where}: run command must start with one of {sorted(RUN_FIRST_TOKENS)}: {cmd}")
+                    problems.append(
+                        f"{where}: run command must start with one of {sorted(RUN_FIRST_TOKENS)}: {cmd}"
+                    )
             for r in as_list(s.get("replay")):
                 p = SITE / str(r)
                 if not p.exists():
@@ -237,58 +239,141 @@ def replay_rows(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
             if last_turn is not None:
                 rows.append({"divider": f"Turn {turn}"})
             last_turn = turn
-        row: dict[str, Any] = {"agent": agent, "sub": agent != "main", "detail": "", "badge": "", "badge_text": "", "tone": ""}
+        row: dict[str, Any] = {
+            "agent": agent,
+            "sub": agent != "main",
+            "detail": "",
+            "badge": "",
+            "badge_text": "",
+            "tone": "",
+        }
         if t == "user":
-            row.update(cat="messages", label=WHO.get(e.get("source", "maya"), "Maya"), html=_bold(e.get("text", "")), bubble="me")
+            row.update(
+                cat="messages",
+                label=WHO.get(e.get("source", "maya"), "Maya"),
+                html=_bold(e.get("text", "")),
+                bubble="me",
+            )
         elif t == "assistant":
-            row.update(cat="messages", label="Assistant" if agent == "main" else agent.capitalize(), html=_bold(e.get("text", "")), bubble="them")
+            row.update(
+                cat="messages",
+                label="Assistant" if agent == "main" else agent.capitalize(),
+                html=_bold(e.get("text", "")),
+                bubble="them",
+            )
         elif t == "thinking_summary":
             row.update(cat="system", label="Thinking", html=_bold(e.get("text", "").strip()), tone="quiet")
         elif t == "tool_call":
-            row.update(cat="tools", label="Tool call", html=Markup(f"<code>{escape(e.get('tool', ''))}</code> "
-                       f"<span class=\"args\">{escape(_args_line(e.get('input')))}</span>"),
-                       detail=_pretty(e.get("input") or {}) if e.get("input") else "")
+            row.update(
+                cat="tools",
+                label="Tool call",
+                html=Markup(
+                    f"<code>{escape(e.get('tool', ''))}</code> "
+                    f'<span class="args">{escape(_args_line(e.get("input")))}</span>'
+                ),
+                detail=_pretty(e.get("input") or {}) if e.get("input") else "",
+            )
         elif t == "tool_result":
             if e.get("tool") == "Agent":
                 continue  # the handoff_result row says the same, more readably
             ok = bool(e.get("ok"))
             out = e.get("output") if ok else (e.get("error") or e.get("output"))
-            row.update(cat="tools" if ok else "error", label="Result",
-                       html=Markup(f"<code>{escape(e.get('tool', ''))}</code> <span class=\"args\">{escape(_short(out, 120))}</span>"),
-                       detail=_pretty(out), tone="result", badge="ok" if ok else "error", badge_text="ok" if ok else "failed")
+            row.update(
+                cat="tools" if ok else "error",
+                label="Result",
+                html=Markup(
+                    f'<code>{escape(e.get("tool", ""))}</code> <span class="args">{escape(_short(out, 120))}</span>'
+                ),
+                detail=_pretty(out),
+                tone="result",
+                badge="ok" if ok else "error",
+                badge_text="ok" if ok else "failed",
+            )
         elif t == "skill_loaded":
-            row.update(cat="skills", label="Skill", html=Markup(f"Loaded the <strong>{escape(e.get('skill', ''))}</strong> skill"))
+            row.update(
+                cat="skills",
+                label="Skill",
+                html=Markup(f"Loaded the <strong>{escape(e.get('skill', ''))}</strong> skill"),
+            )
         elif t == "delegate":
-            row.update(cat="agents", label="Hand-off", html=Markup(f"Handed the task to <strong>{escape(e.get('to', ''))}</strong>"),
-                       detail=_pretty(e.get("task", ""), 2000))
+            row.update(
+                cat="agents",
+                label="Hand-off",
+                html=Markup(f"Handed the task to <strong>{escape(e.get('to', ''))}</strong>"),
+                detail=_pretty(e.get("task", ""), 2000),
+            )
         elif t == "handoff_result":
-            row.update(cat="agents", label="Hand-back", html=Markup(f"<strong>{escape(e.get('to', ''))}</strong> reported back: "
-                       f"<span class=\"args\">{escape(_short(e.get('text', ''), 110))}</span>"), detail=_pretty(e.get("text", ""), 2000))
+            row.update(
+                cat="agents",
+                label="Hand-back",
+                html=Markup(
+                    f"<strong>{escape(e.get('to', ''))}</strong> reported back: "
+                    f'<span class="args">{escape(_short(e.get("text", ""), 110))}</span>'
+                ),
+                detail=_pretty(e.get("text", ""), 2000),
+            )
         elif t == "approval_request":
             summary = e.get("summary") or f"{e.get('tool', '')} {_args_line(e.get('input'), 100)}"
-            row.update(cat="approvals", label="Approval asked", html=Markup(f"<code>{escape(e.get('tool', ''))}</code> "
-                       f"<span class=\"args\">{escape(_short(summary, 130))}</span>"))
+            row.update(
+                cat="approvals",
+                label="Approval asked",
+                html=Markup(
+                    f"<code>{escape(e.get('tool', ''))}</code> "
+                    f'<span class="args">{escape(_short(summary, 130))}</span>'
+                ),
+            )
         elif t == "approval_response":
             allow = e.get("decision") == "allow"
-            who = {"script": "the eval script", "human": "Maya", "app": "Maya in the app"}.get(e.get("by", ""), e.get("by", ""))
+            who = {"script": "the eval script", "human": "Maya", "app": "Maya in the app"}.get(
+                e.get("by", ""), e.get("by", "")
+            )
             reason = f": {e['reason']}" if e.get("reason") else ""
-            row.update(cat="approvals", label="Approved" if allow else "Denied",
-                       html=Markup(f"{'Allowed' if allow else 'Denied'} by {escape(who)}{escape(reason)}"))
+            row.update(
+                cat="approvals",
+                label="Approved" if allow else "Denied",
+                html=Markup(f"{'Allowed' if allow else 'Denied'} by {escape(who)}{escape(reason)}"),
+            )
         elif t == "check":
             probs = e.get("problems") or []
             ok = bool(e.get("ok"))
-            text = "no problems" if ok and not probs else f"{len(probs)} problem{'s' if len(probs) != 1 else ''}"
-            row.update(cat="checks", label="Check", html=Markup(f"<code>{escape(e.get('verifier', ''))}</code> on "
-                       f"{escape(e.get('object_id', ''))}: {escape(text)}"), detail=_pretty(probs) if probs else "", badge="ok" if ok else "error",
-                       badge_text="ok" if ok else "problems")
+            text = (
+                "no problems" if ok and not probs else f"{len(probs)} problem{'s' if len(probs) != 1 else ''}"
+            )
+            row.update(
+                cat="checks",
+                label="Check",
+                html=Markup(
+                    f"<code>{escape(e.get('verifier', ''))}</code> on "
+                    f"{escape(e.get('object_id', ''))}: {escape(text)}"
+                ),
+                detail=_pretty(probs) if probs else "",
+                badge="ok" if ok else "error",
+                badge_text="ok" if ok else "problems",
+            )
         elif t == "signal":
-            row.update(cat="signals", label="Signal", html=Markup(f"<strong>{escape(e.get('kind', ''))}</strong>: {escape(e.get('detail', ''))}"))
+            row.update(
+                cat="signals",
+                label="Signal",
+                html=Markup(f"<strong>{escape(e.get('kind', ''))}</strong>: {escape(e.get('detail', ''))}"),
+            )
         elif t == "stop_check_block":
-            row.update(cat="system", label="Stop check", html=Markup(f"Sent back: {escape(e.get('reason', ''))}"), badge="warn", badge_text="blocked")
+            row.update(
+                cat="system",
+                label="Stop check",
+                html=Markup(f"Sent back: {escape(e.get('reason', ''))}"),
+                badge="warn",
+                badge_text="blocked",
+            )
         elif t == "status":
             st = e.get("status", "")
             reason = f" — {e['reason']}" if e.get("reason") else ""
-            row.update(cat="system", label="Status", html=Markup(f"<span class=\"status status-{escape(st)}\">STATUS: {escape(st)}</span>{escape(reason)}"))
+            row.update(
+                cat="system",
+                label="Status",
+                html=Markup(
+                    f'<span class="status status-{escape(st)}">STATUS: {escape(st)}</span>{escape(reason)}'
+                ),
+            )
         elif t == "usage":
             bits = []
             if e.get("cost_usd") is not None:
@@ -297,7 +382,12 @@ def replay_rows(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 bits.append(f"{float(e['seconds']):.0f} s")
             if e.get("num_turns"):
                 bits.append(f"{e['num_turns']} model turns")
-            row.update(cat="system", label="Usage", html=Markup(escape(" · ".join(bits) or "usage recorded")), tone="quiet")
+            row.update(
+                cat="system",
+                label="Usage",
+                html=Markup(escape(" · ".join(bits) or "usage recorded")),
+                tone="quiet",
+            )
         elif t in ("error", "budget_exceeded"):
             msg = e.get("message") or e.get("which") or ""
             row.update(cat="error", label="Error", html=Markup(escape(f"{e.get('where', '')} {msg}".strip())))
@@ -327,8 +417,13 @@ def replay_stats(events: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def build_env() -> Environment:
-    env = Environment(loader=FileSystemLoader(str(TEMPLATES)), autoescape=True, undefined=Undefined,
-                      trim_blocks=True, lstrip_blocks=True)
+    env = Environment(
+        loader=FileSystemLoader(str(TEMPLATES)),
+        autoescape=True,
+        undefined=Undefined,
+        trim_blocks=True,
+        lstrip_blocks=True,
+    )
     env.filters["md"] = render_md
     env.filters["mdi"] = render_inline
     env.filters["as_list"] = as_list
@@ -341,8 +436,17 @@ def course_manifest(pages: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
     out = []
     for slug in COURSE:
         p = pages[slug]
-        out.append({"slug": slug, "title": p["title"], "label": page_label(p),
-                    "steps": [{"id": str(s["id"]), "title": s["title"], "builds": as_list(s.get("builds"))} for s in p.get("steps") or []]})
+        out.append(
+            {
+                "slug": slug,
+                "title": p["title"],
+                "label": page_label(p),
+                "steps": [
+                    {"id": str(s["id"]), "title": s["title"], "builds": as_list(s.get("builds"))}
+                    for s in p.get("steps") or []
+                ],
+            }
+        )
     return out
 
 
@@ -370,9 +474,16 @@ def build(out: Path | None = None) -> list[Path]:
         p = SITE / path
         events = load_trace(p)
         m = meta.get(p.name, {})
-        return {"id": p.stem, "file": p.name, "title": m.get("title", p.stem), "caption": m.get("caption", ""),
-                "source": m.get("source", "example"), "origin": m.get("origin", ""), "rows": replay_rows(events),
-                "stats": replay_stats(events)}
+        return {
+            "id": p.stem,
+            "file": p.name,
+            "title": m.get("title", p.stem),
+            "caption": m.get("caption", ""),
+            "source": m.get("source", "example"),
+            "origin": m.get("origin", ""),
+            "rows": replay_rows(events),
+            "stats": replay_stats(events),
+        }
 
     out.mkdir(parents=True, exist_ok=True)
     written = []
@@ -380,7 +491,11 @@ def build(out: Path | None = None) -> list[Path]:
         page = pages[slug]
         idx = COURSE.index(slug) if slug in COURSE else None
         prev_slug = COURSE[idx - 1] if idx else ("index" if idx == 0 else None)
-        next_slug = COURSE[idx + 1] if idx is not None and idx + 1 < len(COURSE) else ("setup" if slug == "index" else None)
+        next_slug = (
+            COURSE[idx + 1]
+            if idx is not None and idx + 1 < len(COURSE)
+            else ("setup" if slug == "index" else None)
+        )
         for s in page.get("steps") or []:
             s["_replays"] = [replay(r) for r in as_list(s.get("replay"))]
             s["_run"] = run_commands(s)
