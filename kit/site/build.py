@@ -237,7 +237,7 @@ def replay_rows(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
             if last_turn is not None:
                 rows.append({"divider": f"Turn {turn}"})
             last_turn = turn
-        row: dict[str, Any] = {"agent": agent, "sub": agent != "main", "detail": "", "badge": "", "tone": ""}
+        row: dict[str, Any] = {"agent": agent, "sub": agent != "main", "detail": "", "badge": "", "badge_text": "", "tone": ""}
         if t == "user":
             row.update(cat="messages", label=WHO.get(e.get("source", "maya"), "Maya"), html=_bold(e.get("text", "")), bubble="me")
         elif t == "assistant":
@@ -255,7 +255,7 @@ def replay_rows(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
             out = e.get("output") if ok else (e.get("error") or e.get("output"))
             row.update(cat="tools" if ok else "error", label="Result" if ok else "Failed",
                        html=Markup(f"<code>{escape(e.get('tool', ''))}</code> <span class=\"args\">{escape(_short(out, 120))}</span>"),
-                       detail=_pretty(out), tone="result", badge="ok" if ok else "error")
+                       detail=_pretty(out), tone="result", badge="ok" if ok else "error", badge_text="ok" if ok else "failed")
         elif t == "skill_loaded":
             row.update(cat="skills", label="Skill", html=Markup(f"Loaded the <strong>{escape(e.get('skill', ''))}</strong> skill"))
         elif t == "delegate":
@@ -273,17 +273,18 @@ def replay_rows(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
             who = {"script": "the eval script", "human": "Maya", "app": "Maya in the app"}.get(e.get("by", ""), e.get("by", ""))
             reason = f": {e['reason']}" if e.get("reason") else ""
             row.update(cat="approvals", label="Approved" if allow else "Denied",
-                       html=Markup(f"{'Allowed' if allow else 'Denied'} by {escape(who)}{escape(reason)}"), badge="ok" if allow else "error")
+                       html=Markup(f"{'Allowed' if allow else 'Denied'} by {escape(who)}{escape(reason)}"))
         elif t == "check":
             probs = e.get("problems") or []
             ok = bool(e.get("ok"))
             text = "no problems" if ok and not probs else f"{len(probs)} problem{'s' if len(probs) != 1 else ''}"
             row.update(cat="checks", label="Check", html=Markup(f"<code>{escape(e.get('verifier', ''))}</code> on "
-                       f"{escape(e.get('object_id', ''))}: {escape(text)}"), detail=_pretty(probs) if probs else "", badge="ok" if ok else "error")
+                       f"{escape(e.get('object_id', ''))}: {escape(text)}"), detail=_pretty(probs) if probs else "", badge="ok" if ok else "error",
+                       badge_text="ok" if ok else "problems")
         elif t == "signal":
             row.update(cat="signals", label="Signal", html=Markup(f"<strong>{escape(e.get('kind', ''))}</strong>: {escape(e.get('detail', ''))}"))
         elif t == "stop_check_block":
-            row.update(cat="system", label="Stop check", html=Markup(f"Sent back: {escape(e.get('reason', ''))}"), badge="warn")
+            row.update(cat="system", label="Stop check", html=Markup(f"Sent back: {escape(e.get('reason', ''))}"), badge="warn", badge_text="blocked")
         elif t == "status":
             st = e.get("status", "")
             reason = f" — {e['reason']}" if e.get("reason") else ""
@@ -299,7 +300,7 @@ def replay_rows(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
             row.update(cat="system", label="Usage", html=Markup(escape(" · ".join(bits) or "usage recorded")), tone="quiet")
         elif t in ("error", "budget_exceeded"):
             msg = e.get("message") or e.get("which") or ""
-            row.update(cat="error", label="Error", html=Markup(escape(f"{e.get('where', '')} {msg}".strip())), badge="error")
+            row.update(cat="error", label="Error", html=Markup(escape(f"{e.get('where', '')} {msg}".strip())))
         elif t == "turn_end":
             continue
         else:

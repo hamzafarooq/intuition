@@ -310,8 +310,9 @@ class Session:
         if etype in BROADCAST_ONLY:
             self._broadcast(ev)
             return ev
-        if etype in ("approval_request", "approval_response"):
-            key = (etype, str(ev.get("call_id")))
+        if etype in ("approval_request", "approval_response") or (etype == "signal" and ev.get("kind") == "deny"):
+            # The app and the harness can both report these; keep the first.
+            key = (etype if etype != "signal" else "signal:deny", str(ev.get("call_id") if etype != "signal" else ev.get("object_id")))
             if key in self._seen_approvals:
                 return None
             self._seen_approvals.add(key)

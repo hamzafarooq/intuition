@@ -220,8 +220,17 @@ class TrialContext:
         if sent:
             return sent[-1]
         drafts = [d for d in self.drafts() if addr in {a.lower() for a in d.get("to", [])}]
-        drafts.sort(key=lambda d: (d.get("updated_at") or "", d["id"]))
+        drafts.sort(key=self.draft_recency)
         return drafts[-1] if drafts else None
+
+    def draft_recency(self, d: dict[str, Any]) -> tuple[str, int, int]:
+        """Sort key for "most recently updated". The world clock doesn't move during a run, so every draft's
+        updated_at is the same; the call log orders the writes (last email_draft / email_update_draft /
+        email_send on the draft), then the id's number (dr-10 after dr-2)."""
+        last = max((c.get("seq", 0) for c in self.calls if c.get("ok") and c.get("object_id") == d["id"]
+                    and c.get("tool") in ("email_draft", "email_update_draft", "email_send")), default=0)
+        num = int(m.group(1)) if (m := re.search(r"(\d+)$", d["id"])) else 0
+        return (d.get("updated_at") or "", last, num)
 
     def bookings(self, which: str = "final") -> list[dict[str, Any]]:
         st = self.final if which == "final" else self.initial

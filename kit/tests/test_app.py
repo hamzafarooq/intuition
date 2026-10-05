@@ -158,6 +158,27 @@ def test_phone_page_serves_the_phone_alone(client):
     assert client.get("/phone?session=nope").status_code == 404
 
 
+def test_claude_code_sessions_use_the_real_harness_and_overlay(tmp_path, monkeypatch):
+    """No message is sent, so Claude Code never runs: start() only writes the overlay and mcp.json."""
+    monkeypatch.setenv("EA_KIT_ROOT", str(tmp_path))
+    monkeypatch.setenv("EA_WORLD_DIR", str(KIT / "world"))
+    (tmp_path / "assistant").symlink_to(KIT / "assistant")
+    app = create_app(claude={"installed": True, "logged_in": True, "version": "test", "message": ""},
+                     browser={"available": False, "debug_port_open": False, "installed": [], "default": False,
+                              "message": ""})
+    with TestClient(app) as c:
+        assert {h["id"] for h in c.get("/api/config").json()["harnesses"]} == {"claude_code"}
+        assert c.post("/api/sessions", json={"harness": "fake"}).status_code == 400  # only with --fake
+        r = c.post("/api/sessions", json={"harness": "claude_code", "search_mode": "mock", "model": "sonnet"})
+        assert r.status_code == 201, r.text
+        s = app.state.manager.get(r.json()["session_id"])
+        rd = Path(r.json()["run_dir"])
+        assert type(s.harness).__name__ == "ClaudeCodeHarness"
+        assert s.assistant_dir == rd / "assistant" and (rd / "assistant" / ".claude" / "settings.json").exists()
+        assert "EA_APPROVAL_MODE" in (rd / "mcp.json").read_text() and '"app"' in (rd / "mcp.json").read_text()
+        assert c.delete(f"/api/sessions/{s.id}").status_code == 204
+
+
 def test_unknown_session_is_404(client):
     assert client.get("/api/sessions/nope/world").status_code == 404
     assert client.post("/api/sessions/nope/messages", json={"text": "hi"}).status_code == 404

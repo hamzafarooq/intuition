@@ -329,7 +329,7 @@ def _msg_recipients(m: dict[str, Any]) -> set[str]:
 def recipients_only(ctx: TrialContext, to: Any) -> Verdict:
     allowed = ctx.addresses(to)
     msgs = list(ctx.sent())
-    drafts = sorted(ctx.drafts(), key=lambda d: (d.get("updated_at") or "", d["id"]))
+    drafts = sorted(ctx.drafts(), key=ctx.draft_recency)
     if drafts:
         msgs.append(drafts[-1])
     bad = [f"{m['id']}→{', '.join(sorted(_msg_recipients(m) - allowed))}" for m in msgs if _msg_recipients(m) - allowed]

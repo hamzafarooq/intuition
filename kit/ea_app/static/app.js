@@ -66,8 +66,13 @@
   const CONN_ICON = { email: "mail", calendar: "calendar", contacts: "people", docs: "doc", web: "globe", travel: "plane" };
   const STATUS_LABEL = { done: "Done", partial: "Partly done", failed: "Failed", waiting: "Waiting on you", missing: "No status" };
   const STATUS_RE = /^[ \t]*\**STATUS:\**\s*(done|partial|failed|waiting)\b\s*(?:[—–-]\s*(.*))?$/gim;
-  const groupOf = (e) => { const c = CAT[e.type] || "system"; return c === "error" ? "system" : c; };
-  const catOf = (e) => (e.type === "tool_result" && e.ok === false) || (e.type === "check" && e.ok === false) ? "error" : (CAT[e.type] || "system");
+  const isBrowserTool = (e) => (e.type === "tool_call" || e.type === "tool_result") && (e.server === "browser" || /^browser\./.test(e.tool || ""));
+  const groupOf = (e) => { if (isBrowserTool(e)) return "browser"; const c = CAT[e.type] || "system"; return c === "error" ? "system" : c; };
+  const siteHold = (e) => e.hold_id || e.data?.hold_id || e.data?.hold || "";
+  const siteTotal = (e) => e.total_usd ?? e.data?.total_usd ?? e.data?.total ?? null;
+  const siteWhere = (e) => e.url || e.path || "";
+  const stepNote = (e) => (e.action === "blocked" || e.action === "screenshot_saved") && e.detail ? String(e.detail) : "";
+  const catOf = (e) => (e.type === "tool_result" && e.ok === false) || (e.type === "check" && e.ok === false) ? "error" : isBrowserTool(e) ? "browser" : (CAT[e.type] || "system");
 
   // ------------------------------------------------------------------ time
 
@@ -190,8 +195,8 @@
       }
       case "stop_check_block": return `Stop check blocked the reply: <span class="sub">${esc(e.reason)}</span>`;
       case "signal": return `<b>${esc(e.kind)}</b> ${esc(e.detail || "")}`;
-      case "browser_step": return `${a}<b>${esc((e.action || e.tool || "step").replace(/_page$/, ""))}</b> <span class="sub">${esc(clip(e.url || "", 90))}${e.target ? " · " + esc(e.target) : ""}${e.value ? " · “" + esc(e.value) + "”" : ""}</span>`;
-      case "site_event": return `${a}<b>${esc(e.kind || e.event || "event")}</b> <span class="sub">${esc(e.site || "")} ${esc(e.hold_id || "")}${e.total_usd != null ? " · $" + esc(e.total_usd) : ""} ${esc(clip(e.url || "", 60))}</span>`;
+      case "browser_step": return `${a}<b${e.action === "blocked" ? ' class="bad"' : ""}>${esc((e.action || e.tool || "step").replace(/_page$/, "").replace(/_/g, " "))}</b> <span class="sub">${esc(clip(e.url || "", 90))}${e.target ? " · " + esc(e.target) : ""}${e.value ? " · “" + esc(clip(e.value, 60)) + "”" : ""}${stepNote(e) ? " · " + esc(clip(stepNote(e), 140)) : ""}</span>`;
+      case "site_event": return `${a}<b>${esc(e.kind || e.event || "event")}</b> <span class="sub">${esc(e.site || "")} ${esc(siteHold(e))}${siteTotal(e) != null ? " · $" + esc(siteTotal(e)) : ""} ${esc(clip(siteWhere(e), 60))}</span>`;
       case "user": return `${e.source && e.source !== "maya" ? `<span class="agent-tag">${esc(e.source)}</span>` : ""}${esc(clip(e.text, 240))}`;
       case "assistant": return `${a}${esc(clip(plain(splitStatus(e.text).body), 240))}`;
       case "thinking_summary": return `${a}<em>${esc(clip(e.text, 240))}</em>`;
@@ -274,8 +279,11 @@
     if (!S.replaying) { if (stick) panel.scrollTop = panel.scrollHeight; else $("#trace-jump").hidden = false; }
   }
   function screenshotPath(e) {
-    const p = e.path || e.screenshot || (e.input && (e.input.filePath || e.input.path));
-    if (typeof p === "string" && /(^|\/)outputs\/browser\/[^/]+$|^browser\/[^/]+$/.test(p)) return p.replace(/^.*?(outputs\/browser\/|browser\/)/, "browser/");
+    if (e.type !== "browser_step") return null;
+    const p = e.path || e.screenshot;
+    // Relative paths are under the run's outputs/. Absolute ones are still in the overlay; a
+    // screenshot_saved step follows once the harness moves the file.
+    if (typeof p === "string" && /^(outputs\/)?browser\/[^/]+$/.test(p)) return p.replace(/^outputs\//, "");
     return null;
   }
   function traceClear() {
@@ -488,10 +496,11 @@
       if (e.type === "approval_request") requests.add(String(e.call_id));
     }
     const handoffs = new Set(events.filter((e) => e.type === "handoff_result").map((e) => (e.text || "").trim()));
+    const stepped = new Set(events.filter((e) => e.type === "browser_step" && e.call_id).map((e) => e.call_id));
     const steps = [];
     for (const e of events) {
       switch (e.type) {
-        case "tool_call": steps.push({ e, res: results.get(e.call_id) }); break;
+        case "tool_call": if (!(isBrowserTool(e) && stepped.has(e.call_id))) steps.push({ e, res: results.get(e.call_id) }); break;
         case "tool_result": if (!calls.has(e.call_id)) steps.push({ e }); break;
         case "approval_request": steps.push({ e, res: responses.get(String(e.call_id)) }); break;
         case "approval_response": if (!requests.has(String(e.call_id))) steps.push({ e }); break;
@@ -548,12 +557,12 @@
       case "signal": main = `<b>${esc(signalLabel(e.kind))}</b>`; sub = esc(e.detail); break;
       case "browser_step": {
         main = `${who}Browser: <b>${esc((e.action || e.tool || "step").replace(/_page$/, "").replace(/_/g, " "))}</b>`;
-        sub = esc(clip(e.url || "", 90)) + (e.target ? " · " + esc(e.target) : "") + (e.value ? " · “" + esc(e.value) + "”" : "");
+        sub = esc(clip(e.url || "", 90)) + (e.target ? " · " + esc(e.target) : "") + (e.value ? " · “" + esc(clip(e.value, 60)) + "”" : "") + (stepNote(e) ? " · " + esc(clip(stepNote(e), 160)) : "");
         const shot = screenshotPath(e);
         if (shot) extra = `<img class="thumb" loading="lazy" alt="Screenshot of ${esc(e.url || "the page")}" src="${esc(outputUrl(shot))}">`;
         break;
       }
-      case "site_event": main = `${who}Site: <b>${esc((e.kind || e.event || "event").replace(/_/g, " "))}</b> ${esc(e.hold_id || "")}${e.total_usd != null ? " · $" + esc(e.total_usd) : ""}`; sub = esc(clip(e.url || "", 90)); break;
+      case "site_event": main = `${who}Site: <b>${esc((e.kind || e.event || "event").replace(/_/g, " "))}</b> ${esc(siteHold(e))}${siteTotal(e) != null ? " · $" + esc(siteTotal(e)) : ""}`; sub = esc([e.site, clip(siteWhere(e), 90)].filter(Boolean).join(" · ")); break;
       case "thinking_summary": main = `${who}<em>${esc(e.text)}</em>`; break;
       case "assistant": main = `${who}said`; sub = esc(splitStatus(e.text).body); break;
       case "user": main = `Note from the ${esc(e.source)}`; sub = esc(e.text); break;

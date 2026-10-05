@@ -372,7 +372,7 @@ code, pre, kbd { font-family: var(--font-mono); }
 .lg::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; background: var(--c); }
 .lg-messages { --c: var(--c-messages); } .lg-tools { --c: var(--c-tools); } .lg-skills { --c: var(--c-skills); } .lg-agents { --c: var(--c-agents); }
 .lg-approvals { --c: var(--c-approvals); } .lg-checks { --c: var(--c-checks); } .lg-signals { --c: var(--c-signals); }
-.timeline { list-style: none; margin: 0; padding: 4px 0; max-height: 620px; overflow-y: auto; overscroll-behavior: contain; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.timeline { position: relative; list-style: none; margin: 0; padding: 4px 0; max-height: 620px; overflow-y: auto; overscroll-behavior: contain; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .tl { --c: var(--c-system); display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 10px; padding: 7px 4px; position: relative; }
 .tl::before { content: ""; position: absolute; left: 12px; top: 0; bottom: 0; width: 1px; background: var(--line); }
 .tl-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--c); margin: 7px 0 0 4px; position: relative; z-index: 1; box-shadow: 0 0 0 3px var(--surface-2); }
