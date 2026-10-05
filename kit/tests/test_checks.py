@@ -10,13 +10,14 @@ from __future__ import annotations
 
 import copy
 import itertools
-import re
 import json
+import re
 import shutil
 from pathlib import Path
 from typing import Any
 
 import pytest
+from fixture_world import FIXTURES, apply_edit, cases, expected, fixture_names, load_case, materialize
 
 from ea_evals.checks import CHECKS, REFERENCES, _times
 from ea_evals.context import TrialContext
@@ -24,7 +25,6 @@ from ea_evals.judge import FakeJudge
 from ea_evals.rubrics import build_reference, grade_trial, load_rubric, resolve
 from ea_harness.trace import parse_status, read_trace
 from ea_world import state as world_state
-from fixture_world import FIXTURES, apply_edit, cases, expected, fixture_names, load_case, materialize
 
 SCRIPT_LINES = {"Yes, go ahead.", "👍", "Hmm, maybe later.", "No, don't do that.", "I'll decide later.",
                 "Use your best judgement.", "Thanks."}

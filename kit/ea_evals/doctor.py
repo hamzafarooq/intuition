@@ -281,8 +281,14 @@ def check_personal_settings() -> Result:
             found.append("user-level hooks in ~/.claude/settings.json")
     except Exception:
         pass
+    try:
+        user_mcp = sorted((json.loads((Path.home() / ".claude.json").read_text()).get("mcpServers") or {}).keys())
+    except Exception:
+        user_mcp = []
+    if user_mcp:
+        found.append(f"personal MCP servers ({', '.join(user_mcp)})")
     if not found:
-        return Result(True, "no personal Claude Code instructions or hooks")
+        return Result(True, "no personal Claude Code instructions, hooks or MCP servers")
     return Result(None, f"{', '.join(found)} present. Eval runs skip them (--setting-sources project,local), but `cd assistant && claude` loads them",
                   "move them aside while you work on the assistant interactively, if they change its behaviour")
 
@@ -316,7 +322,7 @@ def main(argv: list[str] | None = None) -> int:
             r = Result(False, f"check crashed: {exc}", "report this to the instructor")
         show(name, r)
         failed += r.ok is False
-    print(("All good." if not failed else f"{failed} check{'s' if failed != 1 else ''} need attention.") + f" (kit: {paths.kit_root()})")
+    print(("All good." if not failed else f"{failed} check{'s need' if failed != 1 else ' needs'} attention.") + f" (kit: {paths.kit_root()})")
     return 1 if failed else 0
 
 

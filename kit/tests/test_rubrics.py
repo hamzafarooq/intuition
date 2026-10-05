@@ -12,8 +12,18 @@ import yaml
 
 from ea_evals.cases import TYPES
 from ea_evals.checks import CHECKS, REFERENCES
-from ea_evals.rubrics import (AXES, GRADERS, KINDS, LEVELS, TEAM_AXES, all_rubrics, check_items, eval_when, rubrics_dir,
-                              validate_when)
+from ea_evals.rubrics import (
+    AXES,
+    GRADERS,
+    KINDS,
+    LEVELS,
+    TEAM_AXES,
+    all_rubrics,
+    check_items,
+    eval_when,
+    rubrics_dir,
+    validate_when,
+)
 
 RUBRICS = all_rubrics()
 CONTRACT = yaml.safe_load((rubrics_dir() / "_functions.yaml").read_text(encoding="utf-8"))

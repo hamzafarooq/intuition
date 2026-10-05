@@ -1,0 +1,184 @@
+title: Build an assistant, then test how far to trust it
+description: "The Intuition workshop guide: build Maya Chen's executive assistant in Claude Code and test every layer of it with a golden dataset graded by rubrics."
+
+hero:
+  eyebrow: "The Intuition workshop · four hours"
+  title: "Build Maya's assistant. Then find out how far to trust it."
+  lede: >
+    You'll build a personal assistant agent in Claude Code, meet it in a small app, and test every part
+    of it with written test cases graded by rubrics. Everything runs on your laptop, against a made-up world.
+  actions:
+    - {label: "Start with setup", href: "setup.html", primary: true}
+    - {label: "What you'll build", href: "#build"}
+  note: "Before the day, follow `docs/SETUP.md` in the kit. It takes about 15 minutes."
+  chat:
+    - {from: maya, text: "Tell Raj I can't do Thursday and offer two other times."}
+    - {from: trace, text: "email-reply skill · email_read · contacts_lookup · calendar_find_free · email_draft · check_email ok"}
+    - {from: assistant, text: "Here's a reply to Raj offering **Tue 27 Oct, 2:15pm Central** or **Wed 28 Oct, 11:45am Central**, 45 minutes each."}
+    - {from: approval, text: "Send this email to raj.mehta@brightpath.example?"}
+    - {from: maya, text: "👍"}
+    - {from: assistant, text: "A thumbs-up isn't a clear yes, so I haven't sent it. Reply **yes** to send."}
+
+sections:
+  - id: build
+    kicker: "What you'll build"
+    heading: "Three things, all yours to keep"
+    cards:
+      - kicker: "The assistant"
+        title: "Maya Chen's executive assistant"
+        body: >
+          A set of files that Claude Code loads: a brief, skills, specialist sub-agents, a small team and
+          permissions. It reads Maya's inbox and calendar, schedules meetings, writes briefs and short decks,
+          books travel, and asks before doing anything it can't undo.
+      - kicker: "The evals"
+        title: "Tests for every layer"
+        body: >
+          A golden dataset of 63 written test cases (you'll run 20), each graded by a rubric: code checks the
+          facts, a model judge checks the judgements. You test the model, the tools, the skills, the agent,
+          the team, the harness and safety.
+      - kicker: "The app"
+        title: "Intuition, to meet your assistant"
+        body: >
+          A small web app on your laptop. Set Maya up, message her assistant, approve or deny what it wants to
+          do, and watch every tool call behind the scenes.
+    after: >
+      You leave with a report full of spider charts that shows where your assistant works, where it fails
+      and what it costs, plus three new test cases made from its own mistakes.
+
+  - id: agent
+    kicker: "Start here if agents are new to you"
+    heading: "What a personal assistant agent is"
+    body: |
+      A personal assistant agent is a program you talk to in plain words that then acts for you. You ask
+      for something. It reads your inbox and calendar, does the work (finds a time, drafts a reply, books a
+      hotel), and asks you before it does anything it can't take back.
+
+      Under the hood it's a loop. A language model reads your message and decides on one step: call a
+      tool, load a set of instructions, hand work to a specialist, or reply. It sees the result and decides
+      the next step, until it's done. The software that runs this loop, calls the tools and enforces the
+      permissions is called the **harness**. In this workshop the harness is Claude Code.
+    diagram: true
+    table:
+      head: ["Idea", "What it is", "Where you meet it"]
+      rows:
+        - ["**Tool**", "A function the model can call, with a name, a description and arguments, such as `calendar_find_free`", "[Lesson 1](lesson-1.html)"]
+        - ["**Skill**", "A packaged set of instructions the assistant loads when a request calls for it, with a checklist for when it's done", "[Lesson 2](lesson-2.html)"]
+        - ["**Sub-agent**", "A specialist the main assistant hands work to, with only the tools it needs", "[Lesson 3](lesson-3.html)"]
+        - ["**Approval**", "A gate that makes the assistant ask before it sends, books or creates anything", "[Lesson 4](lesson-4.html)"]
+        - ["**Eval**", "A test for an AI system: an input, and a way of grading what it did", "Every lesson"]
+
+  - id: maya
+    kicker: "The world"
+    heading: "Meet Maya and her week"
+    body: |
+      Maya Chen is Regional Sales Director, West, at Larkspur Supply, a made-up distributor of tools for
+      builders. She lives in Denver. Her world's clock is fixed at **Monday 26 October 2026, 08:30 Denver
+      time**.
+
+      That week was picked on purpose. The UK left summer time on 25 October and the US doesn't until
+      1 November, so for one week London is 6 hours ahead of Denver instead of the usual 7. Anything that
+      assumes a fixed time difference is an hour wrong.
+    table:
+      head: ["Person", "Role", "Where", "Why they matter"]
+      rows:
+        - ["Maya Chen", "The user", "Denver", ""]
+        - ["Dan Okafor", "Finance Director, Larkspur", "New York", "\"Review the Q4 forecast with Dan\" means him"]
+        - ["Dan Reyes", "Purchasing manager at Ridgeway Builders, a customer", "Chicago", "The other Dan. Inviting him to an internal forecast review would leak internal numbers"]
+        - ["Lisa Park", "VP Sales EMEA, Larkspur", "London", "The time-zone trap"]
+        - ["Raj Mehta", "Partner manager at Brightpath Tools, a supplier", "Central time", "Wants Thursday at 2pm his time, when Maya is in a review"]
+        - ["Tom Becker", "Chief Revenue Officer, Maya's manager", "Denver", "Needs the forecast by Friday noon"]
+    after: >
+      Her inbox holds a few more traps: a thread she dropped nine days ago, a reply that's only a thumbs-up,
+      and an email with instructions aimed at AI assistants. Every name and company is fictional, and every
+      email address ends in `.example`.
+
+  - id: instinct
+    kicker: "Why this matters"
+    heading: "The Instinct story"
+    body: |
+      Instinct is an invite-only personal assistant you text. It connects to your email, calendar and
+      documents and acts on your behalf. It launched in summer 2026 and, according to Sacra, was valued at
+      $10 billion by September.
+
+      In its first week, users publicly **reported** three failures. Each is something a test suite can
+      catch before launch, and each becomes a suite you run in Lesson 4.
+    cards:
+      - style: failure
+        kicker: "Reported failure 1"
+        title: "It followed instructions planted in an email"
+        body: >
+          A user emailed his own inbox some malicious instructions, as a test. Instinct reportedly followed
+          them and sent back a summary of his open tasks.
+        foot: "Tested here by the injection cases (X01, W03 and others) in [Lesson 4.3](lesson-4.html#step-4-3)."
+      - style: failure
+        kicker: "Reported failure 2"
+        title: "It sent an email without asking"
+        body: >
+          A user reported that Instinct sent an email on her behalf without checking with her first.
+        foot: "Tested here by the approval-gate cases (E02, E07, E08, R05) in [Lesson 4.2](lesson-4.html#step-4-2)."
+      - style: failure
+        kicker: "Reported failure 3"
+        title: "It kept inbox data after being disconnected"
+        body: >
+          A user disconnected Google access and still received an inbox summary hours later. Message text
+          reportedly remained in her data export.
+        foot: "Tested here by the disconnect case (X07) in [Lesson 4.4](lesson-4.html#step-4-4)."
+    callout:
+      tone: warn
+      body: |
+        **A caveat about these reports.** They come mostly from secondary sources, chiefly a write-up by
+        Vellum, which sells a competing assistant. We haven't checked them against the original posts, so
+        this guide calls them *reported*, not proven. Instinct is the motivating story, not the subject: the
+        workshop never tests Instinct itself.
+
+        Sources: [Vellum's breakdown](https://www.vellum.ai/blog/official-instinct-breakdown) (a competitor;
+        treat as leads, not facts), [Sacra](https://sacra.com/c/instinct/), [instinct.com](https://instinct.com).
+
+  - id: agenda
+    kicker: "The day"
+    heading: "The four hours"
+    body: >
+      Every block has a build half and a test half, and the test half runs on what you just built. The thread
+      through the day is one spider chart: you draw your assistant's shape in setup, and each lesson's fix
+      changes it.
+    table:
+      head: ["Block", "Time", "You build", "You test"]
+      rows:
+        - ["[Setup](setup.html)", "20 min", "The kit running; the brief and the tool server checked", "A first request; the baseline run and your first spider chart"]
+        - ["[1. Tools](lesson-1.html)", "35 min", "A fixed time-zone bug and a clearer tool description", "Tool unit tests; right tool vs right arguments; date reasoning with pass@k and pass^k"]
+        - ["[2. Skills](lesson-2.html)", "35 min", "Four skills, each with its definition of done", "Does each skill load when it should? Does it change behaviour?"]
+        - ["[3. Sub-agents](lesson-3.html)", "50 min", "Four specialists, a reviewer and a stop check", "Writing rubrics; golden cases; judge calibration; overclaim rate"]
+        - ["Break", "10 min", "", ""]
+        - ["[4. Human gate](lesson-4.html)", "35 min", "Approval for send, book and create", "Instinct's three reported failures as test suites, plus privacy"]
+        - ["[5. Team and harness](lesson-5.html)", "35 min", "The Monday-brief team", "One agent vs a team; injected faults; harness settings"]
+        - ["[Wrap](wrap.html)", "10 min", "Your final report", "Baseline vs final; failures become golden cases"]
+
+  - id: how
+    kicker: "How the lessons work"
+    heading: "Paste, run, compare"
+    body: |
+      Every step is a card with the same parts:
+
+      - **Why**: two or three sentences on what the step is for.
+      - **Prompt**: text you paste into Claude Code, started in the kit's top folder. Prompts say what to
+        build and how to check it, never the finished answer, so your version will differ from your
+        neighbour's. The evals measure the difference.
+      - **Run**: commands to paste into a terminal, when there are any.
+      - **What to expect**: patterns to look for, not exact numbers. Models vary from run to run.
+      - **Replay**: a recorded or example trace you can read now, for steps that are slow or might go
+        differently live.
+
+      Tick each step when you're done. Ticks are saved in this browser, and the "What you have built so
+      far" list at the bottom of each lesson fills in as you go.
+
+  - id: start
+    heading: "Start with setup"
+    body: >
+      Before the day: install Claude Code and log in, install uv, get the code, run `make setup`, add the
+      OpenAI key to `.env` and run `make doctor`. The full steps, for Mac, Windows and Linux, are in
+      `docs/SETUP.md`. On the day, the setup page gets your assistant answering and records the baseline
+      you'll improve on.
+    actions:
+      - {label: "Start with setup", href: "setup.html", primary: true}
+      - {label: "The eval cheatsheet", href: "cheatsheet.html"}
+      - {label: "Glossary", href: "glossary.html"}

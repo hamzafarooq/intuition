@@ -29,10 +29,10 @@ sys.path.insert(0, str(KIT))
 sys.path.insert(0, str(KIT / "tests"))
 os.environ.pop("EA_KIT_ROOT", None)
 
+import fixture_world as FW  # noqa: E402
 import yaml  # noqa: E402
 from mcp.server.mcpserver.exceptions import ToolError  # noqa: E402
 
-import fixture_world as FW  # noqa: E402
 from ea_evals import variants as V  # noqa: E402
 from ea_evals.cases import load_all  # noqa: E402
 from ea_evals.sim_user import script_line  # noqa: E402
@@ -242,6 +242,8 @@ class Fake:
         trial = FW.materialize(dst, check_dir)
         mismatch = compare_dirs(self.run / "state", trial / "final_state")
         assert not mismatch, f"{self.name}: materialized final state differs: {mismatch}"
+        for d in (self.tmp, check_dir, check_dir0):
+            shutil.rmtree(d, ignore_errors=True)
         print(f"wrote {dst.relative_to(KIT)} ({len(patch)} edits)")
 
 
