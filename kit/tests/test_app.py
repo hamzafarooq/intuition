@@ -179,6 +179,36 @@ def test_claude_code_sessions_use_the_real_harness_and_overlay(tmp_path, monkeyp
         assert c.delete(f"/api/sessions/{s.id}").status_code == 204
 
 
+def _free_port() -> int:
+    import socket
+
+    with socket.socket() as s:
+        s.bind(("127.0.0.1", 0))
+        return s.getsockname()[1]
+
+
+def test_booking_sites_start_with_the_app_and_skip_a_busy_port(tmp_path, monkeypatch):
+    import socket
+
+    monkeypatch.setenv("EA_KIT_ROOT", str(tmp_path))
+    monkeypatch.setenv("EA_WORLD_DIR", str(KIT / "world"))
+    probes = {"claude": {"installed": True, "logged_in": True, "version": "t", "message": ""},
+              "browser": {"available": False, "debug_port_open": False, "installed": [], "default": False, "message": ""}}
+    with socket.socket() as busy:  # another copy already holds the port
+        busy.bind(("127.0.0.1", 0))
+        busy.listen()
+        port = busy.getsockname()[1]
+        app = create_app(lambda name: FakeHarness(delay=0), sites_port=port, **probes)
+        with TestClient(app) as c:
+            assert c.get("/api/config").status_code == 200
+            assert app.state.sites["running"] is False and "busy" in app.state.sites["note"]
+    port = _free_port()
+    app = create_app(lambda name: FakeHarness(delay=0), sites_port=port, **probes)
+    with TestClient(app) as c:
+        assert c.get("/api/config").json()["sites"]["running"] is True
+        socket.create_connection(("127.0.0.1", port), timeout=1).close()
+
+
 def test_unknown_session_is_404(client):
     assert client.get("/api/sessions/nope/world").status_code == 404
     assert client.post("/api/sessions/nope/messages", json={"text": "hi"}).status_code == 404

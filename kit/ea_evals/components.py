@@ -99,9 +99,9 @@ def ask_claude_no_tools(question: str, system: str, model: str) -> tuple[str, fl
     return str(data.get("result", "")), float(data.get("total_cost_usd", 0) or 0)
 
 
-def run_llm_dates(trials: int, model: str, items: str = "workshop", out=print) -> dict[str, Any]:
+def run_llm_dates(trials: int, model: str, items: str = "workshop", out=print, ids: list[str] | None = None) -> dict[str, Any]:
     suite = load_suite("llm_dates")
-    chosen = [i for i in suite["items"] if items == "all" or i.get("workshop")]
+    chosen = [i for i in suite["items"] if (items == "all" or i.get("workshop")) and (not ids or i["id"] in ids)]
     rows = []
     for item in chosen:
         results = []
@@ -187,8 +187,28 @@ def args_match(args: dict[str, Any], spec: dict[str, Any], tool: str) -> bool:
     return True
 
 
+PREFLIGHT = {"clock_now"}  # house rule 11: the assistant checks the clock before anything else
+
+
+def attempted_calls(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Every ea-world call the assistant attempted, in order (approval requests stand in for denied calls)."""
+    seen, out = set(), []
+    for e in events:
+        if e.get("type") == "approval_request" and e.get("call_id") not in seen:
+            seen.add(e.get("call_id"))
+            out.append({"tool": e.get("tool"), "input": e.get("input") or {}})
+        elif e.get("type") == "tool_call" and not e.get("builtin") and e.get("call_id") not in seen and not str(e.get("tool", "")).startswith("browser."):
+            seen.add(e.get("call_id"))
+            out.append({"tool": e.get("tool"), "input": e.get("input") or {}})
+    return out
+
+
 def grade_tool_use(item: dict[str, Any], events: list[dict[str, Any]]) -> dict[str, Any]:
-    first = first_tool_call(events)
+    calls = attempted_calls(events)
+    expected = set(item.get("expected_tools", []))
+    if calls and calls[0]["tool"] in PREFLIGHT and not (expected & PREFLIGHT):
+        calls = [c for c in calls if c["tool"] not in PREFLIGHT] or calls[:0]
+    first = calls[0] if calls else None
     if first is None:
         sel = bool(item.get("allow_no_tool"))
         return {"tool": None, "selection": sel, "arguments": sel}
@@ -205,11 +225,11 @@ def grade_skill(skill: str, events: list[dict[str, Any]]) -> dict[str, Any]:
     return {"loaded": [e.get("skill") for e in loads], "triggered": loaded_first, "loaded_at_all": any(e.get("skill") == skill for e in loads)}
 
 
-def run_tool_use(trials: int, model: str, run_id: str, items: str = "all", out=print) -> dict[str, Any]:
+def run_tool_use(trials: int, model: str, run_id: str, items: str = "all", out=print, ids: list[str] | None = None) -> dict[str, Any]:
     suite = load_suite("tool_use")
     base = results_dir() / run_id
     rows = []
-    for item in suite["items"]:
+    for item in [i for i in suite["items"] if not ids or i["id"] in ids]:
         res = []
         for k in range(1, trials + 1):
             events = asyncio.run(probe(item["request"], base / item["id"] / f"t{k}", model, MAX_TURNS["tool_use"]))
@@ -221,7 +241,7 @@ def run_tool_use(trials: int, model: str, run_id: str, items: str = "all", out=p
             "selection_accuracy": sum(r["selection"] for r in rows) / len(rows), "argument_accuracy": sum(r["arguments"] for r in rows) / len(rows)}
 
 
-def run_skill_triggers(trials: int, model: str, run_id: str, skill: str | None = None, out=print) -> dict[str, Any]:
+def run_skill_triggers(trials: int, model: str, run_id: str, skill: str | None = None, out=print, ids: list[str] | None = None) -> dict[str, Any]:
     suite = load_suite("skill_triggers")["skills"]
     base = results_dir() / run_id
     per_skill = {}
@@ -231,7 +251,7 @@ def run_skill_triggers(trials: int, model: str, run_id: str, skill: str | None =
         tp = fn = fp = tn = 0
         rows = []
         for group, items in (("should", sets["should"]), ("should_not", sets["should_not"])):
-            for item in items:
+            for item in [i for i in items if not ids or i["id"] in ids]:
                 for k in range(1, trials + 1):
                     events = asyncio.run(probe(item["text"], base / name / item["id"] / f"t{k}", model, MAX_TURNS["skill_triggers"]))
                     g = grade_skill(name, events)
@@ -242,18 +262,21 @@ def run_skill_triggers(trials: int, model: str, run_id: str, skill: str | None =
                         fp, tn = fp + hit, tn + (not hit)
                     rows.append({"id": item["id"], "group": group, "text": item["text"], "trial": k, **g})
                 out(f"  {name} {item['id']} ({group}): {'loaded' if rows[-1]['loaded_at_all'] else 'not loaded'}")
+        if not rows:
+            continue
         per_skill[name] = {"precision": tp / (tp + fp) if tp + fp else None, "recall": tp / (tp + fn) if tp + fn else None,
                            "tp": tp, "fn": fn, "fp": fp, "tn": tn, "rows": rows}
     return {"suite": "skill_triggers", "skills": per_skill}
 
 
-def run_component(name: str, trials: int, model: str, run_id: str, skill: str | None = None, items: str = "workshop", out=print) -> Path:
+def run_component(name: str, trials: int, model: str, run_id: str, skill: str | None = None, items: str = "workshop", out=print,
+                  ids: list[str] | None = None) -> Path:
     if name == "llm_dates":
-        result = run_llm_dates(trials, model, items, out)
+        result = run_llm_dates(trials, model, items, out, ids)
     elif name == "tool_use":
-        result = run_tool_use(trials, model, run_id, items, out)
+        result = run_tool_use(trials, model, run_id, items, out, ids)
     elif name == "skill_triggers":
-        result = run_skill_triggers(trials, model, run_id, skill, out)
+        result = run_skill_triggers(trials, model, run_id, skill, out, ids)
     else:
         raise ValueError(f"Unknown component suite '{name}'")
     d = results_dir() / run_id

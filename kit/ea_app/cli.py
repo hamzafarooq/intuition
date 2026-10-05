@@ -47,13 +47,24 @@ def _parser(prog: str, start: bool) -> argparse.ArgumentParser:
     return p
 
 
+def load_env() -> None:
+    """Read kit/.env into the environment (SERPAPI_API_KEY, OPENAI_API_KEY, ...). Values are never printed."""
+    try:
+        from ea_evals.env import load_dotenv
+    except ImportError:
+        return
+    path = load_dotenv()
+    if path:
+        print(f"Settings: read {path.name}")
+
+
 def serve(host: str, port: int, open_browser: bool, fake: bool, log_level: str = "warning") -> None:
     import uvicorn
 
     from .server import create_app
 
     logging.basicConfig(level=log_level.upper(), format="%(asctime)s %(name)s %(levelname)s %(message)s")
-    app = create_app(fake=fake)
+    app = create_app(fake=fake, sites_port=int(os.environ.get("EA_SITES_PORT", "8766")))
     url = f"http://{'localhost' if host in ('127.0.0.1', '0.0.0.0') else host}:{port}"
     print(_color("1", f"{app.state.app_name} is running at {url}") + ("  (scripted demo harness)" if fake else ""))
     print("Press Ctrl+C to stop.")
@@ -65,6 +76,7 @@ def serve(host: str, port: int, open_browser: bool, fake: bool, log_level: str =
 
 def main(argv: list[str] | None = None) -> None:
     args = _parser("ea-app", start=False).parse_args(argv)
+    load_env()
     if not checks.port_free(args.host, args.port):
         bad(f"Port {args.port} is in use.", f"uv run ea-app --port {args.port + 35}")
         sys.exit(1)
@@ -75,6 +87,7 @@ def start(argv: list[str] | None = None) -> None:
     """Quick checks (Claude Code present and logged in, port free), then the app."""
     args = _parser("ea-start", start=True).parse_args(argv)
     print(_color("1", "Checking your setup"))
+    load_env()
     c = checks.claude_status()
     ready = True
     if not c["installed"]:

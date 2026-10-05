@@ -417,17 +417,18 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 
 .hero-float { display: grid; place-items: center; will-change: transform; }
 .hero-shadow {
-  width: 270px; height: 560px; border-radius: 60px; background: rgb(40 26 12 / .34); filter: blur(34px);
+  width: 280px; height: 580px; border-radius: 60px; background: rgb(40 26 12 / .42); filter: blur(30px);
   transform: translate3d(22px, 40px, 0) scale(.92); will-change: transform; pointer-events: none;
 }
 .sheen {
   position: absolute; inset: -30% -70%; z-index: 7; pointer-events: none; will-change: transform;
-  background: linear-gradient(104deg, transparent 40%, rgb(255 255 255 / .17) 47.5%, rgb(255 255 255 / .05) 52%, transparent 58%);
+  background: linear-gradient(104deg, transparent 38%, rgb(255 255 255 / .24) 47%, rgb(255 255 255 / .07) 52%, transparent 60%);
   transform: translate3d(-4%, 0, 0);
 }
 :root[data-theme="dark"] .sheen { opacity: .55; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .sheen { opacity: .55; } }
 
+.demo .row, .demo .row.first { margin-top: 6px; }
 .demo .slot { display: grid; }
 .demo .slot > .row { grid-area: 1 / 1; }
 .demo .slot > .row.d-tmp { align-self: start; }

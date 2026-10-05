@@ -335,3 +335,105 @@ def test_slices_trial_total_matches_its_comment():
         plan, trials, _ = slice_plan(name)
         total += len(plan) * trials
     assert total == int(m.group(2)) == sum(int(x) for x in m.group(1).split("+"))
+
+
+# ---------------------------------------------------------------- fill values point at real things
+
+
+_WORLD: dict[tuple[str, ...], dict[str, Any]] = {}
+
+
+def world(case: dict[str, Any]) -> dict[str, Any]:
+    """The case's initial world (variants applied), loaded once per variant set."""
+    key = tuple(case["world"]["variants"])
+    if key not in _WORLD:
+        import tempfile
+
+        from ea_world import verifiers
+
+        d = Path(tempfile.mkdtemp(prefix="golden-")) / "t"
+        world_state.init_run_dir(d, list(key))
+        st = world_state.State(d)
+        _WORLD[key] = {
+            "emails": {e["id"] for e in st.load("inbox")["emails"]},
+            "events": {e["id"] for e in st.load("calendars")["maya"]},
+            "contacts": {c["id"] for c in st.load("contacts")["contacts"]},
+            "addresses": {c["email"] for c in st.load("contacts")["contacts"]},
+            "options": {o["id"] for o in st.load("flights")["flights"] + st.load("hotels")["hotels"] + st.load("restaurants")["restaurants"]},
+            "bookings": {b["id"] for b in st.load("bookings")["bookings"]},
+            "docs": {x["id"] for x in st.load("docs")["docs"]},
+            "text": "\n".join(verifiers.source_texts(st, d)),
+        }
+        shutil.rmtree(d.parent, ignore_errors=True)
+    return _WORLD[key]
+
+
+def _ids(v: Any) -> list[str]:
+    return [x for x in (v if isinstance(v, list) else [v]) if isinstance(x, str)] if v is not None else []
+
+
+@pytest.mark.parametrize("cid", sorted(CASES))
+def test_fill_references_exist(cid: str):
+    from ea_evals.context import phrase_matches
+    from ea_world.timeutil import parse_dt
+
+    case = CASES[cid]
+    f, w = case["fill"], world(case)
+    gold_refs = set(yaml.safe_load((world_dir() / "gold" / "email_refs.json").read_text(encoding="utf-8")))
+    for key in ("needs_today", "must_include", "ignorable", "not_ignorable", "flag"):
+        for e in _ids(f.get(key)):
+            assert e in w["emails"], f"{cid}: fill.{key} names unknown email {e}"
+            if key != "flag":
+                assert e in gold_refs, f"{cid}: {e} has no gold/email_refs.json entry, so mentions_emails can't find it"
+    if f.get("min_recall") is not None:
+        assert 0 < f["min_recall"] <= len(f["needs_today"])
+    for key in ("event_id", "confirm_event"):
+        if f.get(key):
+            assert f[key] in w["events"], f"{cid}: fill.{key} {f[key]} isn't in Maya's calendar"
+    for key in ("invitees", "never_invite", "add_attendee", "no_event_attendee", "routed_to_people"):
+        for p in _ids(f.get(key)):
+            assert p in w["contacts"], f"{cid}: fill.{key} names unknown contact {p}"
+    for p in _ids(f.get("to")):
+        assert p in w["contacts"] or p in w["addresses"], f"{cid}: fill.to {p} isn't a contact"
+    for o in _ids(f.get("good_options")):
+        assert o in w["options"], f"{cid}: unknown option {o}"
+    for item in f.get("expected") or [] if isinstance(f.get("expected"), list) else []:
+        assert item.get("kind") in ("flight", "hotel", "restaurant"), item
+        assert ("count" in item) != ("min" in item or "max" in item), item
+        for o in _ids(item.get("option_id")):
+            assert o in w["options"], f"{cid}: unknown option {o}"
+        if item.get("traveler"):
+            assert item["traveler"] in w["contacts"]
+    if f.get("cancel"):
+        assert f["cancel"] in w["bookings"], f"{cid}: fill.cancel {f['cancel']} isn't an initial booking"
+    for key in ("valid_starts", "valid_alternatives"):
+        for t in _ids(f.get(key)):
+            parse_dt(t)  # ISO with an offset
+    for a, b in f.get("valid_ranges") or []:
+        assert parse_dt(a) <= parse_dt(b)
+    for key in ("arrive_by",):
+        if f.get(key):
+            parse_dt(f[key])
+    for key in ("exclude_days", "valid_days", "no_event_date", "to_date"):
+        for d in _ids(f.get(key)):
+            assert re.fullmatch(r"2026-\d{2}-\d{2}", d), f"{cid}: fill.{key} {d}"
+    # grounded facts must be findable in the world, or they could never be matched by a grounded answer
+    for key in ("facts", "web_facts"):
+        for p in f.get(key) or []:
+            re.compile(p)
+            assert phrase_matches(p, w["text"]), f"{cid}: fill.{key} {p!r} isn't in any world source"
+    for key in ("must_say", "also_mention", "must_cover_patterns", "attack_targets"):
+        for p in f.get(key) or []:
+            re.compile(p)
+    if "must_cover" in f:
+        assert len(f["must_cover"]) == len(f["must_cover_patterns"])
+        for item, p in zip(f["must_cover"], f["must_cover_patterns"], strict=True):
+            assert phrase_matches(p, item), f"{cid}: must_cover pattern {p!r} doesn't match its own item {item!r}"
+    for target in f.get("attack_targets") or []:
+        assert target in json_targets(), f"{cid}: attack target {target} isn't in gold/injection_targets.json"
+
+
+def json_targets() -> set[str]:
+    import json
+
+    return set(json.loads((world_dir() / "gold" / "injection_targets.json").read_text(encoding="utf-8"))["targets"])

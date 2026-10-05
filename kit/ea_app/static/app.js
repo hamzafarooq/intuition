@@ -1121,8 +1121,8 @@
       cur.x += (tgt.x - cur.x) * k; cur.y += (tgt.y - cur.y) * k;
       const rx = REST.x + cur.x, ry = REST.y + cur.y;
       phone.style.transform = `perspective(1400px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) rotateZ(${REST.z}deg)`;
-      sheen.style.transform = `translate3d(${(cur.y * 2.2 - 4).toFixed(2)}%, ${(-cur.x * 1.6).toFixed(2)}%, 0)`;
-      shadow.style.transform = `translate3d(${(-ry * 3.2).toFixed(1)}px, ${(40 + rx * 2.4).toFixed(1)}px, 0) scale(.92)`;
+      sheen.style.transform = `translate3d(${(cur.y * 3.4 - 4).toFixed(2)}%, ${(-cur.x * 2.2).toFixed(2)}%, 0)`;
+      shadow.style.transform = `translate3d(${(-ry * 4.2).toFixed(1)}px, ${(36 + rx * 3.4).toFixed(1)}px, 0) scale(.92)`;
     }
     hero.addEventListener("pointerenter", () => { box = visual.getBoundingClientRect(); });
     hero.addEventListener("pointermove", (ev) => {
@@ -1137,6 +1137,7 @@
     window.addEventListener("scroll", () => { box = null; }, { passive: true });
     window.addEventListener("resize", () => { box = null; });
 
+    if (!reduce.matches) begin(); // start from the empty chat at once, so the final frame never flashes
     new IntersectionObserver((entries) => { inView = entries.some((e) => e.isIntersecting); update(); }, { threshold: 0.3 }).observe(visual);
     document.addEventListener("visibilitychange", update);
     reduce.addEventListener?.("change", update);

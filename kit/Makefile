@@ -31,6 +31,7 @@ smoke:
 
 start:
 	$(UV) run python -m ea_evals.doctor --quick
+	@[ "$$EA_BROWSER" = "off" ] || $(UV) run python tools/browser.py || true
 	$(UV) run ea-start
 
 app:

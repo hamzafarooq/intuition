@@ -1,4 +1,4 @@
-# Expected verdicts for this fixture (tests/test_checks.py). Generated with its trace; edit both together.
+# Expected verdicts for this fixture (tests/test_checks.py). Written with the trace by tests/make_fixture_traces.py.
 # s01-good: correct slot, checks run, local times right. Every applicable criterion passes.
 all_yes: true
 criteria: {}

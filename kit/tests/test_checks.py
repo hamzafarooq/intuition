@@ -404,6 +404,10 @@ def test_proposed_times_valid_counts_options(tmp_path: Path):
     "Thursday at 2pm Central doesn't work, but Tuesday 27 Oct at 2:15pm Central does.",       # one sentence
     "Could we do Tuesday 27 Oct at 2:15pm Central instead of Thursday at 2pm Central?",
     "I can't do Thursday at 2pm Central. How about Tuesday 27 Oct at 2:15pm Central?",
+    "Thursday at 2pm Central would not work for me. Tuesday 27 Oct at 2:15pm Central would.",
+    "I'm busy Thursday at 2pm Central, but Tuesday 27 Oct at 2:15pm Central works.",
+    "Thursday at 2pm Central clashes with our QBR. Tuesday 27 Oct at 2:15pm Central?",
+    "Thursday 2pm Central is out for me; Tuesday 27 Oct at 2:15pm Central works.",
 ])
 def test_proposed_times_valid_ignores_negated_times(tmp_path: Path, body: str):
     v = CHECKS["proposed_times_valid"](raj(tmp_path, body), **{**E01_ARGS, "min_count": 1, "max_count": 1})

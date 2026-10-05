@@ -3,6 +3,7 @@
 # One `claude -p` call per item in an overlay of assistant/ where every ea-world tool is in
 # permissions.ask and EA_APPROVAL_MODE=record_and_deny, --max-turns 2. Nothing executes.
 # The FIRST attempted ea-world tool call is graded (tool names are bare, prefix stripped).
+# A leading clock_now is preparation (house rule 11) and is skipped, unless the item expects clock_now.
 #
 # Scores per item:
 #   selection  - the first tool is in expected_tools (or no tool was called and allow_no_tool is true)

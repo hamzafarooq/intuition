@@ -164,7 +164,8 @@ def cmd_component(args: argparse.Namespace) -> int:
     from .components import run_component
 
     run_id = args.run_id or _run_id(f"component-{args.suite}")
-    path = run_component(args.suite, args.trials, args.claude_model or os.environ.get("EA_CLAUDE_MODEL", "opus"), run_id, args.skill, args.items)
+    ids = [i.strip() for i in (args.ids or "").split(",") if i.strip()] or None
+    path = run_component(args.suite, args.trials, args.claude_model or os.environ.get("EA_CLAUDE_MODEL", "opus"), run_id, args.skill, args.items, ids=ids)
     data = json.loads(path.read_text())
     keys = [k for k in data if k.startswith("pass") or k.endswith("accuracy")]
     print(f"\n{args.suite}: " + ", ".join(f"{k} {data[k]:.0%}" for k in keys if isinstance(data[k], (int, float))))
@@ -245,6 +246,7 @@ def build_parser() -> argparse.ArgumentParser:
     co.add_argument("--trials", type=int, default=1)
     co.add_argument("--skill", default=None)
     co.add_argument("--items", default="workshop", choices=["workshop", "all"])
+    co.add_argument("--ids", default="", help="only these item ids, comma-separated")
     co.add_argument("--claude-model", "--model", dest="claude_model", default=None)
     co.add_argument("--run-id", default=None)
     co.add_argument("--variant", action="append", default=[])

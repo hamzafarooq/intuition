@@ -23,6 +23,7 @@ import logging
 import mimetypes
 import os
 import re
+import threading
 import urllib.parse
 from collections.abc import AsyncIterator, Callable
 from pathlib import Path
@@ -96,8 +97,12 @@ def create_app(
     claude: dict[str, Any] | Callable[[], dict[str, Any]] | None = None,
     browser: dict[str, Any] | Callable[[], dict[str, Any]] | None = None,
     app_name: str | None = None,
+    sites_port: int | None = None,
 ) -> Starlette:
-    """Build the app. Tests pass a `harness_factory` (and `claude=`/`browser=` dicts to skip the probes)."""
+    """Build the app. Tests pass a `harness_factory` (and `claude=`/`browser=` dicts to skip the probes).
+    With `sites_port`, the mock booking sites (`ea_sites`) also run on 127.0.0.1:<port> in a background
+    thread, unless that port is already taken (another copy is running); they read runs/CURRENT, which
+    every app session writes."""
     name = app_name or os.environ.get("APP_NAME", "").strip() or "Intuition"
     manager = SessionManager(harness_factory)
     fake_enabled = fake or harness_factory is not None
@@ -185,6 +190,7 @@ def create_app(
             "suggestions": SUGGESTIONS,
             "extra_suggestions": FAKE_EXTRA_SUGGESTIONS if fake_enabled else [],
             "fake": fake,
+            "sites": dict(sites),
         })
 
     # ------------------------------------------------------------ sessions
@@ -398,10 +404,39 @@ def create_app(
 
     # ------------------------------------------------------------ app
 
+    sites: dict[str, Any] = {"running": False, "port": sites_port, "note": "not started"}
+
+    async def start_sites() -> Any:
+        if not sites_port:
+            return None
+        if checks.port_in_use(sites_port):
+            sites["note"] = f"port {sites_port} is busy; using the booking sites already running there"
+            print(f"Booking sites: {sites['note']}.", flush=True)
+            return None
+        import uvicorn
+
+        from ea_sites.server import create_app as create_sites
+
+        server = uvicorn.Server(uvicorn.Config(create_sites(), host="127.0.0.1", port=sites_port,
+                                               log_level="warning", lifespan="off"))
+        threading.Thread(target=server.run, name="ea-sites", daemon=True).start()
+        for _ in range(40):  # up to 2 s
+            if server.started:
+                break
+            await asyncio.sleep(0.05)
+        sites["running"] = bool(server.started)
+        sites["note"] = (f"running at http://skyway.localhost:{sites_port}" if server.started
+                         else f"couldn't start on port {sites_port}")
+        print(f"Booking sites: {sites['note']}.", flush=True)
+        return server
+
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette) -> AsyncIterator[None]:
+        sites_server = await start_sites()
         yield
         await manager.close_all()
+        if sites_server is not None:
+            sites_server.should_exit = True
 
     routes: list[Any] = [
         Route("/", index),
@@ -427,4 +462,5 @@ def create_app(
     app = Starlette(routes=routes, lifespan=lifespan)
     app.state.manager = manager
     app.state.app_name = name
+    app.state.sites = sites
     return app

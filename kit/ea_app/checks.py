@@ -79,6 +79,15 @@ def port_free(host: str, port: int) -> bool:
     return True
 
 
+def port_in_use(port: int, host: str = "127.0.0.1") -> bool:
+    """Something already accepts connections there (another copy of the app or the sites)."""
+    try:
+        with socket.create_connection((host, port), timeout=0.3):
+            return True
+    except OSError:
+        return not port_free(host, port)
+
+
 def debug_port_answers(port: int = 9222, timeout: float = 0.6) -> bool:
     try:
         with urllib.request.urlopen(f"http://127.0.0.1:{port}/json/version", timeout=timeout) as r:
