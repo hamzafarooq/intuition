@@ -614,12 +614,16 @@ def local_times_correct(ctx: TrialContext, scope: str, to: str | None = None) ->
         if any(abs((inst - k).total_seconds()) < 60 for k in known):
             continue
         day = inst.date()
+        near = []
         for k in known:
             kl = k.astimezone(ZoneInfo(tz))
             diff = (inst - k).total_seconds() / 3600
             if kl.date() == day and diff != 0 and float(diff).is_integer() and abs(diff) <= 3:
-                wrong.append(f"'{m.raw}' should be {kl:%H:%M} {tz}")
-                break
+                near.append((abs(diff), kl))
+        if near:  # name the nearest known instant as the likely intended one (this run's events first)
+            ours = {parse_dt(e["start"]) for e in ctx.created_events()} | {parse_dt(e["end"]) for e in ctx.created_events()}
+            best = min(near, key=lambda x: (x[0], x[1] not in ours))[1]
+            wrong.append(f"'{m.raw}' should be {best:%H:%M} {tz}")
     return Verdict.of(not wrong, f"{labelled} labelled times, none wrong", "; ".join(wrong[:3]))
 
 

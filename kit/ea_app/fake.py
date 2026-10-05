@@ -29,8 +29,20 @@ from typing import Any
 from zoneinfo import ZoneInfo
 
 from ea_harness.base import RunConfig, TurnResult, Usage
-from ea_world import approvals, core, state
-from ea_world import calendar, connectors, contacts, docs, email, outputs, travel, verifiers, web  # noqa: F401
+from ea_world import (  # noqa: F401
+    approvals,
+    calendar,
+    connectors,
+    contacts,
+    core,
+    docs,
+    email,
+    outputs,
+    state,
+    travel,
+    verifiers,
+    web,
+)
 
 STATUS_RE = re.compile(r"^STATUS:\s*(done|partial|failed|waiting)\b\s*(?:[—-]\s*(.*))?$", re.MULTILINE)
 NOTE_RE = re.compile(r"^\[Intuition app:.*\]\s*$", re.MULTILINE)

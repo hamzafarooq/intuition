@@ -1,7 +1,7 @@
 ---
 name: travel
 description: "Finds travel and restaurant options within policy. Use for trips and dinners."
-tools: mcp__ea-world__clock_now, mcp__ea-world__docs_search, mcp__ea-world__docs_read, mcp__ea-world__email_search, mcp__ea-world__email_read, mcp__ea-world__calendar_list, mcp__ea-world__contacts_lookup, mcp__ea-world__travel_search, mcp__ea-world__restaurant_search, mcp__ea-world__holds_list, mcp__browser__new_page, mcp__browser__navigate_page, mcp__browser__select_page, mcp__browser__list_pages, mcp__browser__take_snapshot, mcp__browser__click, mcp__browser__fill, mcp__browser__fill_form, mcp__browser__press_key, mcp__browser__hover, mcp__browser__wait_for, mcp__browser__take_screenshot, mcp__browser__close_page
+tools: mcp__ea-world__clock_now, mcp__ea-world__docs_search, mcp__ea-world__docs_read, mcp__ea-world__email_search, mcp__ea-world__email_read, mcp__ea-world__calendar_list, mcp__ea-world__contacts_lookup, mcp__ea-world__travel_search, mcp__ea-world__restaurant_search, mcp__ea-world__holds_list, mcp__ea-world__bookings_list, mcp__browser__new_page, mcp__browser__navigate_page, mcp__browser__select_page, mcp__browser__list_pages, mcp__browser__take_snapshot, mcp__browser__click, mcp__browser__fill, mcp__browser__fill_form, mcp__browser__press_key, mcp__browser__hover, mcp__browser__wait_for, mcp__browser__take_screenshot, mcp__browser__close_page
 model: inherit
 ---
 

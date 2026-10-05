@@ -234,7 +234,7 @@ def port_free(port: int) -> bool:
 def check_port(port: int = 8765) -> Result:
     if port_free(port):
         return Result(True, f"port {port} is free")
-    return Result(False, f"port {port} is in use", f"stop whatever uses it, or run uv run ea-app --port 8800")
+    return Result(False, f"port {port} is in use", "stop whatever uses it, or run uv run ea-app --port 8800")
 
 
 def find_browser() -> str | None:

@@ -26,6 +26,8 @@ Booking, changing or cancelling flights, hotels and restaurant tables. To look u
 10. Confirm: each booking id, what it is, and the total in dollars.
 
 <!-- browser:start -->
+To change or cancel a trip, find Maya's existing bookings with `bookings_list` first; cancel the old booking with `travel_cancel` only after her explicit yes, and never leave two bookings for the same leg.
+
 ## Browser mode
 
 When browser mode is on (see CLAUDE.md), use these steps instead of steps 4–9, then confirm as in step 10:

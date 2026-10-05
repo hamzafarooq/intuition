@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{{ page.title }} · Intuition guide{% endblock %}</title>
+<meta name="description" content="{{ page.description or page.goal or 'The Intuition workshop guide: build an executive assistant, then test how far to trust it.' }}">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='1' y='1' width='30' height='30' rx='9' fill='%231f1b16'/%3E%3Cpath d='M13 13.5h4.2v9.2c0 .9.5 1.3 1.6 1.3' fill='none' stroke='%23f5f0e6' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='16' cy='8.6' r='2.4' fill='%23e3825a'/%3E%3C/svg%3E">
+<script>
+  /* Apply a saved theme before first paint. Storage may be blocked: then follow the system. */
+  (function () { try { var t = localStorage.getItem("intuition-guide:v1:pref:theme"); if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); } catch (e) {} })();
+</script>
+<style>
+{{ css }}
+</style>
+</head>
+<body class="tpl-{{ page.template }} page-{{ slug }}">
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="wordmark" href="index.html" aria-label="Intuition guide: home">
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="9" fill="var(--mark-bg)"/><path d="M13 13.5h4.2v9.2c0 .9.5 1.3 1.6 1.3" fill="none" stroke="var(--mark-ink)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="8.6" r="2.4" fill="var(--mark-dot)"/></svg>
+      <span class="wordmark-text">Intuition</span><span class="wordmark-sub">guide</span>
+    </a>
+    <nav class="nav-main" aria-label="Workshop">
+      {% for s, text in nav %}<a href="{{ s }}.html"{% if s == slug %} aria-current="page"{% endif %}>{{ text }}</a>{% endfor %}
+    </nav>
+    <div class="topbar-right">
+      <details class="menu" data-menu>
+        <summary><span class="menu-wide">Reference</span><span class="menu-narrow">Menu</span></summary>
+        <div class="menu-panel">
+          <div class="menu-course">
+            <a href="index.html"{% if slug == 'index' %} aria-current="page"{% endif %}>Overview</a>
+            {% for s, text in nav %}<a href="{{ s }}.html"{% if s == slug %} aria-current="page"{% endif %}>{{ text }}</a>{% endfor %}
+          </div>
+          <div class="menu-ref">
+            {% for s, text in nav_ref %}<a href="{{ s }}.html"{% if s == slug %} aria-current="page"{% endif %}>{{ text }}</a>{% endfor %}
+          </div>
+        </div>
+      </details>
+      <a class="app-link" href="{{ app_url }}" target="_blank" rel="noopener" title="The Intuition app, after make start">
+        <span class="app-dot" aria-hidden="true"></span><span class="app-long">Open the app</span><span class="app-short">App</span>
+      </a>
+      <button class="icon-btn theme-btn" type="button" data-theme-toggle aria-label="Theme: follows your system. Click to change." title="Theme">
+        <svg class="i-auto" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg>
+        <svg class="i-light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <svg class="i-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 14.6A8 8 0 0 1 9.4 4.5a8 8 0 1 0 10.1 10.1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<p class="storage-note" data-storage-note hidden>Your browser is blocking storage for this page, so ticks won't be remembered after you close it. Everything else works.</p>
+<main id="main">
+{% block main %}{% endblock %}
+</main>
+<footer class="footer">
+  <div class="wrap footer-in">
+    <p><strong>Intuition</strong> workshop guide. Everything in Maya's world is made up and runs on your laptop.</p>
+    <p class="fine">Opens from disk with no network. Your ticks are saved in this browser only. The app runs at <a href="{{ app_url }}" target="_blank" rel="noopener">{{ app_url }}</a> after <code>make start</code>.</p>
+  </div>
+</footer>
+<script type="application/json" id="guide-data">{{ guide_data }}</script>
+<script>
+{{ js }}
+</script>
+</body>
+</html>

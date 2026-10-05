@@ -41,6 +41,6 @@ def promote(run_id: str, case_id: str, harness: str, variant: str, trial: int | 
         f"{case['type']} cases. Failing criteria: " + ("; ".join(failing) if failing else "none (the trial passed)")
     )
     path = drafts / f"{new_id}.yaml"
-    header = f"# Draft golden case promoted from a failing trial. Schema: evals/golden/README.md\n"
+    header = "# Draft golden case promoted from a failing trial. Schema: evals/golden/README.md\n"
     path.write_text(header + yaml.safe_dump(draft, sort_keys=False, allow_unicode=True, width=110), encoding="utf-8")
     return path

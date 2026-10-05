@@ -178,7 +178,7 @@ class StreamMapper:
             self.tool_of[cid] = ("browser", bare, inp)
             self.trace.emit("tool_call", agent=agent, parent_call_id=parent, call_id=cid, tool=f"browser.{bare}", input=inp, server="browser")
             self.trace.emit("browser_step", agent=agent, parent_call_id=parent, call_id=cid, action=bare,
-                            url=inp.get("url", ""), detail=truncate(inp, 300))
+                            url=inp.get("url", ""), target=inp.get("uid", ""), value=inp.get("value", ""), detail=truncate(inp, 300))
             return
         self.tool_of[cid] = ("builtin", name, inp)
         self.trace.emit("tool_call", agent=agent, parent_call_id=parent, call_id=cid, tool=name, input=inp, builtin=True)
@@ -311,15 +311,40 @@ class ClaudeCodeHarness:
             cmd += ["--effort", self.config.effort]
         if self.config.browser:
             cmd += ["--append-system-prompt",
-                    f"Browser mode is on. Save browser screenshots under {self.run_dir}/outputs/browser/ "
+                    f"Browser mode is on. Save browser screenshots under {self.shots_dir()}/ "
                     "(pass that folder to the travel specialist)."]
         cmd += list(self.config.extra_args)
         if self.session_id:
             cmd += ["--resume", self.session_id]
         return cmd
 
+    def shots_dir(self) -> Path:
+        """Where the browser saves screenshots: inside the working directory, the browser MCP's only writable root."""
+        assert self.config
+        d = Path(self.config.assistant_dir) / "outputs" / "browser"
+        d.mkdir(parents=True, exist_ok=True)
+        return d
+
+    def _collect_screenshots(self) -> None:
+        """Move new screenshots into <run_dir>/outputs/browser/, where the app and the report look."""
+        if not (self.config and self.config.browser and self.run_dir):
+            return
+        src = Path(self.config.assistant_dir) / "outputs" / "browser"
+        if not src.exists():
+            return
+        dst = self.run_dir / "outputs" / "browser"
+        dst.mkdir(parents=True, exist_ok=True)
+        for f in src.iterdir():
+            if f.is_file() and time.time() - f.stat().st_mtime > 0.5:  # finished writing
+                target = dst / f.name
+                with contextlib.suppress(OSError):
+                    shutil.move(str(f), str(target))
+                    assert self.trace
+                    self.trace.emit("browser_step", action="screenshot_saved", url="", detail=f.name, path=f"outputs/browser/{f.name}")
+
     def _merge_logs(self) -> None:
         assert self.trace
+        self._collect_screenshots()
         for rec in self.tails["approvals"].read():
             if rec.get("kind") == "request":
                 self.trace.emit("approval_request", call_id=rec.get("call_id"), tool=rec.get("tool"),
@@ -333,7 +358,9 @@ class ClaudeCodeHarness:
             self.trace.emit("stop_check_block", agent=rec.get("agent", "main") if rec.get("hook") == "subagent" else "main",
                             reason=rec.get("reason", ""))
         for rec in self.tails["site"].read():
-            self.trace.emit("site_event", kind=rec.get("type"), site=rec.get("site"), path=rec.get("path"), data=rec.get("data"))
+            data = rec.get("data") or {}
+            self.trace.emit("site_event", kind=rec.get("type"), site=rec.get("site"), path=rec.get("path"),
+                            url=data.get("url", ""), hold_id=data.get("hold_id"), total_usd=data.get("total_usd"), data=data)
         for rec in self.tails["browser"].read():
             if rec.get("decision") == "deny":
                 self.trace.emit("browser_step", action="blocked", url=rec.get("url", ""), detail=rec.get("reason", ""))
@@ -403,6 +430,7 @@ class ClaudeCodeHarness:
                 (self.run_dir / "claude_stderr.log").open("a", encoding="utf-8").write(stderr)
         except Exception as exc:  # never crash the runner
             stopped_by, err = "error", f"Couldn't run claude: {exc}"
+        await asyncio.sleep(0.6)
         self._merge_logs()
         elapsed = time.monotonic() - started
         return self._finish(mapper, stopped_by, err, elapsed)

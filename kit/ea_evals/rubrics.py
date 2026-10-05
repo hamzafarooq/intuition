@@ -128,10 +128,25 @@ def _contains(container: Any, item: Any) -> bool:
         return False
 
 
+_ALLOWED_NODES = (ast.Expression, ast.BoolOp, ast.And, ast.Or, ast.UnaryOp, ast.Not, ast.Compare, ast.Eq, ast.NotEq,
+                  ast.In, ast.NotIn, ast.Name, ast.Load, ast.Attribute, ast.Constant, ast.List, ast.Tuple)
+
+
 def validate_when(expr: str | None) -> None:
-    """Raise if the expression uses anything outside the grammar."""
+    """Raise if the expression uses anything outside the grammar.
+
+    Walks the whole tree, so a disallowed part is caught even where evaluating with empty scopes would
+    short-circuit past it (e.g. the second comparison in `fill.x == 1 < 2`)."""
     if not expr:
         return
+    tree = ast.parse(str(expr), mode="eval")
+    for node in ast.walk(tree):
+        if not isinstance(node, _ALLOWED_NODES):
+            raise ValueError(f"`{ast.unparse(node) if isinstance(node, ast.expr) else type(node).__name__}` isn't allowed in `when`")
+        if isinstance(node, ast.Name) and node.id not in _NAMES and node.id not in ("fill", "maya", "case", "variant"):
+            raise ValueError(f"Unknown name '{node.id}' in `when`")
+        if isinstance(node, ast.Attribute) and not isinstance(node.value, (ast.Name, ast.Attribute)):
+            raise ValueError(f"`{ast.unparse(node)}` isn't allowed in `when`")
     eval_when(expr, {"fill": {}, "maya": {}, "case": {}, "variant": {}})
 
 

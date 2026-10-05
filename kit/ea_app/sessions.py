@@ -29,8 +29,21 @@ from pathlib import Path
 from typing import Any
 
 from ea_harness.base import RunConfig
-from ea_world import approvals, core, paths, state
-from ea_world import calendar, connectors, contacts, docs, email, outputs, travel, verifiers, web  # noqa: F401 (register tools)
+from ea_world import (  # noqa: F401 (register tools)
+    approvals,
+    calendar,
+    connectors,
+    contacts,
+    core,
+    docs,
+    email,
+    outputs,
+    paths,
+    state,
+    travel,
+    verifiers,
+    web,
+)
 from ea_world.state import CONNECTORS
 
 from .views import describe_action

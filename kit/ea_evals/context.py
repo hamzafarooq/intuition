@@ -17,7 +17,7 @@ from ea_world.state import State, read_jsonl
 def normalize(text: str) -> str:
     t = unicodedata.normalize("NFKC", text or "")
     t = t.replace("‘", "'").replace("’", "'").replace("“", '"').replace("”", '"')
-    t = re.sub("[–—−]", "-", t).replace(" ", " ").replace(" ", " ")
+    t = re.sub("[\u2010-\u2015\u2212]", "-", t).replace(" ", " ").replace(" ", " ")  # every Unicode hyphen and dash (U+2010-U+2015), the minus sign; no-break spaces
     return re.sub(r"[ \t]+", " ", t)
 
 

@@ -1,0 +1,20 @@
+{% extends "base.j2" %}
+{% from "_macros.j2" import section %}
+{% block main %}
+<div class="wrap wrap-page">
+  <header class="page-head">
+    {% if page.eyebrow %}<p class="eyebrow">{{ page.eyebrow }}</p>{% endif %}
+    <h1 class="display-2">{{ page.title }}</h1>
+    {% if page.lede %}<p class="lede">{{ page.lede|mdi }}</p>{% endif %}
+    {% if page.toc %}
+    <nav class="page-toc" aria-label="On this page">
+      {% for sec in page.sections if sec.heading %}<a href="#{{ sec.id }}">{{ sec.heading }}</a>{% endfor %}
+    </nav>
+    {% endif %}
+  </header>
+  {% for sec in page.sections %}{{ section(sec) }}{% endfor %}
+  <nav class="pager pager-ref" aria-label="Reference pages">
+    {% for s, text in nav_ref if s != slug %}<a class="pager-link" href="{{ s }}.html"><span class="pager-dir">Reference</span><strong>{{ pages[s].title }}</strong></a>{% endfor %}
+  </nav>
+</div>
+{% endblock %}

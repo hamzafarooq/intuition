@@ -1,0 +1,172 @@
+{# Shared pieces: code blocks with copy buttons, replays, content sections. #}
+
+{% macro codeblock(text, kind="run", label="") -%}
+<div class="code code-{{ kind }}">
+  <button class="copy" type="button" data-copy aria-label="Copy {{ label or kind }}">Copy</button>
+  <pre><code>{{ text }}</code></pre>
+</div>
+{%- endmacro %}
+
+{% macro build_item(text) -%}
+{%- set parts = text.split(" (", 1) -%}
+<code>{{ parts[0] }}</code>{% if parts|length > 1 %} <span class="muted">({{ parts[1] }}</span>{% endif %}
+{%- endmacro %}
+
+{% macro replay(r) -%}
+<details class="replay" id="replay-{{ r.id }}" data-replay>
+  <summary>
+    <span class="replay-kicker">{{ "Recorded run" if r.source == "recorded" else "Example trace" }}</span>
+    <span class="replay-title">{{ r.title }}</span>
+    <span class="replay-meta">
+      {{- r.stats.tool_calls }} tool call{{ "" if r.stats.tool_calls == 1 else "s" }}
+      {%- if r.stats.agents %} · specialists: {{ r.stats.agents|join(", ") }}{% endif %}
+      {%- if r.stats.turns > 1 %} · {{ r.stats.turns }} turns{% endif %}
+      {%- if r.stats.cost %} · ${{ "%.2f"|format(r.stats.cost) }}{% endif %}
+      {%- if r.stats.status %} · ends <span class="status status-{{ r.stats.status }}">{{ r.stats.status }}</span>{% endif -%}
+    </span>
+  </summary>
+  <div class="replay-body">
+    {% if r.caption %}<div class="replay-caption prose">{{ r.caption|md }}</div>{% endif %}
+    <div class="replay-controls">
+      <button class="btn btn-s btn-quiet" type="button" data-play>Play it back</button>
+      <button class="btn btn-s btn-ghost" type="button" data-show-all>Show everything</button>
+      <span class="legend" aria-hidden="true">
+        <span class="lg lg-messages">messages</span><span class="lg lg-tools">tools</span><span class="lg lg-skills">skills</span><span class="lg lg-agents">specialists</span><span class="lg lg-approvals">approvals</span><span class="lg lg-checks">checks</span><span class="lg lg-signals">signals</span>
+      </span>
+    </div>
+    <ol class="timeline" data-timeline>
+      {% for row in r.rows %}
+      {% if row.divider %}
+      <li class="tl-divider"><span>{{ row.divider }}</span></li>
+      {% else %}
+      <li class="tl tl-{{ row.cat }}{{ ' tl-sub' if row.sub }}{{ ' tl-' ~ row.tone if row.tone }}{{ ' tl-bubble tl-' ~ row.bubble if row.bubble }}">
+        <span class="tl-dot" aria-hidden="true"></span>
+        <div class="tl-body">
+          <div class="tl-label">{{ row.label }}{% if row.sub %} <span class="tl-agent">{{ row.agent }}</span>{% endif %}{% if row.badge %} <span class="badge badge-{{ row.badge }}">{{ row.badge_text }}</span>{% endif %}</div>
+          <div class="tl-text">{{ row.html }}</div>
+          {% if row.detail %}<details class="tl-more"><summary>Details</summary><pre>{{ row.detail }}</pre></details>{% endif %}
+        </div>
+      </li>
+      {% endif %}
+      {% endfor %}
+    </ol>
+    {% if r.origin %}<p class="fine replay-origin">{{ r.origin|mdi }}</p>{% endif %}
+  </div>
+</details>
+{%- endmacro %}
+
+{% macro table(t) -%}
+<div class="table-scroll">
+  <table>
+    {% if t.head %}<thead><tr>{% for h in t.head %}<th scope="col">{{ h|mdi }}</th>{% endfor %}</tr></thead>{% endif %}
+    <tbody>
+      {% for row in t.rows %}<tr>{% for cell in row %}<td>{{ cell|mdi }}</td>{% endfor %}</tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{%- endmacro %}
+
+{% macro diagram() -%}
+<figure class="flow" aria-label="How a request flows through the assistant">
+  <div class="flow-node flow-you">
+    <span class="flow-kicker">You</span>
+    <strong>Maya sends a message</strong>
+    <span>"Find 30 minutes with Dan and Lisa this week."</span>
+  </div>
+  <div class="flow-arrow" aria-hidden="true"></div>
+  <div class="flow-node flow-agent">
+    <span class="flow-kicker">The assistant</span>
+    <strong>Claude Code reads its files</strong>
+    <span>A brief (<code>CLAUDE.md</code>), skills, specialist sub-agents and permissions. The model decides what to do next, one step at a time.</span>
+  </div>
+  <div class="flow-arrow" aria-hidden="true"></div>
+  <div class="flow-node flow-tools">
+    <span class="flow-kicker">Tools</span>
+    <strong>The <code>ea-world</code> tool server</strong>
+    <span>Read the calendar, search email, look up contacts, find free time, draft, check.</span>
+    <span class="flow-gate">Send, book, create: <b>asks Maya first</b></span>
+  </div>
+  <div class="flow-arrow" aria-hidden="true"></div>
+  <div class="flow-node flow-world">
+    <span class="flow-kicker">The world</span>
+    <strong>Maya's mock week</strong>
+    <span>Inbox, calendar, contacts, documents, flights and hotels. All made up, all on your laptop.</span>
+  </div>
+  <figcaption class="fine">Every step is written to a trace, so you can see exactly what happened and grade it.</figcaption>
+</figure>
+{%- endmacro %}
+
+{% macro layers(items) -%}
+<div class="layers">
+  {% for l in items %}
+  <article class="layer card" id="layer-{{ l.id }}">
+    <header class="layer-head">
+      <p class="kicker">{{ l.where|mdi }}</p>
+      <h3>{{ l.name }}</h3>
+      <p class="layer-what">{{ l.what|mdi }}</p>
+    </header>
+    <dl class="layer-grid">
+      <div><dt>What to test</dt><dd>{{ l.test|mdi }}</dd></div>
+      <div><dt>What to collect</dt><dd>{{ l.collect|mdi }}</dd></div>
+      <div><dt>How to grade</dt><dd>{{ l.grade|mdi }}</dd></div>
+      <div class="layer-fail"><dt>A failure from Maya's world</dt><dd>{{ l.example|mdi }}</dd></div>
+    </dl>
+    {% if l.run %}{{ codeblock(l.run|as_list|join("\n"), "run", l.name ~ " commands") }}{% endif %}
+  </article>
+  {% endfor %}
+</div>
+{%- endmacro %}
+
+{% macro section(sec) -%}
+<section class="sec{{ ' sec-' ~ sec.style if sec.style }}" id="{{ sec.id }}">
+  {% if sec.kicker %}<p class="eyebrow">{{ sec.kicker }}</p>{% endif %}
+  {% if sec.heading %}<h2 class="sec-title">{{ sec.heading }}</h2>{% endif %}
+  {% if sec.body %}<div class="prose">{{ sec.body|md }}</div>{% endif %}
+  {% if sec.diagram %}{{ diagram() }}{% endif %}
+  {% if sec.cards %}
+  <div class="cards cards-{{ sec.cards|length }}">
+    {% for c in sec.cards %}
+    <article class="card{{ ' card-' ~ c.style if c.style }}">
+      {% if c.kicker %}<p class="kicker">{{ c.kicker|mdi }}</p>{% endif %}
+      <h3>{{ c.title|mdi }}</h3>
+      <div class="prose">{{ c.body|md }}</div>
+      {% if c.foot %}<p class="card-foot">{{ c.foot|mdi }}</p>{% endif %}
+    </article>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% if sec.table %}{{ table(sec.table) }}{% endif %}
+  {% if sec.code %}
+  <figure class="code-figure">
+    {% if sec.code.caption %}<figcaption class="code-caption">{{ sec.code.caption|mdi }}</figcaption>{% endif %}
+    {{ codeblock(sec.code.text.rstrip(), "file", sec.code.caption or "example") }}
+  </figure>
+  {% endif %}
+  {% if sec.compare %}
+  <div class="compare">
+    {% for side in sec.compare %}
+    <figure class="compare-side compare-{{ side.tone }}">
+      <figcaption><span class="badge badge-{{ 'error' if side.tone == 'bad' else 'ok' }}">{{ side.label }}</span></figcaption>
+      {{ codeblock(side.text.rstrip(), "file", side.label) }}
+      {% if side.note %}<div class="prose fine">{{ side.note|md }}</div>{% endif %}
+    </figure>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% if sec.layers %}{{ layers(sec.layers) }}{% endif %}
+  {% if sec.terms %}
+  <dl class="terms">
+    {% for t in sec.terms %}
+    <div class="term" id="term-{{ t.term|lower|replace(' ', '-')|replace(',', '')|replace('^', '')|replace('@', '') }}"><dt>{{ t.term }}</dt><dd>{{ t.meaning|mdi }}</dd></div>
+    {% endfor %}
+  </dl>
+  {% endif %}
+  {% if sec.callout %}<aside class="callout callout-{{ sec.callout.tone or 'note' }}"><div class="prose">{{ sec.callout.body|md }}</div></aside>{% endif %}
+  {% if sec.after %}<div class="prose after">{{ sec.after|md }}</div>{% endif %}
+  {% if sec.actions %}
+  <p class="actions">
+    {% for a in sec.actions %}<a class="btn {{ 'btn-accent' if a.primary else 'btn-quiet' }} btn-pill" href="{{ a.href }}">{{ a.label }}</a>{% endfor %}
+  </p>
+  {% endif %}
+</section>
+{%- endmacro %}

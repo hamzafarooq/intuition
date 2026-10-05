@@ -68,7 +68,7 @@ def chart_block(chart_id: str, title: str, axes: list[tuple[str, str]], runs: li
     return {
         "id": chart_id,
         "title": title,
-        "svg": radar_svg(axes, series, title, f"{title}: {', '.join(f'{s['name']} ({t} trials)' for s, t in zip(series, trials, strict=True))}",
+        "svg": radar_svg(axes, series, title, f"{title}: " + ", ".join(f"{s['name']} ({t} trials)" for s, t in zip(series, trials, strict=True)),
                          flagged_axes=flagged, chart_id=chart_id),
         "legend": legend_html(series) if len(series) > 1 else "",
         "table": table_html(axes, series, counts),

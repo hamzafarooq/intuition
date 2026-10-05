@@ -11,8 +11,20 @@ from typing import Annotated, Any
 from mcp.server.mcpserver import MCPServer
 from pydantic import BaseModel, Field
 
-from . import approvals, core, state
-from . import calendar, connectors, contacts, docs, email, outputs, travel, verifiers, web  # noqa: F401  (register tools)
+from . import (  # noqa: F401  (register tools)
+    approvals,
+    calendar,
+    connectors,
+    contacts,
+    core,
+    docs,
+    email,
+    outputs,
+    state,
+    travel,
+    verifiers,
+    web,
+)
 
 log = logging.getLogger("ea_world")
 

@@ -113,7 +113,7 @@ criteria:
     artifact: draft
     question: "Does the email answer what the recipient asked or what Maya wanted said?"
     reference: {fn: thread_and_request}
-    pass_example: "To Raj: 'Thursday doesn't work for me after all. Could we do Tuesday 27 Oct at 14:15 Central or Friday 30 Oct at 10:00 Central, 45 minutes, for the co-marketing plan?'"
+    pass_example: "To Raj: 'Thursday doesn't work for me after all. Could we do Tuesday 27 Oct at 14:15 Central or Friday 30 Oct at 11:00 Central, 45 minutes, for the co-marketing plan?'"
     fail_example: "To Raj: 'Thanks for your note, let's find a time soon.' (no times, Thursday not declined)."
 
   - id: tone

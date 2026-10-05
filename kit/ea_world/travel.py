@@ -7,7 +7,7 @@ from mcp.server.mcpserver.exceptions import ToolError
 from pydantic import Field
 
 from . import core, feedback, verifiers
-from .common import contacts, next_id
+from .common import contacts
 from .core import tool
 from .rules import contacts_by_id
 

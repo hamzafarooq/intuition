@@ -216,7 +216,7 @@
   }
   function chipHtml(status, reason) {
     const s = STATUS_LABEL[status] ? status : "missing";
-    return `<span class="chip chip-${s}" title="${esc(reason || "")}"><i></i>${esc(STATUS_LABEL[s])}${reason ? `<span class="reason">: ${esc(clip(reason, 60))}</span>` : ""}</span>`;
+    return `<span class="chip chip-${s}" title="${esc(reason || "")}"><i></i><span class="lab">${esc(STATUS_LABEL[s])}${reason ? `<span class="reason">: ${esc(clip(reason, 60))}</span>` : ""}</span></span>`;
   }
 
   // ------------------------------------------------------------------ live trace
@@ -255,6 +255,7 @@
       const sep = el("li", "ev turn-sep", `<summary><span class="turn-label">Turn ${esc(e.turn)}<small>${esc(clip(msg?.text || "", 80))}</small></span></summary>`);
       list.append(sep);
     }
+    if (e.type === "turn_start" || (e.type === "message_queued" && !e.queued)) return; // the turn separator says it
     const g = groupOf(e);
     const row = el("details", `ev cat-${catOf(e)}`);
     row.dataset.group = g; row.dataset.i = String(e._i);
@@ -864,7 +865,7 @@
 
   function setupInit() {
     const c = S.cfg;
-    document.title = c.app_name;
+    document.title = PHONE ? `${c.app_name} · phone` : c.app_name;
     for (const n of document.querySelectorAll("[data-app-name]")) n.textContent = c.app_name;
     const p = c.persona;
     $("#persona-initials").textContent = p.initials;

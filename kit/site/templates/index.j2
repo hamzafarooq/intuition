@@ -1,0 +1,35 @@
+{% extends "base.j2" %}
+{% from "_macros.j2" import section %}
+{% block title %}Intuition guide: {{ page.title }}{% endblock %}
+{% block main %}
+<div class="wrap">
+  <section class="hero">
+    <div class="hero-text">
+      <p class="eyebrow">{{ page.hero.eyebrow }}</p>
+      <h1 class="display">{{ page.hero.title }}</h1>
+      <p class="lede">{{ page.hero.lede|mdi }}</p>
+      <p class="actions">
+        {% for a in page.hero.actions %}<a class="btn {{ 'btn-accent' if a.primary else 'btn-quiet' }} btn-pill btn-l" href="{{ a.href }}">{{ a.label }}</a>{% endfor %}
+      </p>
+      {% if page.hero.note %}<p class="fine hero-note">{{ page.hero.note|mdi }}</p>{% endif %}
+    </div>
+    <div class="hero-visual" aria-label="An example conversation with the assistant">
+      <div class="chat card">
+        <div class="chat-head"><span class="chat-avatar" aria-hidden="true">M</span><div><strong>Maya Chen</strong><span class="fine">Mon 26 Oct · 08:30 Denver</span></div></div>
+        <ol class="chat-body">
+          {% for m in page.hero.chat %}
+          <li class="msg msg-{{ m.from }}">
+            {% if m.from == 'trace' %}<span class="msg-trace">{{ m.text|mdi }}</span>
+            {% elif m.from == 'approval' %}<div class="msg-approval"><span class="kicker">Needs your yes</span><p>{{ m.text|mdi }}</p><span class="msg-buttons"><span class="fake-btn fake-yes">Approve</span><span class="fake-btn">Deny</span></span></div>
+            {% else %}<p>{{ m.text|mdi }}</p>{% endif %}
+          </li>
+          {% endfor %}
+        </ol>
+      </div>
+    </div>
+  </section>
+  <div class="index-sections">
+    {% for sec in page.sections %}{{ section(sec) }}{% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -107,7 +107,7 @@ def radar_svg(
                 a, b = have.get(j), have.get((j + 1) % n)
                 if a and b:
                     out.append(f'<line class="outline {cls}" x1="{a[0]:.1f}" y1="{a[1]:.1f}" x2="{b[0]:.1f}" y2="{b[1]:.1f}"{dash}/>')
-        for x, y, key, label, v in pts:
+        for x, y, _key, label, v in pts:
             out.append(_marker(SERIES_MARKER[s_i], x, y, f"pt {cls}", f"{s.get('name', '')} · {label}: {v * 100:.0f}%"))
     out.append("</svg>")
     return "\n".join(out)

@@ -71,7 +71,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 .switch .track { width: 44px; height: 26px; border-radius: var(--radius-pill); background: var(--line-strong); position: relative; transition: background .18s; }
 .switch .track::after {
   content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%;
-  background: var(--surface); box-shadow: 0 1px 3px rgb(0 0 0 / .25); transition: transform .2s var(--ease);
+  background: #fffaf3; box-shadow: 0 1px 3px rgb(0 0 0 / .25); transition: transform .2s var(--ease);
 }
 .switch input:checked + .track { background: var(--accent); }
 .switch input:checked + .track::after { transform: translateX(18px); }
@@ -290,7 +290,8 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 .chip-failed { background: var(--bad-soft); color: var(--bad); }
 .chip-waiting { background: var(--info-soft); color: var(--info); }
 .chip-missing { background: var(--surface-3); color: var(--muted); }
-.chip .reason { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chip .lab { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chip .reason { font-weight: 500; }
 .hood-toggle {
   display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px 3px 10px; border-radius: var(--radius-pill);
   border: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 82%, transparent); color: var(--muted);
@@ -400,6 +401,8 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 .phone--hero { --phone-w: 330px; --phone-h: 660px; transform: rotate(-4deg); }
 .phone--hero .bubble, .phone--hero .approval { font-size: 13.5px; }
 .phone--hero .ap-rows { font-size: 12px; }
+.phone--hero .island { width: 86px; }
+.phone--hero .statusbar { padding: 6px 22px 0 30px; }
 .phone--hero .chat-body { position: absolute; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; }
 
 /* ------------------------------------------------------------------ workspace */
@@ -479,7 +482,7 @@ body[data-view="chat"] #nav-session { display: flex; }
 .conn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
 .conn-tile { display: flex; align-items: center; gap: 8px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); min-width: 0; }
 .conn-tile .icon { width: 18px; height: 18px; color: var(--ink-2); }
-.conn-tile .c-name { font-weight: 600; font-size: 13.5px; }
+.conn-tile .c-name { font-weight: 600; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .conn-tile .c-state { font-size: 11.5px; color: var(--ok); }
 .conn-tile.off .c-state { color: var(--bad); }
 .conn-tile.off .c-name { color: var(--muted); }
@@ -515,6 +518,7 @@ body[data-view="chat"] #nav-session { display: flex; }
 .kv { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; padding: 7px 0; border-top: 1px solid var(--line); font-size: 13px; }
 .kv:first-child { border-top: 0; }
 .kv .k { font-weight: 600; overflow-wrap: anywhere; }
+.kv .k .icon { width: 14px; height: 14px; vertical-align: -2px; color: var(--muted); }
 .kv .v { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .kv .d { grid-column: 1 / -1; color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
 .links a { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 13.5px; font-weight: 550; text-decoration: none; color: var(--ink); border-top: 1px solid var(--line); }
@@ -574,6 +578,9 @@ body.phone-full .popout-btn { display: none; }
   .ev > summary { grid-template-columns: 50px minmax(0, 1fr); gap: 4px 8px; }
   .ev > summary .ev-body { grid-column: 1 / -1; }
   .ev pre { margin-left: 4px; }
+  .filters { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
+  .filters::-webkit-scrollbar { display: none; }
+  .filter { flex: none; }
 }
 
 /* The phone on its own page (/phone/<session>): a pop-out window or a second tab. */
@@ -605,7 +612,8 @@ body.popped .dock { padding-left: 4px; }
 
 @media (max-width: 420px) {
   .hero-actions .btn { width: 100%; }
-  .phone--hero { --phone-w: 300px; --phone-h: 600px; }
+  .phone--hero { --phone-w: 300px; --phone-h: 650px; transform: rotate(-2deg); margin: 0; }
+  .phone--hero .bubble, .phone--hero .approval { font-size: 13px; }
   .opt { flex-wrap: wrap; }
   .card { padding: 18px 16px; }
   .bubble { max-width: 86%; }

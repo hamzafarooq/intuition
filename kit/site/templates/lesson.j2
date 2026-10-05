@@ -1,0 +1,153 @@
+{% extends "base.j2" %}
+{% from "_macros.j2" import codeblock, replay, build_item %}
+{% block title %}{{ label }}: {{ page.title }} · Intuition guide{% endblock %}
+{% block main %}
+<div class="wrap">
+  <header class="lesson-head">
+    <p class="eyebrow">{{ label }}<span class="dot-sep" aria-hidden="true">·</span>{{ page.duration }}</p>
+    <h1 class="display-2">{{ page.title }}</h1>
+    <p class="lede">{{ page.goal|mdi }}</p>
+    <div class="lesson-head-grid">
+      {% if page.intro %}<div class="prose intro">{{ page.intro|md }}</div>{% endif %}
+      <div class="by-end card">
+        <h2 class="label">By the end of this {{ "lesson" if slug.startswith("lesson-") else "block" }}</h2>
+        <ul>{% for x in page.by_the_end %}<li>{{ x|mdi }}</li>{% endfor %}</ul>
+      </div>
+    </div>
+    <div class="progress" data-progress aria-live="polite">
+      <span class="progress-bar" aria-hidden="true"><span data-progress-fill></span></span>
+      <span class="progress-text" data-progress-text>0 of {{ page.steps|length }} steps done</span>
+    </div>
+  </header>
+
+  <div class="lesson-grid">
+    <div class="lesson-main" data-lesson-main>
+      <div class="lock-note card" data-lock hidden>
+        <p class="lock-title"><strong>Finish the earlier steps first, or show anyway.</strong></p>
+        <p>Each block builds on the one before. You haven't ticked <a href="#" data-lock-step>a step</a> in <a href="#" data-lock-page>an earlier block</a> yet.</p>
+        <p class="lock-actions">
+          <a class="btn btn-quiet btn-pill" href="#" data-lock-go>Go to the first unfinished step</a>
+          <button class="btn btn-primary btn-pill" type="button" data-show-anyway>Show anyway</button>
+        </p>
+        <ol class="lock-preview">{% for s in page.steps %}<li><span>{{ s.id }}</span> {{ s.title }}</li>{% endfor %}</ol>
+      </div>
+
+      <ol class="steps" data-steps>
+        {% for s in page.steps %}
+        <li class="step card" id="{{ s.id|anchor }}" data-step="{{ s.id }}">
+          <div class="step-head">
+            <span class="step-num">{{ s.id }}</span>
+            <h2 class="step-title">{{ s.title }}</h2>
+            <label class="tick">
+              <input type="checkbox" data-tick="{{ s.id }}">
+              <span class="tick-box" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M5 10.5l3.2 3.2L15 6.8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="tick-text">Done</span>
+            </label>
+          </div>
+          {% if s.note %}<aside class="callout callout-{{ s.note_tone or 'note' }}"><div class="prose">{{ s.note|md }}</div></aside>{% endif %}
+
+          <div class="part part-why">
+            <h3 class="part-label">Why</h3>
+            <div class="prose">{{ s.why|md }}</div>
+          </div>
+
+          <div class="part">
+            <h3 class="part-label">Prompt <span class="hint">paste into Claude Code at the kit root</span></h3>
+            {{ codeblock(s.prompt.strip(), "prompt", "prompt " ~ s.id) }}
+          </div>
+
+          {% if s.say %}
+          <div class="part">
+            <h3 class="part-label">Say to the assistant <span class="hint">in the app, or in <code>cd assistant &amp;&amp; claude</code></span></h3>
+            {{ codeblock(s.say|as_list|join("\n"), "say", "message " ~ s.id) }}
+          </div>
+          {% endif %}
+
+          {% if s._run %}
+          <div class="part">
+            <h3 class="part-label">Run <span class="hint">in a terminal at the kit root</span></h3>
+            {{ codeblock(s._run|join("\n"), "run", "commands " ~ s.id) }}
+          </div>
+          {% endif %}
+
+          <div class="part">
+            <h3 class="part-label">What to expect</h3>
+            <ul class="expect">{% for x in s.expect %}<li>{{ x|mdi }}</li>{% endfor %}</ul>
+          </div>
+
+          {% if s.builds %}
+          <p class="builds"><span class="part-label">Builds</span> {% for b in s.builds %}<span class="build-chip">{{ build_item(b) }}</span>{% endfor %}</p>
+          {% endif %}
+
+          {% if s._replays %}
+          <div class="part part-replay">
+            <h3 class="part-label">Replay <span class="hint">a trace you can read now, in case the live run is slow or goes differently</span></h3>
+            {% for r in s._replays %}{{ replay(r) }}{% endfor %}
+          </div>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ol>
+
+      {% if page.after %}
+      <section class="sec after-steps">
+        <div class="prose">{{ page.after|md }}</div>
+      </section>
+      {% endif %}
+
+      <section class="check" id="check" aria-labelledby="check-title">
+        <h2 class="sec-title" id="check-title">Check</h2>
+        <p class="muted">Three quick questions. Pick an answer to see why.</p>
+        {% for q in page.check %}
+        {% set qi = loop.index0 %}
+        <fieldset class="quiz card" data-quiz data-answer="{{ q.answer }}">
+          <legend><span class="quiz-n">{{ loop.index }}</span> {{ q.q|mdi }}</legend>
+          <div class="quiz-opts">
+            {% for o in q.options %}
+            <label class="opt"><input type="radio" name="{{ slug }}-q{{ qi }}" value="{{ loop.index0 }}"><span>{{ o|mdi }}</span></label>
+            {% endfor %}
+          </div>
+          <p class="quiz-why" data-why hidden><strong data-verdict></strong> {{ q.why|mdi }}</p>
+        </fieldset>
+        {% endfor %}
+      </section>
+
+      <section class="tracker" id="built" aria-labelledby="built-title">
+        <h2 class="sec-title" id="built-title">What you have built so far</h2>
+        <p class="muted" data-tracker-summary>Every file the workshop produces. Tick a step and the files it builds are marked built.</p>
+        <div class="tracker-groups">
+          {% for p in manifest %}
+          {% set files = [] %}
+          {% for st in p.steps %}{% for b in st.builds %}{% set _ = files.append((st.id, b)) %}{% endfor %}{% endfor %}
+          {% if files %}
+          <div class="tracker-group{{ ' is-current' if p.slug == slug }}">
+            <h3><a href="{{ p.slug }}.html">{{ p.label }}</a> <span class="muted">{{ p.title }}</span></h3>
+            <ul>
+              {% for sid, b in files %}
+              <li data-built-by="{{ sid }}"><span class="pill" data-pill>Not yet</span><span class="tracker-file">{{ build_item(b) }}</span><a class="tracker-step" href="{{ p.slug }}.html#{{ sid|anchor }}">step {{ sid }}</a></li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </section>
+
+      <nav class="pager" aria-label="Previous and next">
+        {% if prev %}<a class="pager-link pager-prev" href="{{ prev.slug }}.html"><span class="pager-dir">Previous</span><strong>{{ label_of(prev.slug) if prev.slug != 'index' else 'Overview' }}{% if prev.slug != 'index' %}: {{ prev.title }}{% endif %}</strong></a>{% else %}<span></span>{% endif %}
+        {% if next %}<a class="pager-link pager-next" href="{{ next.slug }}.html"><span class="pager-dir">Next</span><strong>{{ label_of(next.slug) }}: {{ next.title }}</strong></a>{% else %}<a class="pager-link pager-next" href="rubrics.html"><span class="pager-dir">Keep going</span><strong>Rubrics, the cheatsheet and the glossary</strong></a>{% endif %}
+      </nav>
+    </div>
+
+    <aside class="lesson-aside" aria-label="On this page">
+      <div class="aside-in">
+        <p class="label">On this page</p>
+        <ol class="toc">
+          {% for s in page.steps %}<li data-toc="{{ s.id }}"><a href="#{{ s.id|anchor }}"><span class="toc-tick" aria-hidden="true"></span><span class="toc-id">{{ s.id }}</span> {{ s.title }}</a></li>{% endfor %}
+        </ol>
+        <p class="toc-extra"><a href="#check">Check</a><a href="#built">What you have built</a></p>
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}
