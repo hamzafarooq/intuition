@@ -182,6 +182,7 @@ class Runner:
         await h.start(tdir, config)
         turns = list(case.get("turns") or [])
         message, source = case["request"], "maya"
+        end_after = False  # the simulated Maya's reply was her last word ("I'll decide later.", "Thanks.")
         try:
             while True:
                 self._approval_context(tdir, spec, message, explicit_yes=(source == "sim_maya" and message in yes_lines))
@@ -193,7 +194,7 @@ class Runner:
                 if r.stopped_by == "error":
                     stopped, error = "error", r.error
                     break
-                if source == "sim_maya" and getattr(self, "_end_after", {}).get(spec.key):
+                if end_after:
                     break
                 if r.status in ("done", "partial", "failed"):
                     if turns:
@@ -207,8 +208,7 @@ class Runner:
                 if reply.signal and trace is not None:
                     trace.emit("signal", **reply.signal)
                 message, source = reply.text, "sim_maya"
-                self._end_after = getattr(self, "_end_after", {})
-                self._end_after[spec.key] = reply.end
+                end_after = reply.end
         finally:
             await h.close()
         world_state.copy_final_state(tdir)

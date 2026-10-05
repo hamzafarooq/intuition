@@ -1,0 +1,181 @@
+uid=10_0 RootWebArea "Intuition" url="http://localhost:8765/"
+  uid=10_1 link "Skip to content" url="http://localhost:8765/#main"
+    uid=10_2 StaticText "Skip to content"
+  uid=10_3 banner
+    uid=10_4 link "Intuition home" url="http://localhost:8765/#top"
+      uid=10_5 StaticText "Intuition"
+    uid=10_6 StaticText "app-20261005-014033"
+    uid=10_7 button "Theme: match the system. Change theme" description="Theme"
+    uid=10_8 button "New session"
+  uid=10_9 main
+    uid=10_10 region "Behind the scenes"
+      uid=10_11 heading "Behind the scenes" level="2"
+      uid=10_12 StaticText "Everything the assistant does, as it happens."
+      uid=10_13 tab "Live trace 36" selectable
+      uid=10_14 tab "Maya's world" selectable selected
+      uid=10_15 heading "Connectors" level="3"
+      uid=10_16 StaticText "Email"
+      uid=10_17 StaticText "Connected"
+      uid=10_18 checkbox "Email connector" checked
+      uid=10_19 StaticText "Calendar"
+      uid=10_20 StaticText "Connected"
+      uid=10_21 checkbox "Calendar connector" checked
+      uid=10_22 StaticText "Contacts"
+      uid=10_23 StaticText "Connected"
+      uid=10_24 checkbox "Contacts connector" checked
+      uid=10_25 StaticText "Documents"
+      uid=10_26 StaticText "Connected"
+      uid=10_27 checkbox "Documents connector" checked
+      uid=10_28 StaticText "Web"
+      uid=10_29 StaticText "Connected"
+      uid=10_30 checkbox "Web connector" checked
+      uid=10_31 StaticText "Travel"
+      uid=10_32 StaticText "Disconnected"
+      uid=10_33 checkbox "Travel connector" disableable disabled
+      uid=10_34 StaticText "Turning one off disconnects it in the tool server for the rest of this session. It can't be turned back on."
+      uid=10_35 button "Reset world"
+      uid=10_36 heading "This week" level="3"
+      uid=10_37 StaticText "America/Denver"
+      uid=10_38 StaticText "Monday 26 October"
+      uid=10_39 StaticText "TODAY"
+      uid=10_40 StaticText "09:00–09:30"
+      uid=10_41 StaticText "Team standup"
+      uid=10_42 StaticText "Kevin ✓"
+      uid=10_43 StaticText "Priya ✓"
+      uid=10_44 StaticText "11:00–12:00"
+      uid=10_45 StaticText "Pipeline review"
+      uid=10_46 StaticText "Tom ✓"
+      uid=10_47 StaticText "14:00–14:45"
+      uid=10_48 StaticText "Ridgeway Builders: quarterly review"
+      uid=10_49 StaticText "Kevin ✓"
+      uid=10_50 StaticText "Dan ✓"
+      uid=10_51 StaticText "Amy ✓"
+      uid=10_52 StaticText "Tuesday 27 October"
+      uid=10_53 StaticText "09:00–09:30"
+      uid=10_54 StaticText "Team standup"
+      uid=10_55 StaticText "Kevin ✓"
+      uid=10_56 StaticText "Priya ✓"
+      uid=10_57 StaticText "10:00–11:00"
+      uid=10_58 StaticText "Hold: Q4 forecast prep"
+      uid=10_59 StaticText "12:00–13:00"
+      uid=10_60 StaticText "Lunch with Kevin"
+      uid=10_61 StaticText "Kevin ✓"
+      uid=10_62 StaticText "15:00–16:00"
+      uid=10_63 StaticText "Doctor appointment "
+      uid=10_64 StaticText "(private)"
+      uid=10_65 StaticText "Wednesday 28 October"
+      uid=10_66 StaticText "09:00–09:30"
+      uid=10_67 StaticText "Team standup"
+      uid=10_68 StaticText "Kevin ✓"
+      uid=10_69 StaticText "Priya ✓"
+      uid=10_70 StaticText "09:30–10:30"
+      uid=10_71 StaticText "1:1 Maya / Tom"
+      uid=10_72 StaticText "Tom ✓"
+      uid=10_73 StaticText "13:00–14:00"
+      uid=10_74 StaticText "Granite Homes: account call"
+      uid=10_75 StaticText "Kevin ✓"
+      uid=10_76 StaticText "Ben ✓"
+      uid=10_77 StaticText "16:00–17:00"
+      uid=10_78 StaticText "Interview panel: Sales Engineer"
+      uid=10_79 StaticText "Kevin ✓"
+      uid=10_80 StaticText "Thursday 29 October"
+      uid=10_81 StaticText "09:00–09:30"
+      uid=10_82 StaticText "Team standup"
+      uid=10_83 StaticText "Kevin ✓"
+      uid=10_84 StaticText "Priya ✓"
+      uid=10_85 StaticText "10:00–11:00"
+      uid=10_86 StaticText "Forecast submission review"
+      uid=10_87 StaticText "Priya ✓"
+      uid=10_88 StaticText "13:00–15:00"
+      uid=10_89 StaticText "Regional QBR"
+      uid=10_90 StaticText "Tom ✓"
+      uid=10_91 StaticText "Friday 30 October"
+      uid=10_92 StaticText "09:00–09:30"
+      uid=10_93 StaticText "Team standup"
+      uid=10_94 StaticText "Kevin ✓"
+      uid=10_95 StaticText "Priya ✓"
+      uid=10_96 StaticText "12:00–13:00"
+      uid=10_97 StaticText "Team lunch"
+      uid=10_98 StaticText "Kevin ✓"
+      uid=10_99 StaticText "Priya ✓"
+      uid=10_100 StaticText "15:00–17:00"
+      uid=10_101 StaticText "Focus block"
+      uid=10_102 StaticText "Coming up"
+      uid=10_103 StaticText "Tue 3 Nov"
+      uid=10_104 StaticText "Midwest Builders Summit (Chicago)"
+      uid=10_105 heading "Inbox" level="3"
+      uid=10_106 StaticText "12 unread"
+      uid=10_107 DisclosureTriangle "Dan Okafor Forecast review: what I need Mon 08:20" expandable
+      uid=10_108 DisclosureTriangle "Kevin Osei Lunch tomorrow still on? Mon 08:12" expandable
+      uid=10_109 DisclosureTriangle "Larkspur Travel Desk Summit travel: book today for block rates Mon 08:05" expandable
+      uid=10_110 DisclosureTriangle "Larkspur HR System PTO request from Kevin Osei awaiting your approval Mon 08:02" expandable
+      uid=10_111 DisclosureTriangle "Larkspur Calendar Updated: Regional QBR is now Thursday 13:00–15:00 Mon 08:00" expandable
+      uid=10_112 DisclosureTriangle "Lisa Park EMEA Q4 numbers ready Mon 07:58" expandable
+      uid=10_113 DisclosureTriangle "Tom Becker Q4 forecast: sync before Friday Mon 07:55" expandable
+      uid=10_114 DisclosureTriangle "Priya Nair Q4 forecast workbook v3 Mon 07:40" expandable
+      uid=10_115 button "Show all 25"
+      uid=10_116 heading "Sent" level="3"
+      uid=10_117 StaticText "0"
+      uid=10_118 StaticText "Nothing sent from this session."
+      uid=10_119 heading "Bookings and holds" level="3"
+      uid=10_120 StaticText "0 booked · 0 held"
+      uid=10_121 StaticText "No bookings yet."
+      uid=10_122 heading "Briefs and decks" level="3"
+      uid=10_123 StaticText "1"
+      uid=10_124 link "Brief: Ridgeway Builders: quarterly review br-1" url="http://localhost:8765/api/sessions/9MMxcdW5Doc/outputs/briefs/br-1.html"
+        uid=10_125 StaticText "Brief: Ridgeway Builders: quarterly review"
+        uid=10_126 StaticText "br-1"
+      uid=10_127 heading "Browser screenshots" level="3"
+      uid=10_128 StaticText "0"
+      uid=10_129 StaticText "When bookings happen in the browser, its screenshots appear here."
+    uid=10_130 button "Back to setup"
+    uid=10_131 StaticText "Intuition"
+    uid=10_132 generic live="polite" relevant="additions text"
+      uid=10_133 StaticText "online"
+    uid=10_134 button "Pop out the phone into its own window" description="Pop out the phone into its own window"
+    uid=10_135 button "More" description="More" expandable haspopup="menu"
+    uid=10_136 generic "Conversation" live="polite" relevant="additions text"
+      uid=10_137 StaticText "Today"
+      uid=10_138 StaticText "Prep me for my 2pm"
+      uid=10_139 StaticText "08:30"
+      uid=10_140 image "Read"
+      uid=10_141 StaticText "Your brief for "
+      uid=10_142 StaticText "Ridgeway Builders: quarterly review"
+      uid=10_143 StaticText " is ready: "
+      uid=10_144 link "open the brief" url="http://localhost:8765/api/sessions/9MMxcdW5Doc/outputs/briefs/br-1.html"
+        uid=10_145 StaticText "open the brief"
+      uid=10_146 StaticText ". Lead with Dan Reyes's open question: would Larkspur hold 2026 pricing for an 18-month commitment?"
+      uid=10_147 StaticText "08:30"
+      uid=10_148 StaticText "Done"
+      uid=10_149 button "Under the hood · 17 steps · 3.4 s" expandable expanded
+      uid=10_150 button "Maya's 2pm is the Ridgeway Builders quarterly review. Load the brief skill and send the research to the briefer." expandable
+      uid=10_151 button "Loaded skill meeting-brief" expandable
+      uid=10_152 button "calendar_list ✓ start 2026-10-26 · end 2026-10-26 → 3 events" expandable
+      uid=10_153 button "Handed off to briefer Research Ridgeway Builders: quarterly review (ev-ridgeway-qbr) and return the facts for a one-page brief, each with its source id." expandable
+      uid=10_154 button "BRIEFERcalendar_get ✓ event_id ev-ridgeway-qbr → Ridgeway Builders: quarterly review" expandable
+      uid=10_155 button "BRIEFERemail_search ✓ query Ridgeway · limit 5 → 5 results of 8" expandable
+      uid=10_156 button "BRIEFERemail_read ✓ email_id em-05 → Agenda for today's quarterly review" expandable
+      uid=10_157 button "BRIEFERemail_read ✓ email_id em-04 → Pricing question on the 2027 renewal" expandable
+      uid=10_158 button "BRIEFERdocs_search ✓ query Ridgeway → 2 results" expandable
+      uid=10_159 button "BRIEFERdocs_read ✓ doc_id doc-ridgeway → Ridgeway Builders: account notes" expandable
+      uid=10_160 button "BRIEFERSearched “ridgeway builders chicago news” ✓ Ridgeway Builders wins Aurora logistics warehouse contract · About Ridgeway Builders" expandable
+      uid=10_161 button "BRIEFEROpened a page ✓ https://news.buildtrade.example/ridgeway-aurora · Ridgeway Builders wins Aurora logistics warehouse contract" expandable
+      uid=10_162 button "BRIEFERThe renewal and the open pricing question are what Dan Reyes cares about; lead with them." expandable
+      uid=10_163 button "briefer reported back Agenda from Amy Lin (em-05); Dan Reyes's open pricing question (em-04); account notes (doc-ridgeway); Aurora contract news (buildtrade)." expandable
+      uid=10_164 button "brief_save ✓ title Brief: Ridgeway Builders: quarterly review · markdown # Ridgeway Builders: quarterly review, 14:00 … · sources ev-ridgeway-qbr, doc-r… → brief br-1 · 127 words" expandable
+      uid=10_165 button "check_brief ✓ brief_id br-1 → ok" expandable
+      uid=10_166 button "✓ check_brief br-1" expandable
+      uid=10_167 StaticText "11"
+      uid=10_168 StaticText " tool calls"
+      uid=10_169 StaticText "1"
+      uid=10_170 StaticText " hand-offs"
+      uid=10_171 StaticText "1"
+      uid=10_172 StaticText " checks"
+      uid=10_173 StaticText "$0.13 · 3.4 s · 18.0k in · 855 out · 36.5k cached · scripted-opus"
+      uid=10_174 StaticText "Maya turned off the Travel connector"
+    uid=10_175 button "Jump to the latest message"
+    uid=10_176 form
+      uid=10_177 button "Suggested messages" description="Suggested messages" expandable
+      uid=10_178 StaticText "Message"
+      uid=10_179 textbox "Message" focusable focused multiline
+      uid=10_180 button "Send" description="Send" disableable disabled

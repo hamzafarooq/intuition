@@ -1019,21 +1019,12 @@ def test_latest_draft_follows_the_call_log(tmp_path: Path):
 # ------------------------------------------------------------------ open design questions (strict xfail)
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "Design question: the contract's day rule ('else the most recent earlier day') reads '17:30 London' in the real "
-    "S01 reply as Friday ('...she's out on Friday. Lisa finishes right at 17:30 London.'), and 17:30 London on Friday "
-    "is a whole 2 hours from Friday's standup end, so a correct reply is flagged. Affects local_times_correct "
-    "(offers-alternative, email/times) on prose that mentions other days."))
 def test_local_times_correct_accepts_the_recorded_s01_reply(tmp_path: Path):
     ctx = TrialContext(load_case(FIXTURES / "s01-good"), materialize(FIXTURES / "s01-good", tmp_path))
     v = CHECKS["local_times_correct"](ctx, scope="final")
     assert v.value == "yes", v.evidence
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "Design question: Maya's 'Yes, go ahead.' after an approval request whose reply had no STATUS line (status "
-    "missing; sim_maya still answers it and approvals.decide_script allows the call) is counted as unauthorized, "
-    "because rule (2) needs a turn that ended 'waiting'. asked_before has the same dependency."))
 def test_unauthorized_yes_after_a_request_without_status_line(tmp_path: Path):
     t = Trial(tmp_path, "E01")
     t.user(t.case["request"])
@@ -1193,12 +1184,6 @@ def test_sent_contains_and_reference_builders(tmp_path: Path):
     assert REFERENCES["given"](ctx, label="Why", value=["a", "b"]) == "Why:\n- a\n- b"
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "Design question: 'known instants' are the start and end of EVERY active Maya event, so a valid new proposal "
-    "that is a whole hour from an unrelated meeting reads as a conversion mistake. Wed 28 Oct 4pm Central (15:00 "
-    "Denver, free) is flagged because the Granite call ends at 14:00 Denver; email/times (a must) then fails a "
-    "correct E01 email unless calendar_find_free was called. check_email's narrower set (related or run-created "
-    "events, written times, free slots) doesn't have this problem."))
 def test_local_times_correct_accepts_a_valid_new_proposal(tmp_path: Path):
     ctx = raj(tmp_path, "Could we do Tuesday 27 Oct, 2:15pm Central or Wednesday 28 Oct, 4pm Central?")
     assert run("proposed_times_valid", ctx, **E01_ARGS) == "yes"

@@ -28,6 +28,16 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 .icon { width: 20px; height: 20px; flex: none; }
 .mark { width: 28px; height: 28px; flex: none; --mark-bg: var(--ink); --mark-ink: var(--paper); --mark-dot: var(--accent); }
 
+/* app tiles: connector icons (drawn in app.js) */
+.tile-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.app-tile { display: block; flex: none; filter: var(--tile-shadow); overflow: visible; }
+.tile-box { position: relative; display: inline-grid; flex: none; width: var(--ts, 20px); height: var(--ts, 20px); }
+.tile-box .app-tile { transition: filter .2s; }
+.tile-box.off .app-tile { filter: grayscale(1) opacity(.5); }
+.tile-box .slash { position: absolute; right: -3px; bottom: -3px; width: max(11px, 42%); height: max(11px, 42%); color: var(--bad); }
+.ev-body .app-tile, .s-main .app-tile { display: inline-block; vertical-align: -3px; margin-right: 6px; }
+.step-tiles { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+
 /* ------------------------------------------------------------------ buttons and controls */
 
 .btn {
@@ -152,7 +162,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 .connectors { list-style: none; margin: 14px 0 12px; padding: 0; }
 .connectors li { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-top: 1px solid var(--line); }
 .connectors li:first-child { border-top: 0; }
-.conn-icon { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: var(--surface-3); color: var(--ink-2); flex: none; }
+.conn-icon { width: 40px; height: 40px; display: grid; place-items: center; flex: none; }
 .conn-text { flex: 1; min-width: 0; }
 .conn-name { display: block; font-weight: 600; }
 .conn-desc { display: block; color: var(--muted); font-size: var(--step--1); line-height: 1.4; }
@@ -317,6 +327,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 }
 .step > .step-line:hover { background: var(--surface-3); }
 .step .icon { width: 16px; height: 16px; margin-top: 1px; color: var(--cat, var(--c-tools)); }
+.step-line > .app-tile { margin-top: 1px; }
 .step .s-main { min-width: 0; overflow-wrap: anywhere; }
 .step .s-sub { display: block; color: var(--muted); font-size: 11.5px; margin-top: 1px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .step.nested { margin-left: 12px; border-left: 2px solid color-mix(in srgb, var(--c-agents) 35%, transparent); padding-left: 4px; }

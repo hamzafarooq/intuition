@@ -148,7 +148,7 @@ def find_times(text: str, year: int = 2026) -> list[TimeMention]:
     """Every time of day in the text, with its zone label and the date or weekday it belongs to.
 
     A date is taken from just before the time (since the previous time), else from just after it
-    ("10am on Monday 2 November"), else inherited from the previous time on the same line.
+    ("10am on Monday 2 November"), else from the most recent earlier date in the text.
     """
     out: list[TimeMention] = []
     if not text:
@@ -164,6 +164,10 @@ def find_times(text: str, year: int = 2026) -> list[TimeMention]:
         t1 = _hm(m.group("h1"), m.group("m1"), m.group("ap1"), m.group("noon1"))
         if t1 is None and t2 is not None and m.group("h1") and m.group("ap2"):
             t1 = _hm(m.group("h1"), m.group("m1"), m.group("ap2"), None)  # "12-1pm"
+        elif t1 is not None and t2 is not None and not m.group("ap1") and m.group("ap2") and t1[0] < 12:
+            shifted = _hm(m.group("h1"), m.group("m1"), m.group("ap2"), None)  # "2:15–3:45pm" is 14:15–15:45
+            if shifted and shifted <= t2:
+                t1 = shifted
         if t1 is None:
             continue
         matches.append((m, t1, t2))
@@ -184,7 +188,7 @@ def find_times(text: str, year: int = 2026) -> list[TimeMention]:
                 end += after.end()
         line_start = text.rfind("\n", 0, m.start()) + 1
         if line_start != last_line:
-            last_ctx, last_line = (None, None, None), line_start
+            last_line = line_start  # a time with no day of its own takes the most recent earlier day, even on an earlier line
         next_start = matches[i + 1][0].start() if i + 1 < len(matches) else len(text)
         ctx = None
         before = [d for d in dates if d[0] >= max(prev_end, line_start) and d[1] <= m.start() and d[0] not in used]
@@ -197,7 +201,16 @@ def find_times(text: str, year: int = 2026) -> list[TimeMention]:
                 ctx = after_dates[0][2:]
                 used.add(after_dates[0][0])
         if ctx is None:
-            ctx = last_ctx
+            between = [d for d in dates if d[0] >= prev_end and d[1] <= m.start() and d[0] not in used]
+            if between:  # a date header on an earlier line ("Tuesday 27 Oct:\n- 2:15pm Central")
+                ctx = between[-1][2:]
+                used.add(between[-1][0])
+            else:
+                ctx = last_ctx
+        if ctx == (None, None, None):
+            earlier = [d for d in dates if d[1] <= m.start()]
+            if earlier:
+                ctx = earlier[-1][2:]
         last_ctx = ctx
         prev_end = end
         out.append(TimeMention(t1[0], t1[1], zone, ctx[0], ctx[1], ctx[2], text[m.start() : end], m.start(), end, t2))

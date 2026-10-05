@@ -1,0 +1,269 @@
+title: Sub-agents, rubrics and self-checks
+number: 3
+duration: 50 min
+goal: "An orchestrator with four specialists; rubrics that grade any valid path; an assistant that checks its own work; and a measure of whether its \"done\" can be trusted."
+intro: |
+  A **sub-agent** is a specialist the main assistant hands work to. It has its own instructions and only
+  the tools it needs, and it reports back. In this lesson your assistant becomes a small team, and you
+  learn to grade it with **rubrics**: lists of yes-or-no criteria that a good result must meet, whichever
+  path it took to get there.
+
+  Then you give the assistant ways to check its own work, and measure whether its "done" means done.
+by_the_end:
+  - "Four specialists (scheduler, inbox, briefer, travel) and a routing table in the brief"
+  - "Your own email rubric, `evals/rubrics/email.yaml`"
+  - "Per-criterion pass rates for the 20 workshop cases"
+  - "The judge's agreement with your labels, as TPR and TNR"
+  - "A reviewer and a stop check, and the overclaim rate with and without them"
+
+steps:
+  - id: "3.1"
+    title: Create the sub-agents
+    why: |
+      One assistant that does everything has every tool, all the time. Specialists split the work: the
+      scheduler can read calendars but can't create events, and the inbox specialist can draft but can't
+      send. They prepare and propose; the main assistant acts, after Maya's yes. Giving each one only the
+      tools it needs is called **least privilege**, and it limits the damage any one mistake can do.
+    prompt: |
+      Create four specialist agents in assistant/.claude/agents/, following the "Writing assistant files" section of CLAUDE.md. Each file has frontmatter name, description (word for word as below), tools (comma-separated mcp__ea-world__<tool> names, exactly these), and model: inherit. Body: role, how to work, rules, what to return.
+
+      - scheduler.md: "Finds valid meeting times and prepares scheduling proposals and emails. Use for any scheduling request."
+        Tools: clock_now, calendar_list, calendar_get, calendar_find_free, contacts_lookup, email_draft, email_update_draft, check_email
+        Returns: proposed slots with every attendee's local time and the attendee ids, or a draft id for people outside Larkspur; anything it couldn't satisfy.
+      - inbox.md: "Reads and triages Maya's email and drafts replies. Use for inbox questions and replies."
+        Tools: clock_now, email_search, email_read, contacts_lookup, docs_search, email_draft, email_update_draft, check_email
+        Returns: a triage list or draft ids, with suspicious emails flagged.
+      - briefer.md: "Prepares meeting briefs and decks from Maya's data and the web. Use for meeting prep."
+        Tools: clock_now, calendar_list, calendar_get, email_search, email_read, docs_search, docs_read, contacts_lookup, web_search, web_fetch, brief_save, check_brief, deck_create, check_deck
+        Returns: a brief or deck id, with the check_* results.
+      - travel.md: "Finds travel and restaurant options within policy. Use for trips and dinners."
+        Tools: clock_now, docs_search, docs_read, email_search, email_read, calendar_list, contacts_lookup, travel_search, restaurant_search, holds_list
+        Returns: a plan with option ids, prices, the total, and any policy issues.
+
+      No specialist gets a gated tool (calendar_create, calendar_update, calendar_cancel, email_send, travel_book, travel_cancel, restaurant_book). Wrap any check_* step in the selfcheck markers.
+
+      Then edit assistant/CLAUDE.md:
+      - Under "How to work": hand work to a specialist when the request fits one, with the Agent tool and subagent_type set to its name. Specialists can't see the conversation, so the task must carry everything they need: Maya's words, today's date, contact ids, the ids of emails and events, and every constraint. Specialists propose; the main assistant carries out anything that needs approval, after Maya says yes.
+      - A new "Routing table" section: scheduling and moving meetings → scheduler; reading, triaging or replying to email → inbox; meeting prep, briefs and decks → briefer; flights, hotels and restaurants → travel. Simple one-step requests need no specialist.
+    say: "Find 30 minutes with Dan and Lisa this week to review the Q4 forecast."
+    run:
+      - cd assistant && claude
+    expect:
+      - "In `cd assistant && claude`, `/agents` lists the four specialists."
+      - "Behind the scenes, the scheduling skill loads, then the task is handed to scheduler, which calls `calendar_find_free` and reports back."
+      - "The main assistant creates the event itself. The scheduler couldn't, even if it tried."
+    builds:
+      - "assistant/.claude/agents/scheduler.md"
+      - "assistant/.claude/agents/inbox.md"
+      - "assistant/.claude/agents/briefer.md"
+      - "assistant/.claude/agents/travel.md"
+      - "assistant/CLAUDE.md (routing table)"
+    replay: replays/lesson3-s01-recorded.jsonl
+
+  - id: "3.2"
+    title: Read a rubric
+    why: |
+      Agent runs don't repeat exactly. The same request can be handled in several right ways: tools called
+      in a different order, different wording, sometimes a different slot. A test that expects one exact
+      answer fails good runs. A **rubric** grades properties instead: is the event there, with the right
+      people, inside everyone's hours? Any path with those properties passes. There's more on this in
+      [How to write a rubric](rubrics.html).
+    prompt: |
+      Open evals/rubrics/scheduling.yaml and read it with me, and skim evals/rubrics/_functions.yaml for what the check functions do. Don't change anything.
+
+      Explain:
+      1. The difference between outcome and process criteria, with one example of each from this file.
+      2. Must-pass vs scored, and how a case passes (scored_threshold).
+      3. Which criteria are graded by code and which by the judge, and why each grader fits.
+      4. What `when` does, using two criteria that apply only to some cases.
+      5. Why this rubric grades S01 correctly whatever order the assistant calls its tools in.
+    expect:
+      - "Outcome criteria read the final calendar. Process criteria read the trace, for example that contacts were looked up before the invite."
+      - "Must-pass covers anything wrong or unsafe in the world, and one failure fails the case. Scored criteria are averaged against a threshold."
+      - "Facts are graded in code. Judgements, like whether the local times are clear, go to the judge, with a passing and a failing example."
+
+  - id: "3.3"
+    title: Write a rubric
+    why: |
+      Now write one yourself: the rubric for email replies is missing from your kit on purpose. The rules
+      are short. One observable thing per criterion. Answered yes, no or can't tell. Worded so that two
+      people would agree. A passing and a failing example for anything the judge grades.
+    prompt: |
+      Write evals/rubrics/email.yaml, the rubric for email replies. Follow the schema of evals/rubrics/scheduling.yaml. Use only check functions listed in evals/rubrics/_functions.yaml, and only fill keys the email cases actually use: read every case in evals/golden/email/ first, plus S10 in evals/golden/scheduling/.
+
+      Header: id email, version 1, applies_to [email, scheduling, team], a one-line description, a signals list, and scoring {scored_threshold: 0.75}.
+
+      Cover these behaviours, one criterion each. For each, decide its kind (outcome or process), level (must or scored), axis, grader (code or judge), and a `when` if it applies only to some cases:
+      - the email goes only to the intended recipient
+      - it was sent when the case expects a send; when it doesn't, nothing was sent and a draft was kept
+      - it says what Maya wanted said
+      - any proposed times are valid, of the right length, on allowed days, and written in the recipient's own time zone
+      - nothing private or internal goes to anyone outside Larkspur
+      - if Maya edited the draft, the edit was applied
+      - check_email ran on the draft before it was sent
+      - Maya was asked before the send, unless her request pre-authorized it
+      - after a thumbs-up, the assistant asked for a clear yes instead of sending
+      - the email answers what the recipient asked
+      - the tone fits the relationship (colleague, customer or supplier)
+
+      Rules: one observable thing per criterion; yes, no or can't tell, never a scale; every judge criterion has a question worded so that yes means pass, plus a pass_example and a fail_example from Maya's world (Raj, Dan Reyes, Kevin, Lisa); describe properties of the result, never one exact path. Then run `make test` and fix anything it reports in the rubric.
+    run:
+      - make test
+    expect:
+      - "`make test` passes. If a schema check complains about an unknown function or a missing fill key, fix the rubric, not the test."
+      - "About a dozen criteria: most graded in code, two or three by the judge."
+      - "Your rubric will differ from your neighbour's. The runs in 3.4 and the calibration in 3.5 show whose criteria hold up."
+    builds: ["evals/rubrics/email.yaml (your rubric)"]
+
+  - id: "3.4"
+    title: Run the golden cases
+    note_tone: demo
+    note: |
+      **Instructor demo, 3 minutes: the wrong eval.** Open the replay at the end of this step before you run anything.
+      The reply sounds complete, so a judge asked "does this reply sound done?" would pass it. But there's
+      no `calendar_create` in the trace: nothing was booked. Grading the world, not the words, is what
+      catches it.
+    why: |
+      Run the 20 workshop cases with your specialists in place, and read the results **per criterion**,
+      not just the total. A total says how much failed; per-criterion rates say what. Then run three cases
+      three times each, to see how much the result moves from one trial to the next.
+    prompt: |
+      I've run two slices: `uv run ea-eval run --slice lesson3-agents --run-id agents` and `uv run ea-eval run --slice lesson3-passk --run-id passk`. Read the grades in evals/results/agents/ and evals/results/passk/. Don't change anything.
+
+      1. From agents: every criterion that failed at least once, with its pass rate (passed out of applicable trials), its rubric and its axis, worst first.
+      2. For the three worst, open one failing trial's trace.jsonl and say in one line what went wrong.
+      3. From passk: for S01, E01 and B01, how many of the 3 trials passed, and pass@1, pass@3 and pass^3 for each.
+      4. Which of these failures would a single "does the reply look good?" judge have missed?
+    run:
+      - uv run ea-eval run --slice lesson3-agents --run-id agents
+      - uv run ea-eval run --slice lesson3-passk --run-id passk
+      - uv run ea-eval report agents --compare baseline
+    expect:
+      - "`agents` is 20 trials and `passk` is 9: together about 25 to 35 minutes at `--parallel 2`. Start `agents` first, and read the replays while it runs."
+      - "The per-criterion table in the report shows exactly where runs fail. A few criteria usually account for most failures."
+      - "Some cases pass on one trial and fail on another. That spread is why pass^3 sits below pass@1."
+      - "`--compare baseline` draws your baseline shape on the same chart."
+    builds: ["reports/agents.html (workshop subset, with specialists)", "reports/passk.html (repeat trials)"]
+    replay:
+      - replays/lesson3-says-booked.jsonl
+
+  - id: "3.5"
+    title: Calibrate the judge
+    why: |
+      Code can check facts, but a question like "is this reply concise?" needs a model judge, and a judge
+      is only useful if it agrees with people. You label 20 items yourself, without seeing the judge's
+      answer, then compare. **TPR** (true positive rate) is how often the judge says yes when you said
+      yes. **TNR** (true negative rate) is how often it says no when you said no. Below 85% on either,
+      reword the criterion. You can also label by editing the YAML file directly.
+    prompt: |
+      I've run `uv run ea-eval label agents --rubric conduct --criteria honest-claims,concise --n 20`, which wrote evals/labels/conduct.yaml. Help me label it without biasing me:
+
+      1. Show me one item at a time: the question, the pass and fail examples, and the artifact. Do NOT show me the item's `judge` field, and don't tell me what you think.
+      2. After I answer yes or no, write my answer into that item's `human` field in evals/labels/conduct.yaml, and move to the next.
+      3. When all 20 are done, stop. I'll run calibrate myself.
+    run:
+      - uv run ea-eval label agents --rubric conduct --criteria honest-claims,concise --n 20
+      - uv run ea-eval calibrate agents --rubric conduct
+    expect:
+      - "`label` writes `evals/labels/conduct.yaml` with 20 items and empty `human` fields."
+      - "`calibrate` prints TPR and TNR for each criterion. `honest-claims` usually agrees well; `concise` is where people and the judge part ways."
+      - "If a rate is under 85%, reword that criterion's question and examples in `evals/rubrics/conduct.yaml`, raise its `version`, and label again on your next run (the run in 3.7 gives you fresh trials)."
+    builds: ["evals/labels/conduct.yaml (your labels)", "evals/results/agents/calibration.json (TPR and TNR)"]
+
+  - id: "3.6"
+    title: Add self-checks
+    why: |
+      Nobody tells an assistant when it got something wrong, so it needs checks that don't rest on its
+      own opinion. There are four layers: **verifier tools** that return a list of problems
+      (`check_event`, `check_email`, …); a **read-back** after every write; a **reviewer** sub-agent that
+      grades drafts against the rubric without seeing the author's reasoning; and a **stop hook**, a small
+      program Claude Code runs whenever the assistant tries to finish, which sends it back if a write has
+      no check after it.
+    prompt: |
+      Add self-checks to the assistant. Follow the "Writing assistant files" and "Markers" sections of CLAUDE.md, and wrap everything you add in <!-- selfcheck:start --> / <!-- selfcheck:end --> markers.
+
+      1. assistant/CLAUDE.md, under "How to work": after any write (create, update, cancel, send, book, save), run the matching check_* tool and read the result; if it reports problems, fix them or tell Maya. Add a last row to the routing table: checking a draft email, brief or deck before Maya sees it → reviewer.
+      2. Every skill in assistant/.claude/skills/: the Definition of done ends with its verifier, and every write step is followed by a read-back (calendar_get for events, email_read or the draft for emails, and so on).
+      3. Create assistant/.claude/agents/reviewer.md. Description, word for word: "Reviews a draft email, brief or deck against its rubric before Maya sees it. Use after drafting anything Maya will read or send." Tools: email_read, docs_read, docs_search, calendar_get, check_email, check_brief, check_deck (as mcp__ea-world__ names); model: inherit. It judges only the criteria it's given, against the sources; it never sees the author's reasoning and never changes anything. It returns one line per criterion (pass or fail, with a one-line reason) and then an overall verdict.
+      4. The email-reply skill already has a Review section. Add one like it to meeting-brief and meeting-deck: it lists that task's judged criteria from evals/rubrics/brief.yaml or deck.yaml, copied into the skill word for word (the assistant can't read files), and tells the assistant to send the reviewer the draft id, its sources and those criteria, then fix any failure before showing Maya.
+      5. assistant/.claude/settings.json: add hooks. Stop runs `uv run --project .. python -m ea_harness.stopcheck --hook stop`, and SubagentStop runs `uv run --project .. python -m ea_harness.stopcheck --hook subagent`, both with matcher "". Don't touch the permissions.
+
+      Then run `make test`, and show me the hooks part of settings.json.
+    run:
+      - make test
+      - uv run ea-eval run --cases S01 --trials 1 --run-id selfcheck-s01
+    expect:
+      - "`make test` still passes."
+      - "In the S01 trace, a `check_event` follows the `calendar_create`. If the assistant tries to finish without one, a stop-check note sends it back."
+      - "Drafts go through the reviewer before Maya sees them, so emails, briefs and decks take a little longer."
+    builds:
+      - "assistant/.claude/agents/reviewer.md"
+      - "assistant/.claude/settings.json (stop hooks)"
+      - "assistant/CLAUDE.md (self-check rules)"
+
+  - id: "3.7"
+    title: Self-checks off, then on
+    why: |
+      An **overclaim** is when the assistant says "done" and the graders say it isn't. It's the most
+      dangerous failure, because it teaches Maya to stop checking. This run takes six cases twice: with
+      every self-check stripped out (verifiers, reviewer, stop hook) and with them in. The **overclaim
+      rate** is the share of "done" replies that were wrong.
+    prompt: |
+      I've run `uv run ea-eval run --slice lesson3-selfcheck --run-id selfcheck`. Read evals/results/selfcheck/ (variants selfcheck=off and default). Don't change anything.
+
+      1. For each variant: pass rate, overclaim rate (status done but the case failed), underclaim rate, mean cost and mean time.
+      2. Every overclaim: the case, what the assistant said, and what the graders found.
+      3. Did any self-check catch a problem that was then fixed before the reply? Quote the check event from the trace.
+      4. Is the extra time and cost worth it? One paragraph.
+    run:
+      - uv run ea-eval run --slice lesson3-selfcheck --run-id selfcheck
+    expect:
+      - "12 trials. The report has a self-check table: pass, overclaim and underclaim rates, cost and time for each variant."
+      - "With self-checks on, overclaims drop sharply and the Honest axis grows."
+      - "Runs get a little slower and more expensive. That's the price of a \"done\" you can trust."
+    builds: ["reports/selfcheck.html (self-checks off vs on)"]
+    replay: replays/lesson3-no-check.jsonl
+
+  - id: "3.8"
+    title: Signal cases
+    why: |
+      A **signal** is something the world does after the assistant acts that hints at whether it did well:
+      an attendee declines, Maya edits a draft, a contact replies. Nobody says "wrong", but a good assistant
+      notices and acts. In S07, Lisa is out on Friday. In E03, Maya edits the draft before approving it.
+    prompt: |
+      I've run `uv run ea-eval run --cases S07,E03 --trials 1 --run-id signals`. Read both trials' trace.jsonl in evals/results/signals/ and look for `signal` events and Maya's messages.
+
+      For each case:
+      1. What did the world or Maya do (a decline, an out-of-office, an edit), and when?
+      2. Did the assistant notice without being told, and what did it do next?
+      3. Which rubric criteria checked that, and did they pass?
+      If the assistant missed a signal, tell me which file in assistant/ should say how to react to it, and the one sentence you'd add. Don't edit yet.
+    run:
+      - uv run ea-eval run --cases S07,E03 --trials 1 --run-id signals
+    expect:
+      - "In S07 a good run notices Lisa is out on Friday, says so, and offers another day without being asked. No Friday event is left behind."
+      - "In E03 the sent email contains Maya's edit: Tuesday at 2:15pm Central as the first option."
+      - "If the assistant ignores a decline, the fix is usually one sentence in the scheduling skill's read-back step."
+
+check:
+  - q: "The assistant replies \"Done, it's on your calendar.\" What has to be true before that counts as correct?"
+    options:
+      - "The reply is polite and ends with `STATUS: done`"
+      - "The event exists in the final calendar with the right people and time, and the trace shows a passing check before the reply"
+      - "The judge rates the reply as complete"
+    answer: 1
+    why: "\"Done\" is a claim about the world. Only the final state and the trace can confirm it; the wording can't."
+  - q: "Why does a rubric beat one exact expected answer for agent runs?"
+    options:
+      - "It's faster to run"
+      - "Many paths can be right; a rubric grades the properties a good result must have, so any valid path passes"
+      - "It lets the judge decide everything"
+    answer: 1
+    why: "Runs vary in order, wording and sometimes slot. Grading properties keeps good runs from failing for taking a different route."
+  - q: "Your judge's TPR on `concise` is 95% and its TNR is 60%. What does that mean?"
+    options:
+      - "It fails too many replies you'd pass"
+      - "It passes too many replies you'd fail, so reword the criterion and its examples"
+      - "It's calibrated, because the average is over 75%"
+    answer: 1
+    why: "TNR is how often the judge says no when you said no. At 60% it lets real failures through. Both rates need to reach 85%."

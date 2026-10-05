@@ -1,0 +1,151 @@
+title: Tools and tool evals
+number: 1
+duration: 35 min
+goal: "Tools that do what their descriptions say, and evidence that the model picks them and calls them correctly."
+intro: |
+  A tool is only as good as two things: its code and its description. The model never sees the code. It
+  decides which tool to call, and with what arguments, from the name and the description alone. So this
+  lesson tests both: the code with unit tests, and the description with the model in the loop. It ends
+  with the model on its own, answering date questions with no tools at all.
+by_the_end:
+  - "`ea_world/calendar.py` fixed, so free slots respect each person's own time zone"
+  - "A clearer `calendar_find_free` description, and numbers that show what it changed"
+  - "Two tool scores: right tool (selection) and right arguments"
+  - "pass@k and pass^k for date questions, and a sense of which one users feel"
+
+steps:
+  - id: "1.1"
+    title: Read the tool descriptions
+    why: |
+      Before testing anything, read what the model reads. One description in your kit is vague on
+      purpose: `calendar_find_free` doesn't say whose time zone or working hours it uses. A model can't
+      follow rules nobody told it, so a vague description turns into wrong arguments.
+    prompt: |
+      Read every tool's description in ea_world/: the docstrings and the Field descriptions in calendar.py, email.py, contacts.py, docs.py, web.py, travel.py and verifiers.py. Don't change anything yet.
+
+      Imagine you're the model and these descriptions are all you know. List the three most likely to cause a wrong call. For each, say:
+      - what a model could get wrong (which tool, which argument)
+      - what the description should say instead, in one sentence
+      Start with calendar_find_free: does it say which time zone the inputs are in, whose working hours it applies, and what it returns?
+    expect:
+      - "`calendar_find_free` is the weakest. \"Finds free time\" says nothing about time zones, working hours or the 09:00 to 17:30 limit."
+      - "Claude Code suggests wording that names the format of the inputs (ISO 8601 with offsets) and says each attendee's hours apply in their own zone."
+      - "You haven't changed any files. The fix comes in 1.4, after you've measured."
+
+  - id: "1.2"
+    title: Run the tool unit tests, and fix what fails
+    why: |
+      Unit tests check the code with no model involved: the same input always gives the same answer. At
+      least one `find_free` test fails in your kit. The free-slot finder reads everyone's working hours on
+      Maya's clock, so it offers slots that are evenings in London. This week makes it worse: London
+      changed its clocks on 25 October and Denver hasn't yet.
+    prompt: |
+      Run `uv run pytest tests/test_tools.py -k find_free`. At least one test fails.
+
+      1. Read the failing test in tests/test_tools.py and tell me in plain words what it expects and what the tool returned instead.
+      2. Find the cause in ea_world/calendar.py (calendar_find_free and the helpers it calls).
+      3. Fix it so every attendee's working hours are checked in that attendee's own time zone, using zoneinfo (ZoneInfo with the contact's timezone). No fixed UTC offsets anywhere: this week London is 6 hours ahead of Denver, not 7.
+      4. Don't change the tests, and don't touch the tool's description yet.
+      5. Run the find_free tests again, then the whole file, and show me the summary lines.
+    run:
+      - uv run pytest tests/test_tools.py -k find_free
+      - uv run pytest tests/test_tools.py
+    expect:
+      - "Before the fix, one or more `find_free` tests fail. The S01 test is the clearest: it expects one slot this week (Wed 28 Oct, 11:00 Denver) and gets several."
+      - "The fix is small: hours are read in each attendee's own zone."
+      - "After the fix every `find_free` test passes, and the rest of `tests/test_tools.py` still does."
+    builds: ["ea_world/calendar.py (time-zone bug fixed)"]
+    replay: replays/lesson1-find-free.jsonl
+
+  - id: "1.3"
+    title: Run the tool-use suite
+    why: |
+      Unit tests say the tool works. They don't say the model calls it well. The tool-use suite sends 30
+      short requests to the assistant and grades only the **first** tool it reaches for. Nothing really
+      runs: every call is recorded, then refused. Two scores come out: **selection accuracy** (was it a
+      right tool?) and **argument accuracy** (were the arguments right too?).
+    prompt: |
+      I've run `uv run ea-eval component tool_use --run-id tools-before`. Read evals/results/tools-before/component.json and evals/components/tool_use.yaml. Don't change anything.
+
+      Tell me:
+      1. The selection accuracy and the argument accuracy.
+      2. Every item where the tool was right but the arguments were wrong: the request, the call it made, and which expected fragment was missing.
+      3. Group those mistakes: time zones and dates, attendee ids, other. Which group is biggest?
+    run:
+      - uv run ea-eval component tool_use --run-id tools-before
+    expect:
+      - "30 short probes, a few minutes in all. It prints `selection_accuracy` and `argument_accuracy`."
+      - "Selection accuracy is high. Argument accuracy is lower, mostly time-zone, date and attendee mistakes."
+      - "Every probe's trace is kept under `evals/results/tools-before/`, so you can see exactly what was called."
+    builds: ["evals/results/tools-before/component.json (tool scores before)"]
+    replay: replays/lesson1-tool-use-probe.jsonl
+
+  - id: "1.4"
+    title: Rewrite the description, then measure again
+    why: |
+      This is an A/B test: change one thing, run the same suite, compare. If the description is the
+      problem, a clearer one should move argument accuracy more than selection, because the model already
+      picks the right tool. It just fills it in wrong.
+    prompt: |
+      Rewrite the description of calendar_find_free in ea_world/calendar.py: its docstring and its Field descriptions. Change only the descriptions, not the code.
+
+      The new description must say:
+      - what it finds: slots where every internal attendee is free
+      - that each attendee's working hours apply in that attendee's own time zone, and no slot starts before 09:00 or ends after 17:30 local time for anyone
+      - that it keeps 15 minutes between Maya's meetings
+      - that times in and out are ISO 8601 with offsets, and that local_times gives each attendee's local time
+      - that attendees are contact ids from contacts_lookup, and that people outside Larkspur have no visible calendar
+      Keep it under 80 words. Run `uv run pytest tests/test_tools.py -k find_free` to make sure nothing broke.
+
+      Then, after I've run the suite again with --run-id tools-after, compare evals/results/tools-before/component.json with evals/results/tools-after/component.json item by item, and tell me which items changed.
+    run:
+      - uv run pytest tests/test_tools.py -k find_free
+      - uv run ea-eval component tool_use --run-id tools-after
+    expect:
+      - "The tests still pass: you changed words, not behaviour."
+      - "Argument accuracy rises more than selection accuracy, which was already high."
+      - "A few items may still miss. Look at them: often the request itself is ambiguous, not the tool."
+    builds: ["ea_world/calendar.py (clearer description)", "evals/results/tools-after/component.json (tool scores after)"]
+
+  - id: "1.5"
+    title: "Test the model alone: dates and times"
+    why: |
+      This is the model layer, with no tools at all. Twenty questions like "What date is the Tuesday of
+      next week?" each have one exact answer, and each is asked 5 times. **pass@k** is the chance that at
+      least one of k tries is right. **pass^k** ("pass hat k") is the chance that all k are. Maya asks once
+      and relies on the answer, so she feels pass^k.
+    prompt: |
+      I've run `uv run ea-eval component llm_dates --trials 5 --run-id dates`. Read evals/results/dates/component.json and evals/components/llm_dates.yaml. Don't change anything.
+
+      Tell me:
+      1. The overall pass@1 and pass^5.
+      2. The items it got right at least once but not all five times (pass@5 yes, pass^5 no): the question, the right answer, and the wrong answers it gave.
+      3. Whether the misses cluster on the clock-change week (London vs Denver on 28 October and 4 November).
+      4. In two sentences: for an assistant that schedules Maya's meetings, which number should we report, and why?
+    run:
+      - uv run ea-eval component llm_dates --trials 5 --run-id dates
+    expect:
+      - "100 short calls (20 questions, 5 tries each), with no tools."
+      - "Almost every question is right at least once in five tries, so pass@5 is close to 100%. pass^5 is visibly lower."
+      - "The misses cluster on the London clock-change questions, the same trap the unit test caught in code."
+    builds: ["evals/results/dates/component.json (date reasoning)"]
+
+check:
+  - q: "A tool call has the right name but the wrong time zone. Which score catches it?"
+    options: ["Selection accuracy", "Argument accuracy", "pass@k"]
+    answer: 1
+    why: "Selection only asks whether a right tool was picked. The arguments score checks what was passed, with times compared as instants."
+  - q: "The `find_free` unit tests pass. What don't they tell you?"
+    options:
+      - "Whether the code finds the right slots"
+      - "Whether the model calls the tool with the right arguments"
+      - "Whether the tool handles London's clock change"
+    answer: 1
+    why: "Unit tests run the code directly. Only an eval with the model in the loop shows whether the model uses the tool well."
+  - q: "pass@5 is 98% and pass^5 is 70%. Which matters more for Maya, who relies on the answer every day?"
+    options:
+      - "pass@5: it shows the model can do it"
+      - "pass^5: it shows how often every try is right"
+      - "Neither: only pass@1 counts"
+    answer: 1
+    why: "Maya doesn't get five tries and pick the best one. pass^k measures reliability, which is what she feels."

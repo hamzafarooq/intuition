@@ -34,6 +34,54 @@
     clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 4200);
   }
 
+  // ------------------------------------------------------------------ app tiles (connector icons)
+
+  // Original drawings: rounded-square tiles with a gradient, a soft gloss and a white glyph.
+  // Gradients and the squircle clip live once in index.html (#tg-*, #tile-sq).
+  const SQ = "M20 .6C31.5.6 35.6.6 37.5 2.5S39.4 8.5 39.4 20s0 15.6-1.9 17.5-6 1.9-17.5 1.9-15.6 0-17.5-1.9S.6 31.5.6 20s0-15.6 1.9-17.5S8.5.6 20 .6z";
+  const GLYPH = {
+    email: '<rect x="9.5" y="12.5" width="21" height="15" rx="2.6" fill="#fff"/><path d="M10.6 13.9 20 21.2l9.4-7.3" fill="none" stroke="#2A6BDD" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>',
+    contacts: '<circle cx="20" cy="16" r="5.2" fill="#fff"/><path d="M10.2 30.2c1.1-5.6 5-8.6 9.8-8.6s8.7 3 9.8 8.6z" fill="#fff"/>',
+    docs: '<path d="M13.4 9.3h10.2l5.8 5.8v15.4a1.6 1.6 0 0 1-1.6 1.6H13.4a1.6 1.6 0 0 1-1.6-1.6V10.9a1.6 1.6 0 0 1 1.6-1.6z" fill="#fff"/><path d="M23.6 9.3v4.2a1.6 1.6 0 0 0 1.6 1.6h4.2z" fill="#F7C25A"/><path d="M15.4 20h9.2M15.4 23.6h9.2M15.4 27.2h5.8" stroke="#E8930F" stroke-width="1.7" stroke-linecap="round"/>',
+    web: '<g fill="none" stroke="#fff" stroke-width="1.9"><circle cx="20" cy="20" r="9.6"/><ellipse cx="20" cy="20" rx="4.2" ry="9.6"/><path d="M10.6 17h18.8M10.6 23h18.8" stroke-linecap="round"/></g>',
+    travel: '<path transform="rotate(45 20 20)" d="M20 7.6c1.3 0 2 1.2 2 2.6V17l9.6 5.3v2.4L22 21.9V28l3 2.3v1.9L20 30.8l-5 1.4v-1.9l3-2.3v-6.1l-9.6 2.8v-2.4L18 17v-6.8c0-1.4.7-2.6 2-2.6z" fill="#fff"/>',
+    check: '<path d="M12.4 20.6l5.1 5.1 10.2-10.6" fill="none" stroke="#fff" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"/>',
+  };
+  function calParts() {
+    const now = worldNow() || (S.cfg?.persona?.now ? new Date(S.cfg.persona.now) : new Date());
+    return { dow: fmt(now, { weekday: "short" }).toUpperCase().slice(0, 3), day: fmt(now, { day: "numeric" }) };
+  }
+  function tile(kind, size = 20) {
+    const box = `class="app-tile" width="${size}" height="${size}" viewBox="0 0 40 40" aria-hidden="true" focusable="false"`;
+    const gloss = `<path d="${SQ}" fill="url(#tg-gloss)"/><path d="${SQ}" fill="none" stroke="rgb(0 0 0 / .13)" stroke-width=".8"/>`;
+    if (kind === "calendar") {
+      const { dow, day } = calParts();
+      return `<svg ${box}><g clip-path="url(#tile-sq)"><rect width="40" height="40" fill="url(#tg-calbody)"/><rect width="40" height="12.5" fill="url(#tg-calhead)"/></g>`
+        + `<text x="20" y="9.6" text-anchor="middle" font-size="7" font-weight="700" letter-spacing=".6" fill="#fff" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif">${esc(dow)}</text>`
+        + `<text x="20" y="31.6" text-anchor="middle" font-size="17.5" font-weight="600" fill="#2A2520" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif">${esc(day)}</text>${gloss}</svg>`;
+    }
+    if (!GLYPH[kind]) return "";
+    return `<svg ${box}><path d="${SQ}" fill="url(#tg-${kind})"/>${GLYPH[kind]}${gloss}</svg>`;
+  }
+  // A tile that can show "not connected" (desaturated) or "disconnected" (desaturated, slash badge).
+  function tileBox(kind, size, state = "on") {
+    const badge = state === "disconnected"
+      ? '<svg class="slash" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5.1" style="fill: var(--surface)" stroke="currentColor" stroke-width="1.4"/><path d="M3 9 9 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>' : "";
+    return `<span class="tile-box ${state === "on" ? "" : "off"}" style="--ts:${size}px">${tile(kind, size)}${badge}</span>`;
+  }
+  function toolGroup(tool) {
+    const t = String(tool || "");
+    if (t.startsWith("calendar_")) return "calendar";
+    if (t.startsWith("email_")) return "email";
+    if (t === "contacts_lookup") return "contacts";
+    if (t.startsWith("docs_")) return "docs";
+    if (t.startsWith("web_")) return "web";
+    if (/^(travel_|restaurant_)/.test(t) || t === "holds_list" || t === "bookings_list") return "travel";
+    if (t.startsWith("check_")) return "check";
+    return null;
+  }
+  const toolTile = (tool, size = 15) => { const g = toolGroup(tool); return g ? tile(g, size) : ""; };
+
   // ------------------------------------------------------------------ state
 
   const S = {
@@ -63,7 +111,6 @@
   };
   const FILTERS = [["all", "All"], ["tools", "Tools"], ["skills", "Skills"], ["agents", "Agents"], ["approvals", "Approvals"],
     ["checks", "Checks"], ["signals", "Signals"], ["browser", "Browser"], ["messages", "Messages"], ["system", "System"]];
-  const CONN_ICON = { email: "mail", calendar: "calendar", contacts: "people", docs: "doc", web: "globe", travel: "plane" };
   const STATUS_LABEL = { done: "Done", partial: "Partly done", failed: "Failed", waiting: "Waiting on you", missing: "No status" };
   const STATUS_RE = /^[ \t]*\**STATUS:\**\s*(done|partial|failed|waiting)\b\s*(?:[—–-]\s*(.*))?$/gim;
   const isBrowserTool = (e) => (e.type === "tool_call" || e.type === "tool_result") && (e.server === "browser" || /^browser\./.test(e.tool || ""));
@@ -179,19 +226,19 @@
     const a = e.agent && e.agent !== "main" ? `<span class="agent-tag">${esc(e.agent)}</span>` : "";
     switch (e.type) {
       case "tool_call":
-        if (e.tool === "web_search") return `${a}Searched “${esc(e.input?.query)}”`;
-        if (e.tool === "web_fetch") return `${a}Opened <span class="sub">${esc(e.input?.url)}</span>`;
-        return `${a}<b>${esc(e.tool)}</b> <span class="sub">${esc(argSummary(e.input))}</span>`;
+        if (e.tool === "web_search") return `${a}${toolTile(e.tool)}Searched “${esc(e.input?.query)}”`;
+        if (e.tool === "web_fetch") return `${a}${toolTile(e.tool)}Opened <span class="sub">${esc(e.input?.url)}</span>`;
+        return `${a}${toolTile(e.tool)}<b>${esc(e.tool)}</b> <span class="sub">${esc(argSummary(e.input))}</span>`;
       case "tool_result":
-        return `${a}${e.ok === false ? '<span class="bad">✗</span>' : '<span class="ok">✓</span>'} <b>${esc(e.tool)}</b> <span class="sub">${esc(e.ok === false ? clip(e.error, 160) : outputSummary(e.tool, e.output))}</span>`;
+        return `${a}${toolTile(e.tool)}${e.ok === false ? '<span class="bad">✗</span>' : '<span class="ok">✓</span>'} <b>${esc(e.tool)}</b> <span class="sub">${esc(e.ok === false ? clip(e.error, 160) : outputSummary(e.tool, e.output))}</span>`;
       case "skill_loaded": return `Loaded skill <b>${esc(e.skill)}</b>`;
       case "delegate": return `Handed to <b>${esc(e.to)}</b>: <span class="sub">${esc(clip(e.task, 180))}</span>`;
       case "handoff_result": return `<b>${esc(e.to)}</b> reported back: <span class="sub">${esc(clip(e.text, 180))}</span>`;
-      case "approval_request": return `${a}Asked to approve <b>${esc(e.tool)}</b>: <span class="sub">${esc(clip(e.summary, 180))}</span>`;
+      case "approval_request": return `${a}${toolTile(e.tool)}Asked to approve <b>${esc(e.tool)}</b>: <span class="sub">${esc(clip(e.summary, 180))}</span>`;
       case "approval_response": return `${e.decision === "allow" ? '<span class="ok">Approved</span>' : '<span class="bad">Denied</span>'} by ${esc(byLabel(e.by))} <span class="sub">${esc(e.reason || "")}</span>`;
       case "check": {
         const probs = (e.problems || []).map((p) => p.detail || p.code).join("; ");
-        return `${a}${e.ok ? '<span class="ok">✓</span>' : '<span class="bad">✗</span>'} <b>${esc(e.verifier)}</b> ${esc(e.object_id || "")} <span class="sub">${esc(clip(probs, 200))}</span>`;
+        return `${a}${tile("check", 15)}${e.ok ? '<span class="ok">✓</span>' : '<span class="bad">✗</span>'} <b>${esc(e.verifier)}</b> ${esc(e.object_id || "")} <span class="sub">${esc(clip(probs, 200))}</span>`;
       }
       case "stop_check_block": return `Stop check blocked the reply: <span class="sub">${esc(e.reason)}</span>`;
       case "signal": return `<b>${esc(e.kind)}</b> ${esc(e.detail || "")}`;
@@ -573,7 +620,8 @@
     }
     const cat = catOf(r && r.ok === false ? r : e);
     const nested = e.agent && e.agent !== "main" ? " nested" : "";
-    return `<li class="step cat-${cat}${nested}"><button class="step-line" type="button" data-step="${idx}" aria-expanded="false">${icon(ic)}<span class="s-main">${main}${sub ? `<span class="s-sub">${sub}</span>` : ""}${extra}</span></button></li>`;
+    const lead = e.type === "check" ? tile("check", 16) : (e.type === "tool_call" || e.type === "tool_result") && toolGroup(e.tool) ? tile(toolGroup(e.tool), 16) : icon(ic);
+    return `<li class="step cat-${cat}${nested}"><button class="step-line" type="button" data-step="${idx}" aria-expanded="false">${lead}<span class="s-main">${main}${sub ? `<span class="s-sub">${sub}</span>` : ""}${extra}</span></button></li>`;
   }
   function signalLabel(kind) {
     return { decline: "Declined", reply: "Reply", travel_flag: "Travel desk flag", disconnect: "Disconnected", edit: "Edited", deny: "Denied", correction: "Correction" }[kind] || kind;
@@ -740,7 +788,7 @@
     const connHtml = conns.map(([k, v]) => {
       const on = v !== "disconnected";
       const label = (S.cfg.connectors.find((c) => c.id === k) || {}).label || k;
-      return `<div class="conn-tile ${on ? "" : "off"}">${icon(CONN_ICON[k] || "plug")}<span class="c-text"><span class="c-name">${esc(label)}</span><span class="c-state">${on ? "Connected" : "Disconnected"}</span></span>
+      return `<div class="conn-tile ${on ? "" : "off"}">${tileBox(k, 24, on ? "on" : "disconnected")}<span class="c-text"><span class="c-name">${esc(label)}</span><span class="c-state">${on ? "Connected" : "Disconnected"}</span></span>
         <label class="switch s"><input type="checkbox" data-conn="${esc(k)}" ${on ? "checked" : "disabled"} aria-label="${esc(label)} connector"><span class="track"></span></label></div>`;
     }).join("");
     const days = (w.week?.days || []).map((d) => `<div class="day"><div class="day-name">${esc(d.label)}${d.today ? '<span class="today">Today</span>' : ""}</div>${d.events.length ? d.events.map(calEvent).join("") : '<p class="w-empty">Nothing booked.</p>'}</div>`).join("");
@@ -766,20 +814,20 @@
         <div class="conn-grid">${connHtml}</div>
         <div class="w-note"><span>Turning one off disconnects it in the tool server for the rest of this session. It can't be turned back on.</span>
         <button class="btn btn-quiet btn-s btn-pill" type="button" id="world-reset">${icon("refresh")} Reset world</button></div></section>
-      <section class="w-card"><div class="w-head">${icon("calendar")}<h3>This week</h3><span class="w-count">${esc(w.timezone || "")}</span></div>${days}${later}</section>
-      <section class="w-card"><div class="w-head">${icon("inbox")}<h3>Inbox</h3><span class="w-count">${w.unread || 0} unread${newIds.size ? ` · ${newIds.size} new` : ""}</span></div>
+      <section class="w-card"><div class="w-head">${tile("calendar", 20)}<h3>This week</h3><span class="w-count">${esc(w.timezone || "")}</span></div>${days}${later}</section>
+      <section class="w-card"><div class="w-head">${tile("email", 20)}<h3>Inbox</h3><span class="w-count">${w.unread || 0} unread${newIds.size ? ` · ${newIds.size} new` : ""}</span></div>
         <div>${shown.map((m) => mail(m, "inbox")).join("") || '<p class="w-empty">Empty.</p>'}</div>
         ${inbox.length > 8 ? `<button class="more" type="button" id="inbox-more">${S.inboxAll ? "Show fewer" : `Show all ${inbox.length}`}</button>` : ""}</section>
-      <section class="w-card"><div class="w-head">${icon("outbox")}<h3>Sent</h3><span class="w-count">${outbox.length}</span></div>
+      <section class="w-card"><div class="w-head">${tile("email", 20)}<h3>Sent</h3><span class="w-count">${outbox.length}</span></div>
         <div>${outbox.slice().reverse().map((m) => mail(m, "sent")).join("") || '<p class="w-empty">Nothing sent from this session.</p>'}</div>
         ${drafts.length ? `<div class="w-head" style="margin-top:12px">${icon("doc")}<h3>Drafts</h3><span class="w-count">${drafts.length}</span></div><div>${drafts.map((m) => mail(m, "drafts")).join("")}</div>` : ""}</section>
-      <section class="w-card"><div class="w-head">${icon("ticket")}<h3>Bookings and holds</h3><span class="w-count">${bookings.length} booked · ${holds.length} held</span></div>
+      <section class="w-card"><div class="w-head">${tile("travel", 20)}<h3>Bookings and holds</h3><span class="w-count">${bookings.length} booked · ${holds.length} held</span></div>
         <div>${bookings.map((b) => `<div class="kv"><span class="k">${esc(b.id)} · ${esc(b.kind)}${b.status === "cancelled" ? " (cancelled)" : ""}</span><span class="v">$${esc(b.total_usd)}</span><span class="d">${esc(b.option_id)}${b.check_in ? ` · ${esc(b.check_in)} to ${esc(b.check_out)}` : b.date ? ` · ${esc(b.date)}` : ""}${b.hold_id ? ` · from ${esc(b.hold_id)}` : ""}</span></div>`).join("")}
         ${holds.map((h) => `<div class="kv"><span class="k">${icon("hold", "icon")} ${esc(h.hold_id)} · ${esc(h.kind)}</span><span class="v">$${esc(h.total_usd)}</span><span class="d">${esc(h.option_id)} · ${esc(h.status)}</span></div>`).join("")}
         ${!bookings.length && !holds.length ? '<p class="w-empty">No bookings yet.</p>' : ""}</div></section>
-      <section class="w-card"><div class="w-head">${icon("doc")}<h3>Briefs and decks</h3><span class="w-count">${docLinks.length}</span></div>
+      <section class="w-card"><div class="w-head">${tile("docs", 20)}<h3>Briefs and decks</h3><span class="w-count">${docLinks.length}</span></div>
         <div class="links">${docLinks.map((l) => `<a href="${esc(outputUrl(l.path))}" target="_blank" rel="noopener">${icon(l.ic)} ${esc(l.title)} <span class="sub">${esc(l.id)}</span></a>`).join("") || '<p class="w-empty">Nothing saved yet.</p>'}</div></section>
-      <section class="w-card"><div class="w-head">${icon("image")}<h3>Browser screenshots</h3><span class="w-count">${links.browser.length}</span></div>
+      <section class="w-card"><div class="w-head">${tile("web", 20)}<h3>Browser screenshots</h3><span class="w-count">${links.browser.length}</span></div>
         ${links.browser.length ? `<div class="thumbs">${links.browser.map((s) => `<a href="${esc(outputUrl(s.path))}" target="_blank" rel="noopener"><img loading="lazy" src="${esc(outputUrl(s.path))}" alt="${esc(s.label)}"><span>${esc(s.label)}</span></a>`).join("")}</div>` : '<p class="w-empty">When bookings happen in the browser, its screenshots appear here.</p>'}</section>`;
   }
   async function disconnect(name, input) {
@@ -884,11 +932,12 @@
     let saved = {};
     try { saved = JSON.parse(store.get("intuition:setup") || "{}") || {}; } catch { saved = {}; }
     $("#connector-list").innerHTML = c.connectors.map((x) => `<li>
-      <span class="conn-icon">${icon(CONN_ICON[x.id] || "plug")}</span>
+      <span class="conn-icon" data-tile="${esc(x.id)}">${tileBox(x.id, 40, saved.connectors?.[x.id] ? "on" : "idle")}</span>
       <span class="conn-text"><span class="conn-name">${esc(x.label)}</span><span class="conn-desc">${esc(x.sees)} ${esc(x.does)}</span></span>
       <label class="switch"><input type="checkbox" role="switch" data-connector="${esc(x.id)}" ${saved.connectors?.[x.id] ? "checked" : ""}><span class="track" aria-hidden="true"></span><span class="sr">Connect ${esc(x.label)}</span></label>
     </li>`).join("");
     updateConnectAll();
+    $("#how-tiles").innerHTML = c.connectors.map((x) => `<span title="${esc(x.label)}">${tile(x.id, 34)}</span>`).join("");
     // harness
     const hs = c.harnesses;
     if (hs.length > 1) {
@@ -918,6 +967,7 @@
   }
   function updateConnectAll() {
     const boxes = [...document.querySelectorAll("[data-connector]")];
+    for (const b of boxes) b.closest("li")?.querySelector(".tile-box")?.classList.toggle("off", !b.checked);
     const all = boxes.every((x) => x.checked);
     const btn = $("#connect-all");
     btn.textContent = all ? "All connected" : "Connect all";
