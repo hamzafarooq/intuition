@@ -1,0 +1,194 @@
+# Component suite: skill loading (Lesson 2.4). Spec: spec/10-component-suites.md.
+#
+# One `claude -p` call per prompt in the assistant folder, every ea-world tool recorded and
+# denied (as in tool_use), --max-turns 2. Pass for a `should` prompt: a Skill tool use for this
+# skill appears before any other tool use. Pass for a `should_not` prompt: this skill is not
+# loaded. Precision and recall per skill.
+#
+# should:     {id, text, style}       style: plain | indirect | typo (typo = a plain request with typos)
+#             per skill: 10 plain + 2 typo (60%), 8 indirect (40%)
+# should_not: {id, text, belongs_to}  belongs_to: a neighbouring skill (near miss) or none
+#             per skill: 10 near misses + 10 needing no skill
+#
+# Skill descriptions these are written against (spec/04-assistant.md):
+#   scheduling    find time, schedule, move or cancel a meeting, or block time; not email about meetings
+#   inbox-triage  what needs attention, what to ignore, what's dropped, inbox summary; not replies
+#   meeting-brief prepare for / be briefed on a meeting, customer or account; not slides
+#   meeting-deck  slides or a deck; not a written brief
+
+skills:
+  scheduling:
+    should:
+      - {id: sch-s01, style: plain, text: "Get me 30 minutes with Kevin today."}
+      - {id: sch-s02, style: plain, text: "Can you move Thursday's forecast review?"}
+      - {id: sch-s03, style: indirect, text: "Dan and Lisa need to see the forecast before Friday."}
+      - {id: sch-s04, style: plain, text: "Find 30 minutes with Dan Okafor and Lisa this week."}
+      - {id: sch-s05, style: plain, text: "Move my Wednesday 1:1 with Tom to Thursday, same time."}
+      - {id: sch-s06, style: plain, text: "Set up 45 minutes with Dan Okafor and Tom on Thursday afternoon."}
+      - {id: sch-s07, style: plain, text: "Block two hours of focus time on Thursday morning."}
+      - {id: sch-s08, style: plain, text: "Cancel Friday's team lunch."}
+      - {id: sch-s09, style: plain, text: "Schedule a call with Raj next week to go over the co-marketing plan."}
+      - {id: sch-s10, style: plain, text: "Put 30 minutes with Kevin on my calendar before the Ridgeway review at 2."}
+      - {id: sch-s11, style: plain, text: "Book an hour with Priya on Tuesday to go through the forecast workbook."}
+      - {id: sch-s12, style: indirect, text: "I need Tom and Dan Okafor in a room before the forecast goes in."}
+      - {id: sch-s13, style: indirect, text: "Kevin and I should sync before the Granite call on Wednesday."}
+      - {id: sch-s14, style: indirect, text: "The 1:1 with Tom on Wednesday isn't going to work for me this week."}
+      - {id: sch-s15, style: indirect, text: "I can't make the Thursday forecast review anymore."}
+      - {id: sch-s16, style: indirect, text: "I need some heads-down time this week to finish the Q4 numbers."}
+      - {id: sch-s17, style: indirect, text: "Lisa's out on Friday, so anything with her and Dan Okafor has to happen before then."}
+      - {id: sch-s18, style: indirect, text: "Priya and I haven't caught up in a while; sometime Wednesday or Thursday would be ideal."}
+      - {id: sch-s19, style: typo, text: "can u find 30 mins w/ kevin tmrw afternoon?"}
+      - {id: sch-s20, style: typo, text: "resched my 1:1 wiht Tom to thursday pls"}
+    should_not:
+      - {id: sch-n01, belongs_to: email-reply, text: "Reply to Raj that Thursday doesn't work."}
+      - {id: sch-n02, belongs_to: email-reply, text: "Write back to Kevin: lunch tomorrow at 12 is still on."}
+      - {id: sch-n03, belongs_to: email-reply, text: "Forward Amy's agenda to Kevin before the 2pm."}
+      - {id: sch-n04, belongs_to: email-reply, text: "Draft an email to Ben Walsh saying Helen is welcome to join Wednesday's call."}
+      - {id: sch-n05, belongs_to: meeting-brief, text: "Prep me for the Granite call on Wednesday."}
+      - {id: sch-n06, belongs_to: travel-booking, text: "Book my flight to Chicago for the summit."}
+      - {id: sch-n07, belongs_to: travel-booking, text: "Reserve a table for 4 near Harbor Point on 3 November at 7pm."}
+      - {id: sch-n08, belongs_to: meeting-deck, text: "Make three slides for Thursday's Regional QBR."}
+      - {id: sch-n09, belongs_to: inbox-triage, text: "Has anyone asked me for a meeting that I haven't answered yet?"}
+      - {id: sch-n10, belongs_to: web-research, text: "Check the summit website for what time registration opens."}
+      - {id: sch-n11, belongs_to: none, text: "What's on my calendar Monday?"}
+      - {id: sch-n12, belongs_to: none, text: "When is my 1:1 with Tom?"}
+      - {id: sch-n13, belongs_to: none, text: "Who's invited to the Ridgeway quarterly review?"}
+      - {id: sch-n14, belongs_to: none, text: "Is the Regional QBR still at 13:00 on Thursday?"}
+      - {id: sch-n15, belongs_to: none, text: "What's Lisa Park's time zone?"}
+      - {id: sch-n16, belongs_to: none, text: "What are Dan Okafor's working hours?"}
+      - {id: sch-n17, belongs_to: none, text: "How long is the Ridgeway meeting this afternoon?"}
+      - {id: sch-n18, belongs_to: none, text: "What's 11:00 Denver in London on Wednesday?"}
+      - {id: sch-n19, belongs_to: none, text: "Disconnect my calendar."}
+      - {id: sch-n20, belongs_to: none, text: "Do I have anything on Friday afternoon?"}
+
+  inbox-triage:
+    should:
+      - {id: tri-s01, style: plain, text: "What needs me today?"}
+      - {id: tri-s02, style: plain, text: "Anything urgent in my inbox?"}
+      - {id: tri-s03, style: indirect, text: "What have I let slip?"}
+      - {id: tri-s04, style: plain, text: "Triage my inbox."}
+      - {id: tri-s05, style: plain, text: "Summarize my inbox for this morning."}
+      - {id: tri-s06, style: plain, text: "What in my email can I ignore?"}
+      - {id: tri-s07, style: plain, text: "Which emails need an answer from me today?"}
+      - {id: tri-s08, style: plain, text: "Go through my unread email and tell me what matters."}
+      - {id: tri-s09, style: plain, text: "Have I dropped any threads with customers?"}
+      - {id: tri-s10, style: plain, text: "Sort my inbox into needs-today, can-wait and ignore."}
+      - {id: tri-s11, style: plain, text: "Is anything in my inbox suspicious or phishy?"}
+      - {id: tri-s12, style: indirect, text: "I was offline all weekend. What did I miss?"}
+      - {id: tri-s13, style: indirect, text: "Who's waiting on me?"}
+      - {id: tri-s14, style: indirect, text: "I have a feeling I forgot to answer someone important."}
+      - {id: tri-s15, style: indirect, text: "I'm drowning in email this morning and only have ten minutes before standup."}
+      - {id: tri-s16, style: indirect, text: "Did anyone chase me for an answer I never gave?"}
+      - {id: tri-s17, style: indirect, text: "Too many emails. Just tell me the ones that actually matter."}
+      - {id: tri-s18, style: indirect, text: "I don't want a customer email sitting unanswered for another week."}
+      - {id: tri-s19, style: typo, text: "whats urgent in my inbx today"}
+      - {id: tri-s20, style: typo, text: "anythign in email i need to deal with b4 9?"}
+    should_not:
+      - {id: tri-n01, belongs_to: email-reply, text: "Reply to Kevin about lunch."}
+      - {id: tri-n02, belongs_to: meeting-brief, text: "Summarize the Ridgeway account."}
+      - {id: tri-n03, belongs_to: email-reply, text: "Draft a reply to Dan Reyes about the 2027 pricing question."}
+      - {id: tri-n04, belongs_to: email-reply, text: "Forward the summit registration email to the travel desk."}
+      - {id: tri-n05, belongs_to: travel-booking, text: "Book the Harbor Point block before the rate expires tonight."}
+      - {id: tri-n06, belongs_to: scheduling, text: "Set up the forecast sync Tom asked for with Dan Okafor and Lisa."}
+      - {id: tri-n07, belongs_to: web-research, text: "Kevin says Fastlane cut prices 8%. Check online whether that's true."}
+      - {id: tri-n08, belongs_to: meeting-brief, text: "Brief me on what Amy wants out of today's review."}
+      - {id: tri-n09, belongs_to: email-reply, text: "Tell Priya by email that v3 of the workbook looks good."}
+      - {id: tri-n10, belongs_to: meeting-deck, text: "Turn Amy's agenda into three slides for this afternoon."}
+      - {id: tri-n11, belongs_to: none, text: "Who is Amy?"}
+      - {id: tri-n12, belongs_to: none, text: "Open the email from Priya about the forecast workbook."}
+      - {id: tri-n13, belongs_to: none, text: "Find the email from Raj about Thursday."}
+      - {id: tri-n14, belongs_to: none, text: "When did Dan Reyes last email me?"}
+      - {id: tri-n15, belongs_to: none, text: "What's the hotel block code for the summit?"}
+      - {id: tri-n16, belongs_to: none, text: "Disconnect my email."}
+      - {id: tri-n17, belongs_to: none, text: "What's Kevin Osei's job title?"}
+      - {id: tri-n18, belongs_to: none, text: "What day is it today?"}
+      - {id: tri-n19, belongs_to: none, text: "Show me the agenda Amy sent this morning."}
+      - {id: tri-n20, belongs_to: none, text: "What's Priya's email address?"}
+
+  meeting-brief:
+    should:
+      - {id: brf-s01, style: plain, text: "Prep me for the 2pm."}
+      - {id: brf-s02, style: plain, text: "What do I need to know before Granite?"}
+      - {id: brf-s03, style: plain, text: "Brief me on the Ridgeway quarterly review."}
+      - {id: brf-s04, style: plain, text: "Prepare a brief for Wednesday's Granite Homes call."}
+      - {id: brf-s05, style: plain, text: "Give me a one-page brief on Ridgeway Builders."}
+      - {id: brf-s06, style: plain, text: "Write me a prep note for my 1:1 with Tom on Wednesday."}
+      - {id: brf-s07, style: plain, text: "Brief me on Brightpath before I talk to Raj."}
+      - {id: brf-s08, style: plain, text: "Get me ready for Thursday's Regional QBR."}
+      - {id: brf-s09, style: plain, text: "What's the background on the Granite Homes account?"}
+      - {id: brf-s10, style: plain, text: "Where do we stand with Ridgeway ahead of this afternoon's review?"}
+      - {id: brf-s11, style: indirect, text: "I walk into the Ridgeway meeting at 2 and I haven't looked at anything yet."}
+      - {id: brf-s12, style: indirect, text: "Amy and Dan Reyes are going to grill me about the late shipments this afternoon."}
+      - {id: brf-s13, style: indirect, text: "Helen Ortiz might be on the Granite call. I don't want any surprises."}
+      - {id: brf-s14, style: indirect, text: "Tom will ask about Ridgeway in our 1:1 and I'd like to have the facts straight."}
+      - {id: brf-s15, style: indirect, text: "Ridgeway's contract runs out at the end of the year and I'm seeing them today."}
+      - {id: brf-s16, style: indirect, text: "Ben Walsh will probably raise the anchors backorder on Wednesday. What am I walking into?"}
+      - {id: brf-s17, style: indirect, text: "Kevin and I are on with Granite on Wednesday and I barely remember their account."}
+      - {id: brf-s18, style: indirect, text: "Before the 2pm I need the open issues, the numbers and what to ask for."}
+      - {id: brf-s19, style: typo, text: "prep me for teh ridgeway qbr"}
+      - {id: brf-s20, style: typo, text: "brief on granit homes pls before wed"}
+    should_not:
+      - {id: brf-n01, belongs_to: meeting-deck, text: "Make slides for Ridgeway."}
+      - {id: brf-n02, belongs_to: meeting-deck, text: "Build a five-slide deck for Wednesday's Granite call."}
+      - {id: brf-n03, belongs_to: meeting-deck, text: "Put together a short deck on the Q4 forecast."}
+      - {id: brf-n04, belongs_to: email-reply, text: "Reply to Amy confirming today's agenda."}
+      - {id: brf-n05, belongs_to: web-research, text: "Search the web for news about Ridgeway Builders."}
+      - {id: brf-n06, belongs_to: web-research, text: "Look up Granite Homes online and tell me what's new."}
+      - {id: brf-n07, belongs_to: scheduling, text: "Move the Granite call to Thursday."}
+      - {id: brf-n08, belongs_to: scheduling, text: "Get Kevin and me 15 minutes before the Ridgeway review."}
+      - {id: brf-n09, belongs_to: inbox-triage, text: "What did I miss in email over the weekend?"}
+      - {id: brf-n10, belongs_to: travel-booking, text: "Book a dinner near Harbor Point for the summit on 3 November."}
+      - {id: brf-n11, belongs_to: none, text: "What time is the Granite call?"}
+      - {id: brf-n12, belongs_to: none, text: "Who's on the invite for the 2pm?"}
+      - {id: brf-n13, belongs_to: none, text: "When does Ridgeway's contract end?"}
+      - {id: brf-n14, belongs_to: none, text: "What's Ben Walsh's email address?"}
+      - {id: brf-n15, belongs_to: none, text: "Is Kevin on the Granite call?"}
+      - {id: brf-n16, belongs_to: none, text: "What's Helen Ortiz's title?"}
+      - {id: brf-n17, belongs_to: none, text: "What time is it?"}
+      - {id: brf-n18, belongs_to: none, text: "Which company is Amy Lin with?"}
+      - {id: brf-n19, belongs_to: none, text: "Who is Raj Mehta?"}
+      - {id: brf-n20, belongs_to: none, text: "How long is the Regional QBR on Thursday?"}
+
+  meeting-deck:
+    should:
+      - {id: dck-s01, style: plain, text: "Five slides for Ridgeway."}
+      - {id: dck-s02, style: plain, text: "Turn the forecast into a short deck for Tom."}
+      - {id: dck-s03, style: plain, text: "Make a deck for the Granite Homes call."}
+      - {id: dck-s04, style: plain, text: "Build me three slides on the Q3 delivery delays for Amy."}
+      - {id: dck-s05, style: plain, text: "Create a slide deck for Thursday's Regional QBR."}
+      - {id: dck-s06, style: plain, text: "I need a four-slide deck on the Aurora warehouse opportunity."}
+      - {id: dck-s07, style: plain, text: "Put the Ridgeway renewal into slides."}
+      - {id: dck-s08, style: plain, text: "Make a short presentation of the West Q4 forecast."}
+      - {id: dck-s09, style: plain, text: "Draft slides for the Brightpath co-marketing plan."}
+      - {id: dck-s10, style: plain, text: "Do a five-slide deck for Tom on our top five deals."}
+      - {id: dck-s11, style: indirect, text: "Tom wants something he can put on screen at the QBR."}
+      - {id: dck-s12, style: indirect, text: "I'd like to walk Ridgeway through the renewal visually this afternoon."}
+      - {id: dck-s13, style: indirect, text: "Helen Ortiz is joining on Wednesday and I want something to present to her."}
+      - {id: dck-s14, style: indirect, text: "Dan Okafor would rather see the forecast as a few slides than a spreadsheet."}
+      - {id: dck-s15, style: indirect, text: "I need visuals for the Granite call, nothing fancy."}
+      - {id: dck-s16, style: indirect, text: "I'm presenting the Aurora opportunity to Tom on Thursday and need something to show."}
+      - {id: dck-s17, style: indirect, text: "Kevin is screen-sharing on the Granite call; give him something to click through."}
+      - {id: dck-s18, style: indirect, text: "For the QBR I want the story on screen: where West landed, the top deals, and the ask."}
+      - {id: dck-s19, style: typo, text: "make 5 sildes for the ridgway review"}
+      - {id: dck-s20, style: typo, text: "deck for granite wed plz, 3 slids max"}
+    should_not:
+      - {id: dck-n01, belongs_to: meeting-brief, text: "Prep me for Ridgeway."}
+      - {id: dck-n02, belongs_to: email-reply, text: "Email Tom the forecast."}
+      - {id: dck-n03, belongs_to: meeting-brief, text: "Write me a short brief on Granite Homes, no slides."}
+      - {id: dck-n04, belongs_to: meeting-brief, text: "Give me talking points for the 2pm."}
+      - {id: dck-n05, belongs_to: email-reply, text: "Send Dan Okafor the commit by region he asked for."}
+      - {id: dck-n06, belongs_to: scheduling, text: "Find 30 minutes with Tom to rehearse the QBR."}
+      - {id: dck-n07, belongs_to: web-research, text: "Search online for Fastlane Supply's new pricing."}
+      - {id: dck-n08, belongs_to: inbox-triage, text: "What's urgent in my inbox this morning?"}
+      - {id: dck-n09, belongs_to: travel-booking, text: "Book the hotel for the summit."}
+      - {id: dck-n10, belongs_to: meeting-brief, text: "Brief me on Thursday's forecast submission review."}
+      - {id: dck-n11, belongs_to: none, text: "What's the West Q4 forecast number?"}
+      - {id: dck-n12, belongs_to: none, text: "Who is Tom Becker?"}
+      - {id: dck-n13, belongs_to: none, text: "When is the Regional QBR?"}
+      - {id: dck-n14, belongs_to: none, text: "What's the Ridgeway renewal carried at in the forecast?"}
+      - {id: dck-n15, belongs_to: none, text: "What time is 13:00 Denver in Chicago?"}
+      - {id: dck-n16, belongs_to: none, text: "Disconnect the docs connector."}
+      - {id: dck-n17, belongs_to: none, text: "Who's Priya?"}
+      - {id: dck-n18, belongs_to: none, text: "What date does the summit start?"}
+      - {id: dck-n19, belongs_to: none, text: "Which customers are in the top five deals?"}
+      - {id: dck-n20, belongs_to: none, text: "What's on my calendar tomorrow?"}

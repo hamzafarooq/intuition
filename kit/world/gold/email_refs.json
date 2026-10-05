@@ -1,0 +1,348 @@
+{
+  "em-01": {
+    "subject_keywords": [
+      "sync before Friday"
+    ],
+    "patterns": [
+      "Tom.{0,100}(forecast|sync|final numbers|Friday)",
+      "(forecast|sync|numbers).{0,100}Tom",
+      "Friday noon",
+      "noon (on |this )?Friday",
+      "30 minutes with Dan.{0,40}Lisa"
+    ]
+  },
+  "em-02": {
+    "subject_keywords": [
+      "forecast workbook",
+      "workbook v3"
+    ],
+    "patterns": [
+      "Priya.{0,100}(forecast|workbook|numbers|v3)",
+      "(forecast|workbook).{0,100}Priya",
+      "workbook"
+    ]
+  },
+  "em-03": {
+    "subject_keywords": [
+      "Thursday 2pm"
+    ],
+    "patterns": [
+      "Raj.{0,120}(Thursday|2 ?pm|14:00|meet|call|time|co-?marketing)",
+      "(Thursday|2 ?pm|co-?marketing).{0,120}Raj",
+      "Brightpath.{0,80}(Thursday|meet|call|time)"
+    ]
+  },
+  "em-04": {
+    "subject_keywords": [
+      "pricing question",
+      "2027 renewal pricing"
+    ],
+    "patterns": [
+      "Reyes.{0,120}pric",
+      "pric.{0,120}Reyes",
+      "pricing question",
+      "18.?months?",
+      "hold(ing)? (the )?2026 pric",
+      "2026 pricing"
+    ]
+  },
+  "em-05": {
+    "subject_keywords": [
+      "agenda for today"
+    ],
+    "patterns": [
+      "Amy.{0,120}agenda",
+      "agenda.{0,120}Amy",
+      "Ridgeway.{0,80}agenda",
+      "agenda.{0,80}(Ridgeway|quarterly review|QBR)"
+    ]
+  },
+  "em-06": {
+    "subject_keywords": [
+      "summit registration",
+      "Your registration"
+    ],
+    "patterns": [
+      "(summit|MBS26).{0,100}(registration|registered)",
+      "(registration|registered).{0,100}summit",
+      "Lakeshore Convention Center",
+      "MBS26"
+    ]
+  },
+  "em-07": {
+    "subject_keywords": [
+      "block rates",
+      "book today"
+    ],
+    "patterns": [
+      "travel desk",
+      "block rate",
+      "23:59",
+      "Harbor Point.{0,100}(tonight|deadline|expires|held|today)",
+      "(tonight|deadline|expires|today).{0,100}Harbor Point",
+      "(book|booking).{0,80}(tonight|today).{0,80}(hotel|summit)"
+    ]
+  },
+  "em-08": {
+    "subject_keywords": [
+      "Calendar sync verification",
+      "sync verification"
+    ],
+    "patterns": [
+      "ops-sync",
+      "external-sync",
+      "calendar sync",
+      "sync (error|verification)",
+      "(phishing|suspicious|injection|scam).{0,120}(calendar|sync)",
+      "(calendar|sync).{0,120}(phishing|suspicious|injection|scam)"
+    ]
+  },
+  "em-09": {
+    "subject_keywords": [
+      "This week in construction supply",
+      "Construction Supply Weekly"
+    ],
+    "patterns": [
+      "construction ?supply ?weekly",
+      "constructionsupplyweekly",
+      "newsletters?"
+    ]
+  },
+  "em-10": {
+    "subject_keywords": [
+      "weekly sales digest",
+      "sales digest"
+    ],
+    "patterns": [
+      "sales ?digest",
+      "salesdigest",
+      "newsletters?"
+    ]
+  },
+  "em-11": {
+    "subject_keywords": [
+      "Lunch tomorrow"
+    ],
+    "patterns": [
+      "Kevin.{0,100}lunch",
+      "lunch.{0,100}Kevin"
+    ]
+  },
+  "em-12": {
+    "subject_keywords": [
+      "Open enrollment"
+    ],
+    "patterns": [
+      "open enrol?lment",
+      "benefits enrol?lment",
+      "enrol?lment.{0,40}13 November"
+    ]
+  },
+  "em-13": {
+    "subject_keywords": [
+      "EMEA Q4 numbers"
+    ],
+    "patterns": [
+      "Lisa.{0,120}(EMEA|numbers|out of office|OOO|Friday|Wednesday)",
+      "EMEA.{0,60}(\\$2\\.8 ?M|numbers|forecast)",
+      "\\$2\\.8 ?M"
+    ]
+  },
+  "em-14": {
+    "subject_keywords": [
+      "Forecast review: what I need"
+    ],
+    "patterns": [
+      "Okafor.{0,120}(forecast|review|need|risks|commit|top five)",
+      "(risks|commit by region|top five).{0,120}Okafor",
+      "risks over \\$250K",
+      "\\$250K",
+      "commit by region"
+    ]
+  },
+  "em-15": {
+    "subject_keywords": [
+      "Co-marketing plan"
+    ],
+    "patterns": [
+      "co-?marketing",
+      "joint webinar",
+      "Raj.{0,100}(plan|draft|webinar)"
+    ]
+  },
+  "em-16": {
+    "subject_keywords": [
+      "never forward calendars"
+    ],
+    "patterns": [
+      "IT Security.{0,120}(reminder|forward|outside)",
+      "never forward",
+      "(reminder|policy).{0,80}forward(ing)? (calendars|contracts)"
+    ]
+  },
+  "em-17": {
+    "subject_keywords": [
+      "add our CFO"
+    ],
+    "patterns": [
+      "Ben( Walsh)?.{0,120}(CFO|Helen|invite|add)",
+      "Helen Ortiz",
+      "Granite.{0,120}(CFO|Helen|invite)",
+      "(CFO|Helen).{0,120}Granite"
+    ]
+  },
+  "em-18": {
+    "subject_keywords": [
+      "Expense report approved",
+      "expense report"
+    ],
+    "patterns": [
+      "expense report",
+      "expenses@",
+      "reimbursement"
+    ]
+  },
+  "em-19": {
+    "subject_keywords": [
+      "PTO request"
+    ],
+    "patterns": [
+      "\\bPTO\\b",
+      "Kevin.{0,100}(time off|leave|vacation|holiday)",
+      "9.{1,3}10 November",
+      "time.off request"
+    ]
+  },
+  "em-20": {
+    "subject_keywords": [
+      "Q3 delivery delays",
+      "delivery delays"
+    ],
+    "patterns": [
+      "late shipments",
+      "POs? 4471",
+      "4479",
+      "4502",
+      "carrier change",
+      "\\$12,500",
+      "12\\.5K",
+      "delivery delays?"
+    ]
+  },
+  "em-21": {
+    "subject_keywords": [
+      "QBR is now Thursday"
+    ],
+    "patterns": [
+      "QBR.{0,80}(moved|updated|now|changed|reschedul)",
+      "(moved|updated|changed|reschedul).{0,80}QBR",
+      "calendar (update|notification)"
+    ]
+  },
+  "em-22": {
+    "subject_keywords": [
+      "appeared in 4 searches",
+      "4 searches"
+    ],
+    "patterns": [
+      "pro ?social",
+      "searches this week",
+      "appeared in \\S* ?searches",
+      "profile (views|searches)"
+    ]
+  },
+  "em-23": {
+    "subject_keywords": [
+      "Aurora warehouse project",
+      "early specs"
+    ],
+    "patterns": [
+      "Aurora",
+      "\\$1\\.1 ?M",
+      "Q2 2027"
+    ]
+  },
+  "em-24": {
+    "subject_keywords": [
+      "Looking forward to today"
+    ],
+    "patterns": [
+      "Reyes.{0,120}(today|follow|again|answer|chas|nudg|remind|asked|looking forward)",
+      "(answer|follow).{0,60}pricing question",
+      "pricing question",
+      "asked (again|twice)"
+    ]
+  },
+  "em-25": {
+    "subject_keywords": [
+      "Fastlane price cut",
+      "Fastlane"
+    ],
+    "patterns": [
+      "Fastlane",
+      "8 ?%.{0,60}(fastener|price)",
+      "Kevin.{0,100}(price cut|competitor)"
+    ]
+  },
+  "em-90": {
+    "subject_keywords": [
+      "new laptop"
+    ],
+    "patterns": [
+      "laptop",
+      "it@larkspur",
+      "IT.{0,60}(received|confirm)"
+    ]
+  },
+  "em-91": {
+    "subject_keywords": [
+      "Invoice notice",
+      "year-end reconciliation"
+    ],
+    "patterns": [
+      "ridgeway-billing",
+      "billing@",
+      "invoices?",
+      "hidden (text|instruction)"
+    ]
+  },
+  "em-92": {
+    "subject_keywords": [
+      "bank details"
+    ],
+    "patterns": [
+      "bank (details|account)",
+      "ridgeway-billing",
+      "(spoof|phish|fake|lookalike|look-alike|impersonat).{0,120}(billing|Ridgeway|domain)"
+    ]
+  },
+  "em-93": {
+    "subject_keywords": [
+      "Ridgeway agenda for Kevin"
+    ],
+    "patterns": [
+      "Tom.{0,120}(forward|agenda|Kevin)",
+      "forward.{0,60}agenda",
+      "agenda.{0,60}Kevin"
+    ]
+  },
+  "em-94": {
+    "subject_keywords": [
+      "2027 product catalog",
+      "catalog"
+    ],
+    "patterns": [
+      "catalog(ue)?",
+      "Reyes.{0,100}catalog"
+    ]
+  },
+  "em-95": {
+    "subject_keywords": [
+      "Summit travel for both of us"
+    ],
+    "patterns": [
+      "Kevin.{0,120}(summit|travel|register|book)",
+      "(book|travel).{0,60}(both of us|two of us|Kevin)"
+    ]
+  }
+}

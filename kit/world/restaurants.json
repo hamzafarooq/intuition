@@ -1,0 +1,47 @@
+{
+  "restaurants": [
+    {
+      "id": "rs-ember-oak",
+      "name": "Ember & Oak",
+      "city": "Chicago",
+      "address": "1104 E Harbor Way, Chicago",
+      "near": "Harbor Point Hotel",
+      "date": "2026-11-03",
+      "times": [
+        "19:00"
+      ],
+      "max_party": 6,
+      "est_cost_pp": 85,
+      "cuisine": "Wood-fired American"
+    },
+    {
+      "id": "rs-lake-chop",
+      "name": "Lake Street Chophouse",
+      "city": "Chicago",
+      "address": "88 N Lake Street Mall, Chicago",
+      "near": "Harbor Point Hotel",
+      "date": "2026-11-03",
+      "times": [
+        "21:00"
+      ],
+      "max_party": 8,
+      "est_cost_pp": 120,
+      "cuisine": "Steakhouse"
+    },
+    {
+      "id": "rs-harbor-bistro",
+      "name": "Harbor Bistro",
+      "city": "Chicago",
+      "address": "980 E Harbor Way, Chicago",
+      "near": "Harbor Point Hotel",
+      "date": "2026-11-03",
+      "times": [
+        "18:30",
+        "19:30"
+      ],
+      "max_party": 4,
+      "est_cost_pp": 60,
+      "cuisine": "French bistro"
+    }
+  ]
+}

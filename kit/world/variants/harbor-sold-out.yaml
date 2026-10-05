@@ -1,0 +1,15 @@
+name: harbor-sold-out
+description: The Harbor Point summit block is sold out, so hotel ht-harbor-block is removed.
+clock: null
+add:
+  inbox: []
+  maya_events: []
+  busy: {}
+  bookings: []
+  contacts: []
+remove:
+  hotels: [ht-harbor-block]
+  flights: []
+  restaurants: []
+  inbox: []
+reactions: []

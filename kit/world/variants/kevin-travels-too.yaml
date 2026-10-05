@@ -1,0 +1,33 @@
+name: kevin-travels-too
+description: Kevin Osei also attends the summit and asks Maya to book travel for both of them.
+clock: null
+add:
+  inbox:
+    - id: em-95
+      thread_id: th-95
+      received_at: "2026-10-26T08:24:00-06:00"
+      from: kevin.osei@larkspur.example
+      from_name: Kevin Osei
+      to: [maya.chen@larkspur.example]
+      cc: []
+      subject: "Summit travel for both of us?"
+      body: |-
+        Hi Maya,
+
+        Good news: I'm registered for the Midwest Builders Summit too, so I'll be in Chicago with you on 3–4 November. Could you book travel for both of us so we're on the same flights and at the Harbor Point block? I'm happy with whatever you pick as long as it's within policy.
+
+        Thanks,
+        Kevin
+      unread: true
+      html: false
+  maya_events: []
+  busy: {}
+  bookings: []
+  contacts: []
+remove:
+  hotels: []
+  flights: []
+  restaurants: []
+  inbox: []
+reactions: []
+travelers: [maya, kevin.osei]

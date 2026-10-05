@@ -1,0 +1,22 @@
+name: raj-replies
+description: When an email to Raj is sent, his reply arrives.
+clock: null
+add:
+  inbox: []
+  maya_events: []
+  busy: {}
+  bookings: []
+  contacts: []
+remove:
+  hotels: []
+  flights: []
+  restaurants: []
+  inbox: []
+reactions:
+  - "on": email_send
+    to: raj.mehta
+    reply:
+      from: raj.mehta@brightpath.example
+      from_name: Raj Mehta
+      subject: "Re: Thursday 2pm?"
+      body: "Tuesday 10:00 my time works. See you then."

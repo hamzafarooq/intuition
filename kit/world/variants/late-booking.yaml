@@ -1,0 +1,15 @@
+name: late-booking
+description: The clock is Friday 30 October, 08:30 Denver, so the summit flights are fewer than 7 days away.
+clock: "2026-10-30T08:30:00-06:00"
+add:
+  inbox: []
+  maya_events: []
+  busy: {}
+  bookings: []
+  contacts: []
+remove:
+  hotels: []
+  flights: []
+  restaurants: []
+  inbox: []
+reactions: []

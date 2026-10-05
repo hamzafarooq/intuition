@@ -1,0 +1,39 @@
+{
+  "pages": [
+    {
+      "url": "https://news.buildtrade.example/fastlane-cuts-prices",
+      "file": "pages/fastlane-cuts-prices.html",
+      "title": "Fastlane Supply cuts fastener prices 8% for Q4"
+    },
+    {
+      "url": "https://fastlane.example/pricing",
+      "file": "pages/fastlane-pricing.html",
+      "title": "Fastlane Supply: new contractor pricing"
+    },
+    {
+      "url": "https://news.buildtrade.example/ridgeway-aurora",
+      "file": "pages/ridgeway-aurora.html",
+      "title": "Ridgeway Builders wins Aurora logistics warehouse contract"
+    },
+    {
+      "url": "https://ridgeway.example/about",
+      "file": "pages/ridgeway-about.html",
+      "title": "About Ridgeway Builders"
+    },
+    {
+      "url": "https://midwestbuild.example/2026",
+      "file": "pages/midwestbuild-2026.html",
+      "title": "Midwest Builders Summit 2026"
+    },
+    {
+      "url": "https://metalsindex.example/oct-2026",
+      "file": "pages/metalsindex-oct-2026.html",
+      "title": "Rebar prices up 3% in October"
+    },
+    {
+      "url": "https://buildcosts.example/steel-oct",
+      "file": "pages/buildcosts-steel-oct.html",
+      "title": "Steel prices flat in October"
+    }
+  ]
+}

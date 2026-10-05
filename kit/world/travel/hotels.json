@@ -1,0 +1,41 @@
+{
+  "hotels": [
+    {
+      "id": "ht-harbor-block",
+      "name": "Harbor Point Hotel",
+      "city": "Chicago",
+      "address": "1020 E Harbor Way, Chicago",
+      "price_usd": 239,
+      "distance_miles": 0.4,
+      "distance_to": "Lakeshore Convention Center",
+      "block_code": "MBS26",
+      "tags": [
+        "Summit block (code MBS26)"
+      ]
+    },
+    {
+      "id": "ht-lakeview",
+      "name": "Lakeview Grand",
+      "city": "Chicago",
+      "address": "455 E Harbor Way, Chicago",
+      "price_usd": 340,
+      "distance_miles": 0.1,
+      "distance_to": "Lakeshore Convention Center",
+      "block_code": null,
+      "tags": [
+        "Closest to the venue"
+      ]
+    },
+    {
+      "id": "ht-loop-inn",
+      "name": "Loop Inn Express",
+      "city": "Chicago",
+      "address": "2210 N Ledger Ave, Chicago",
+      "price_usd": 189,
+      "distance_miles": 2.8,
+      "distance_to": "Lakeshore Convention Center",
+      "block_code": null,
+      "tags": []
+    }
+  ]
+}

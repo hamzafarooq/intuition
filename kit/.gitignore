@@ -1,0 +1,14 @@
+.env
+.env.*
+!.env.example
+runs/
+evals/results/
+reports/
+site/dist/
+.ea_cache/
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+.pytest_cache/
+.ruff_cache/

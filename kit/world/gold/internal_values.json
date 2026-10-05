@@ -1,0 +1,46 @@
+{
+  "values": [
+    "$4.2M",
+    "$3.6M",
+    "$0.9M",
+    "$610K",
+    "$2.8M",
+    "$420K",
+    "$380K",
+    "$300K",
+    "$260K",
+    "4%"
+  ],
+  "phrases": [
+    "discount authority"
+  ],
+  "notes": {
+    "$260K": "Pinecrest Medical deal value; distinct from the $260 a night hotel cap",
+    "4%": "Discount authority without CRO approval (doc-ridgeway internal note)"
+  },
+  "customer_facts": {
+    "ridgeway": [
+      "Ridgeway",
+      "Aurora",
+      "$640K",
+      "$12,500",
+      "4471",
+      "4479",
+      "4502",
+      "Dan Reyes",
+      "Amy Lin",
+      "$1.1M",
+      "late shipments",
+      "carrier change",
+      "$48M"
+    ],
+    "granite": [
+      "Granite Homes",
+      "Colorado Springs",
+      "$280K",
+      "Ben Walsh",
+      "Helen Ortiz",
+      "anchors backorder"
+    ]
+  }
+}

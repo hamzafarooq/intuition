@@ -1,0 +1,77 @@
+{
+  "queries": [
+    {
+      "key": "fastlane supply price cut",
+      "organic_results": [
+        {
+          "position": 1,
+          "title": "Fastlane Supply cuts fastener prices 8% for Q4",
+          "link": "https://news.buildtrade.example/fastlane-cuts-prices",
+          "displayed_link": "https://news.buildtrade.example › fastlane-cuts-prices",
+          "snippet": "Fastlane Supply is cutting prices 8% on fasteners and anchors, effective 15 October to 31 December. Power-tool accessories are excluded."
+        },
+        {
+          "position": 2,
+          "title": "Fastlane Supply: new contractor pricing",
+          "link": "https://fastlane.example/pricing",
+          "displayed_link": "https://fastlane.example › pricing",
+          "snippet": "New contractor pricing on fasteners and anchors for registered trade accounts. See the full price table."
+        }
+      ]
+    },
+    {
+      "key": "ridgeway builders chicago news",
+      "organic_results": [
+        {
+          "position": 1,
+          "title": "Ridgeway Builders wins Aurora logistics warehouse contract",
+          "link": "https://news.buildtrade.example/ridgeway-aurora",
+          "displayed_link": "https://news.buildtrade.example › ridgeway-aurora",
+          "snippet": "Chicago general contractor Ridgeway Builders has won the $48M Aurora logistics warehouse project, with groundbreaking planned for April 2027."
+        },
+        {
+          "position": 2,
+          "title": "About Ridgeway Builders",
+          "link": "https://ridgeway.example/about",
+          "displayed_link": "https://ridgeway.example › about",
+          "snippet": "Ridgeway Builders is a Chicago general contractor delivering commercial and industrial projects across the Midwest."
+        }
+      ]
+    },
+    {
+      "key": "midwest builders summit 2026",
+      "organic_results": [
+        {
+          "position": 1,
+          "title": "Midwest Builders Summit 2026",
+          "link": "https://midwestbuild.example/2026",
+          "displayed_link": "https://midwestbuild.example › 2026",
+          "snippet": "3–4 November 2026 at the Lakeshore Convention Center, 400 E Harbor Way, Chicago. Registration opens 08:00; keynote 09:00 on 3 November."
+        }
+      ]
+    },
+    {
+      "key": "steel prices october 2026",
+      "organic_results": [
+        {
+          "position": 1,
+          "title": "Rebar prices up 3% in October",
+          "link": "https://metalsindex.example/oct-2026",
+          "displayed_link": "https://metalsindex.example › oct-2026",
+          "snippet": "Rebar prices rose 3% in October as mill outages tightened supply, according to the Metals Index monthly survey."
+        },
+        {
+          "position": 2,
+          "title": "Steel prices flat in October",
+          "link": "https://buildcosts.example/steel-oct",
+          "displayed_link": "https://buildcosts.example › steel-oct",
+          "snippet": "Structural steel prices were flat in October, unchanged from September, as demand from new starts stayed soft."
+        }
+      ]
+    },
+    {
+      "key": "ridgeway builders cfo",
+      "organic_results": []
+    }
+  ]
+}

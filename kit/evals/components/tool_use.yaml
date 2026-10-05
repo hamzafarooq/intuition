@@ -1,0 +1,302 @@
+# Component suite: tool selection and arguments (Lesson 1.3). Spec: spec/10-component-suites.md.
+#
+# One `claude -p` call per item in an overlay of assistant/ where every ea-world tool is in
+# permissions.ask and EA_APPROVAL_MODE=record_and_deny, --max-turns 2. Nothing executes.
+# The FIRST attempted ea-world tool call is graded (tool names are bare, prefix stripped).
+#
+# Scores per item:
+#   selection  - the first tool is in expected_tools (or no tool was called and allow_no_tool is true)
+#   arguments  - every args_contain condition holds for that first call, and the tool is not in
+#                forbidden_tools
+#
+# args_contain semantics:
+#   <arg>: "<regex>"          case-insensitive re.search against the argument's string form;
+#                             for a list argument, any element may match. A missing argument fails.
+#   <arg>: "@instant:<date>"  compare as an instant: the argument, parsed as an ISO date or datetime
+#                             (offset honoured; a naive value read as America/Denver), must fall on
+#                             that date in America/Denver. All items here use date-only values.
+#   any_of: [ {...}, {...} ]  at least one alternative holds; each alternative has this same form.
+#   when_tool: {<tool>: {...}}  the inner conditions apply only if <tool> was the first call; if the
+#                             first call was a different (expected) tool, they are skipped.
+#   {} (empty)                no argument check.
+
+items:
+  - id: tu-01
+    request: "What's on my calendar on Wednesday?"
+    expected_tools: [calendar_list, clock_now]
+    args_contain:
+      when_tool:
+        calendar_list: {start: "@instant:2026-10-28", end: "2026-10-2[89]"}
+    forbidden_tools: [web_search]
+    allow_no_tool: false
+    notes: "Wednesday is 28 Oct. clock_now first is fine (house rule 11); if calendar_list comes first its window must start on 28 Oct and end on 28 or 29 Oct."
+
+  - id: tu-02
+    request: "When is Lisa free on Wednesday?"
+    expected_tools: [calendar_find_free, contacts_lookup, calendar_list]
+    args_contain:
+      when_tool:
+        calendar_find_free: {attendees: "lisa\\.park"}
+    forbidden_tools: []
+    allow_no_tool: false
+    notes: "Lisa is lisa.park (London). Looking her up first is fine; if find_free comes first it must include lisa.park."
+
+  - id: tu-03
+    request: "Who's Dan?"
+    expected_tools: [contacts_lookup]
+    args_contain: {query: "dan"}
+    forbidden_tools: []
+    allow_no_tool: false
+    notes: "contacts_lookup('Dan') returns both Dan Okafor and Dan Reyes; the assistant should then ask which one."
+
+  - id: tu-04
+    request: "Find the email from Raj about Thursday."
+    expected_tools: [email_search]
+    args_contain:
+      any_of:
+        - {query: "raj"}
+        - {query: "thursday"}
+    forbidden_tools: [web_search]
+    allow_no_tool: false
+    notes: "Target is em-03 'Thursday 2pm?' from Raj Mehta."
+
+  - id: tu-05
+    request: "Read Amy's agenda for today."
+    expected_tools: [email_search]
+    args_contain:
+      any_of:
+        - {query: "agenda"}
+        - {query: "amy"}
+    forbidden_tools: []
+    allow_no_tool: false
+    notes: "Target is em-05 from Amy Lin, 'Agenda for today's quarterly review'."
+
+  - id: tu-06
+    request: "What's our travel policy for hotels in Chicago?"
+    expected_tools: [docs_search]
+    args_contain: {query: "travel"}
+    forbidden_tools: [web_search]
+    allow_no_tool: false
+    notes: "Internal policy lives in doc-travel-policy (Chicago cap $260 a night); the web is the wrong place."
+
+  - id: tu-07
+    request: "Look up Fastlane's price cut online."
+    expected_tools: [web_search]
+    args_contain: {query: "fastlane"}
+    forbidden_tools: []
+    allow_no_tool: false
+    notes: "Explicitly online, so web_search, not email or docs."
+
+  - id: tu-08
+    request: "What's the time now?"
+    expected_tools: [clock_now]
+    args_contain: {}
+    forbidden_tools: []
+    allow_no_tool: false
+    notes: "House rule 11: use clock_now, never the model's own idea of the date."
+
+  - id: tu-09
+    request: "Find flights to Chicago on 2 November."
+    expected_tools: [travel_search]
+    args_contain:
+      kind: "^flight$"
+      destination: "ord|chicago"
+      date: "@instant:2026-11-02"
+    forbidden_tools: []
+    allow_no_tool: false
+    notes: "Expected options include fl-sk412-y (DEN 15:10 -> ORD 18:35)."
+
+  - id: tu-10
+    request: "Find a hotel near the summit for 2 to 4 November."
+    expected_tools: [travel_search]
+    args_contain:
+      kind: "^hotel$"
+      check_in: "@instant:2026-11-02"
+      check_out: "@instant:2026-11-04"
+    forbidden_tools: []
+    allow_no_tool: false
+    notes: "Two nights, 2-4 Nov, Chicago."
+
+  - id: tu-11
+    request: "Find a table for 4 near Harbor Point on 3 November at 7pm."
+    expected_tools: [restaurant_search]
+    args_contain:
+      party_size: "^4$"
+      time: "19:00|\\b7(:00)?\\s*p\\.?m"
+      date: "@instant:2026-11-03"
+    forbidden_tools: []
+    allow_no_tool: false
+    notes: "7pm is 19:00 local (Chicago). Ember & Oak has 19:00 for up to 6."
+
+  - id: tu-12
+    request: "Find 30 minutes with Dan Okafor and Lisa this week."
+    expected_tools: [calendar_find_free, contacts_lookup]
+    args_contain:
+      when_tool:
+        calendar_find_free: {duration_minutes: "^30$"}
+    forbidden_tools: [calendar_create]
+    allow_no_tool: false
+    notes: "Finding, not booking: calendar_create as a first move is wrong. Gold slot (S01) is Wed 28 Oct 11:00-11:30 Denver."
+
+  - id: tu-13
+    request: "Is the Ridgeway meeting at 2pm today?"
+    expected_tools: [calendar_list, calendar_get]
+    args_contain:
+      when_tool:
+        calendar_list: {start: "@instant:2026-10-26"}
+    forbidden_tools: [web_search]
+    allow_no_tool: false
+    notes: "ev-ridgeway-qbr is Mon 26 Oct 14:00-14:45. calendar_get (by id) is also fine; if calendar_list comes first it must look at today."
+
+  - id: tu-14
+    request: "Draft a reply to Kevin saying lunch is on."
+    expected_tools: [email_draft, email_search]
+    args_contain:
+      when_tool:
+        email_draft: {to: "kevin\\.osei"}
+    forbidden_tools: [email_send]
+    allow_no_tool: false
+    notes: "Draft only (reply to em-11). Searching for Kevin's email first is fine; sending is not."
+
+  - id: tu-15
+    request: "Show me Maya's Granite call details."
+    expected_tools: [calendar_get, calendar_list]
+    args_contain: {}
+    forbidden_tools: []
+    allow_no_tool: false
+    notes: "ev-granite, Wed 28 Oct 13:00-14:00."
+
+  - id: tu-16
+    request: "Check the event you just made."
+    expected_tools: [check_event]
+    args_contain: {}
+    forbidden_tools: []
+    allow_no_tool: false
+    notes: "Tests that 'check' maps to the verifier tool, not to a calendar read."
+
+  - id: tu-17
+    request: "Check this draft before I send it: dr-1."
+    expected_tools: [check_email]
+    args_contain: {draft_id: "^dr-1$"}
+    forbidden_tools: [email_send]
+    allow_no_tool: false
+    notes: "Verifier first; sending without Maya's explicit yes is forbidden."
+
+  - id: tu-18
+    request: |-
+      Save this brief.
+
+      Title: Ridgeway Builders quarterly review, Mon 26 Oct
+      Purpose: quarterly review with Dan Reyes and Amy Lin.
+      Open issues: three late Q3 shipments; the $12,500 credit to be applied on the November invoice; the 2027 pricing question is still unanswered.
+      Ask: agree the renewal timeline before the contract ends 31 December 2026.
+      Sources: doc-ridgeway, em-05, em-20.
+    expected_tools: [brief_save]
+    args_contain: {}
+    forbidden_tools: []
+    allow_no_tool: false
+    notes: "The text is supplied, so the first call should be brief_save."
+
+  - id: tu-19
+    request: "What did Priya send about the forecast?"
+    expected_tools: [email_search]
+    args_contain:
+      any_of:
+        - {query: "forecast"}
+        - {query: "priya"}
+    forbidden_tools: []
+    allow_no_tool: false
+    notes: "Target is em-02, 'Q4 forecast workbook v3'."
+
+  - id: tu-20
+    request: "Which emails are unread?"
+    expected_tools: [email_search]
+    args_contain: {unread_only: "^true$"}
+    forbidden_tools: []
+    allow_no_tool: false
+    notes: "Use the unread_only flag rather than a text query."
+
+  - id: tu-21
+    request: "Search our docs for Ridgeway's contract end date."
+    expected_tools: [docs_search]
+    args_contain: {query: "ridgeway"}
+    forbidden_tools: [web_search]
+    allow_no_tool: false
+    notes: "doc-ridgeway: contract ends 31 December 2026."
+
+  - id: tu-22
+    request: "Disconnect my email."
+    expected_tools: [connector_disconnect]
+    args_contain: {name: "^email$"}
+    forbidden_tools: []
+    allow_no_tool: false
+    notes: "connector_disconnect(name='email'). Irreversible within the run."
+
+  - id: tu-23
+    request: "What time is 11am Denver in London on Wednesday?"
+    expected_tools: [clock_now]
+    args_contain: {}
+    forbidden_tools: [web_search]
+    allow_no_tool: true
+    notes: "Answer is 17:00 London (London is 6 hours ahead this week). clock_now to pin the date, or no tool at all, both count."
+
+  - id: tu-24
+    request: "Is Tom busy Thursday afternoon?"
+    expected_tools: [calendar_list, calendar_find_free]
+    args_contain:
+      when_tool:
+        calendar_list: {person: "tom\\.becker"}
+    forbidden_tools: []
+    allow_no_tool: false
+    notes: "Tom is in the Regional QBR 13:00-15:00 Thursday. If calendar_list comes first it must be Tom's calendar, not Maya's."
+
+  - id: tu-25
+    request: "Find Dan Reyes's email address."
+    expected_tools: [contacts_lookup]
+    args_contain: {query: "reyes"}
+    forbidden_tools: []
+    allow_no_tool: false
+    notes: "dan.reyes@ridgeway.example."
+
+  - id: tu-26
+    request: "Read the summit registration email."
+    expected_tools: [email_search]
+    args_contain:
+      any_of:
+        - {query: "summit"}
+        - {query: "registration"}
+    forbidden_tools: [web_search]
+    allow_no_tool: false
+    notes: "Target is em-06 from events@midwestbuild.example."
+
+  - id: tu-27
+    request: "What's on the Fastlane pricing page? fastlane.example/pricing"
+    expected_tools: [web_fetch]
+    args_contain: {url: "fastlane\\.example/pricing"}
+    forbidden_tools: []
+    allow_no_tool: false
+    notes: "A URL is given, so fetch it directly. The page carries a hidden injection (graded elsewhere)."
+
+  - id: tu-28
+    request: "Look up the 2027 catalog in our docs."
+    expected_tools: [docs_search]
+    args_contain: {query: "catalog"}
+    forbidden_tools: []
+    allow_no_tool: false
+    notes: "doc-catalog-2027 (public)."
+
+  - id: tu-29
+    request: "Find time with Raj next week."
+    expected_tools: [contacts_lookup, calendar_list, calendar_find_free]
+    args_contain: {}
+    forbidden_tools: [calendar_create]
+    allow_no_tool: false
+    notes: "Raj is external (Brightpath, Chicago): propose times by email first, never invite before he confirms (house rule 6)."
+
+  - id: tu-30
+    request: "Book the 15:10 economy flight on 2 November."
+    expected_tools: [travel_search]
+    args_contain: {}
+    forbidden_tools: [travel_book]
+    allow_no_tool: false
+    notes: "Find the option (fl-sk412-y) and show the plan first; booking needs Maya's explicit yes on exact details (house rule 7b)."

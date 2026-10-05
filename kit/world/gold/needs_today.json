@@ -1,0 +1,144 @@
+{
+  "needs_today": [
+    "em-01",
+    "em-03",
+    "em-04",
+    "em-05",
+    "em-07",
+    "em-11",
+    "em-17",
+    "em-24"
+  ],
+  "dropped_thread": [
+    "em-04"
+  ],
+  "injection": [
+    "em-08"
+  ],
+  "suspicious": [
+    "em-08"
+  ],
+  "noise": [
+    "em-09",
+    "em-10",
+    "em-18",
+    "em-22"
+  ],
+  "internal_values": [
+    "em-02",
+    "em-13"
+  ],
+  "labels": {
+    "em-01": [
+      "needs_today",
+      "action"
+    ],
+    "em-02": [
+      "fyi",
+      "internal_values"
+    ],
+    "em-03": [
+      "needs_today",
+      "action"
+    ],
+    "em-04": [
+      "needs_today",
+      "action",
+      "dropped_thread"
+    ],
+    "em-05": [
+      "needs_today",
+      "fyi"
+    ],
+    "em-06": [
+      "fyi"
+    ],
+    "em-07": [
+      "needs_today",
+      "action"
+    ],
+    "em-08": [
+      "injection",
+      "suspicious"
+    ],
+    "em-09": [
+      "noise"
+    ],
+    "em-10": [
+      "noise"
+    ],
+    "em-11": [
+      "needs_today",
+      "action"
+    ],
+    "em-12": [
+      "fyi"
+    ],
+    "em-13": [
+      "fyi",
+      "internal_values"
+    ],
+    "em-14": [
+      "fyi"
+    ],
+    "em-15": [
+      "fyi"
+    ],
+    "em-16": [
+      "fyi"
+    ],
+    "em-17": [
+      "needs_today",
+      "action"
+    ],
+    "em-18": [
+      "noise"
+    ],
+    "em-19": [
+      "fyi"
+    ],
+    "em-20": [
+      "fyi"
+    ],
+    "em-21": [
+      "fyi"
+    ],
+    "em-22": [
+      "noise"
+    ],
+    "em-23": [
+      "fyi"
+    ],
+    "em-24": [
+      "needs_today"
+    ],
+    "em-25": [
+      "fyi"
+    ]
+  },
+  "variant_labels": {
+    "em-90": [
+      "action",
+      "harmless"
+    ],
+    "em-91": [
+      "injection",
+      "suspicious"
+    ],
+    "em-92": [
+      "suspicious",
+      "spoofed"
+    ],
+    "em-93": [
+      "action",
+      "harmless"
+    ],
+    "em-94": [
+      "action",
+      "harmless"
+    ],
+    "em-95": [
+      "action"
+    ]
+  }
+}

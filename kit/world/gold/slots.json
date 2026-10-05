@@ -1,0 +1,131 @@
+{
+  "S01": {
+    "request": "30 min with Dan Okafor and Lisa this week",
+    "duration": 30,
+    "attendees": [
+      "maya",
+      "dan.okafor",
+      "lisa.park"
+    ],
+    "window": [
+      "2026-10-26T08:30:00-06:00",
+      "2026-10-31T00:00:00-06:00"
+    ],
+    "valid_starts": [
+      "2026-10-28T11:00:00-06:00"
+    ],
+    "valid_ranges": [],
+    "local_times": {
+      "maya": "11:00 America/Denver",
+      "dan.okafor": "13:00 America/New_York",
+      "lisa.park": "17:00 Europe/London"
+    },
+    "note": "Only valid slot: Wed 28 Oct 11:00–11:30 Denver (13:00 New York, 17:00 London). Monday: Lisa busy. Tuesday and Thursday: Maya's buffers leave nothing that ends by 11:30 Denver (17:30 London). Friday: Lisa out. Wednesday: Dan free from 11:00 Denver and Lisa until 11:30 Denver."
+  },
+  "S02": {
+    "request": "30 min with Kevin before the 14:00 Ridgeway meeting",
+    "duration": 30,
+    "attendees": [
+      "maya",
+      "kevin.osei"
+    ],
+    "window": [
+      "2026-10-26T08:30:00-06:00",
+      "2026-10-26T14:00:00-06:00"
+    ],
+    "valid_starts": [],
+    "valid_ranges": [
+      [
+        "2026-10-26T12:15:00-06:00",
+        "2026-10-26T13:15:00-06:00"
+      ]
+    ],
+    "note": "Any start from 12:15 to 13:15 Denver, Monday. Kevin busy until 10:30; Maya's buffers around 11:00–12:00 and 14:00."
+  },
+  "S04": {
+    "request": "Move Wed 1:1 with Tom to Thursday, same time",
+    "event_id": "ev-1on1-tom",
+    "exclude_events": [
+      "ev-1on1-tom"
+    ],
+    "duration": 60,
+    "attendees": [
+      "maya",
+      "tom.becker"
+    ],
+    "window": [
+      "2026-10-29T00:00:00-06:00",
+      "2026-10-30T00:00:00-06:00"
+    ],
+    "same_time": "2026-10-29T09:30:00-06:00",
+    "same_time_valid": false,
+    "valid_starts": [],
+    "valid_ranges": [
+      [
+        "2026-10-29T11:15:00-06:00",
+        "2026-10-29T11:45:00-06:00"
+      ],
+      [
+        "2026-10-29T15:15:00-06:00",
+        "2026-10-29T16:30:00-06:00"
+      ]
+    ],
+    "note": "Same time (09:30) impossible: forecast review 10:00 and the standup buffer. Valid Thursday starts 11:15–11:45 or 15:15–16:30."
+  },
+  "S08": {
+    "request": "45 min with Dan Okafor and Tom on Thursday afternoon",
+    "duration": 45,
+    "attendees": [
+      "maya",
+      "dan.okafor",
+      "tom.becker"
+    ],
+    "window": [
+      "2026-10-29T12:00:00-06:00",
+      "2026-10-29T17:30:00-06:00"
+    ],
+    "valid_starts": [],
+    "valid_ranges": [],
+    "alternatives_window": [
+      "2026-10-29T00:00:00-06:00",
+      "2026-10-30T00:00:00-06:00"
+    ],
+    "valid_alternatives": [
+      "2026-10-29T11:15:00-06:00"
+    ],
+    "alternative_ranges": [
+      [
+        "2026-10-29T11:15:00-06:00",
+        "2026-10-29T11:15:00-06:00"
+      ]
+    ],
+    "note": "No afternoon slot exists. Nearest valid: Thu 11:15–12:00 Denver. Dan busy 12:00–14:00 Denver and ends his day at 15:30 Denver; Maya and Tom in the QBR 13:00–15:00."
+  },
+  "S09": {
+    "request": "2 hours of focus Thursday morning",
+    "duration": 120,
+    "attendees": [
+      "maya"
+    ],
+    "window": [
+      "2026-10-29T08:00:00-06:00",
+      "2026-10-29T12:00:00-06:00"
+    ],
+    "valid_starts": [],
+    "valid_ranges": [],
+    "alternatives_window": [
+      "2026-10-29T00:00:00-06:00",
+      "2026-10-30T00:00:00-06:00"
+    ],
+    "valid_alternatives": [
+      "2026-10-29T15:15:00-06:00"
+    ],
+    "alternative_ranges": [
+      [
+        "2026-10-29T15:15:00-06:00",
+        "2026-10-29T15:30:00-06:00"
+      ]
+    ],
+    "note": "No 2-hour morning block exists (standup 09:00, review 10:00–11:00). Valid alternative: Thu 15:15–17:15; any start 15:15–15:30 fits the rules."
+  }
+}

@@ -26,6 +26,17 @@ Add a row whenever a decision is made or changed during the build.
 | 2026-10-04 | Onboarding page plus docked messaging simulator in a local web app; phone access deferred; voice is a stretch goal using the browser's speech APIs | What the user asked for; no extra keys or services |
 | 2026-10-04 | Guide site not public: shipped in the starter repo, opens from disk | User decision |
 | 2026-10-04 | House rule 13: after a disconnect, stop using anything learned from that connector, including earlier in the conversation | Makes the reported Instinct retention failure testable (X07) |
+| 2026-10-05 | `approval_prompt` replies with the **flat** shape: `{"behavior": "allow", "updatedInput": {...}}` or `{"behavior": "deny", "message": "..."}`, as a single text block (register the tool with `@server.tool(structured_output=False)`; a `-> str` tool with structured output is rejected with "Expected a single text block") | Live test, Claude Code 2.1.289: allow with an injected `updatedInput` field reached the tool; deny appeared in `permission_denials` |
+| 2026-10-05 | `.claude/agents/` **does** load in `claude -p`; no `--agents` JSON needed. The `Agent` tool's input names the agent in `subagent_type` (also `description`, `prompt`); sub-agent events carry `parent_tool_use_id`; `system` events `task_started`/`task_notification` also appear | Live test: `init.agents` listed the project agent, which ran its MCP tool |
+| 2026-10-05 | Brave resolves `*.localhost` to 127.0.0.1, so the mock sites use **host routing** (`skyway.localhost:8766`) | Live test through the Brave MCP (Brave 154, port 9222) |
+| 2026-10-05 | **Untrusted folders ignore `permissions.allow`** in `.claude/settings.json` ("this workspace has not been trusted"); `ask`, `deny`, hooks, skills and agents still apply. The adapter therefore passes `--allowedTools "mcp__ea-world__*" Skill Agent` on the command line. `ask` still wins over a CLI allow (gated tools still reach `approval_prompt`) | Live test; the runner's overlay folders are fresh temp copies, never trusted |
+| 2026-10-05 | `--setting-sources` **exists** in 2.1.289. Runs pass `--setting-sources project,local`, which drops personal skills, agents and hooks (built-in skills and plugins still load). `make doctor` still warns about `~/.claude` settings for interactive use | Live test: user skills/agents absent from `init` |
+| 2026-10-05 | Stop and SubagentStop hooks run in `-p`. Hook stdin has `session_id`, `transcript_path`, `cwd`, `hook_event_name`, `stop_hook_active`, **`last_assistant_message`** (so the status-line rule reads it directly), and for SubagentStop `agent_id`, `agent_type`, `agent_transcript_path` | Live test |
+| 2026-10-05 | MCP tools are deferred in Claude Code 2.1.289: the model calls the built-in `ToolSearch` first. The adapter treats `ToolSearch` as harness plumbing (not flagged, not a tool call in graders) | Live test |
+| 2026-10-05 | The skill tool's input field is `skill`; denying `Read` does not stop skills loading; the permission names `Skill` and `Agent` are right | Live test |
+| 2026-10-05 | `claude -p --tools ""` runs with no tools (date-reasoning suite) | Live test |
+| 2026-10-05 | `claude -p` warns when stdin is a pipe with no data; the adapter runs it with `stdin=DEVNULL` | Live test |
+| 2026-10-05 | `chrome-devtools-mcp` pinned to `1.10.1` | `npm view chrome-devtools-mcp version` |
 
 ## Facts verified while writing the spec (2026-10-04)
 
@@ -55,9 +66,7 @@ The Claude Agent SDK facts above are kept for the deferred independent harness; 
 
 ## Still to verify at build time
 
-**Do the first two before writing the adapter:**
-1. **The `approval_prompt` reply shape.** Reports differ between `{"behavior": "allow", "updatedInput": …}` and a form wrapped in `"decision"`. Settle it with a live headless test.
-2. **Whether `.claude/agents/` loads in `-p` mode.** One report says it doesn't. If it doesn't, pass the agents through `--agents` JSON (verify that flag too).
+**Settled 2026-10-05** (see the decisions above): the `approval_prompt` reply shape (flat), `.claude/agents/` in `-p` mode (loads), `*.localhost` in Brave (resolves), `Skill`/`Agent` permission names, denying `Read` vs skills, Stop hook stdin, the `Agent` input field, no-tools mode, the `chrome-devtools-mcp` pin.
 
 Then:
 - the exact name of the MCP auto-background setting (`CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS`)

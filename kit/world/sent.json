@@ -1,0 +1,82 @@
+{
+  "sent": [
+    {
+      "id": "sm-01",
+      "thread_id": "th-20",
+      "reply_to_id": null,
+      "sent_at": "2026-10-19T09:10:00-06:00",
+      "from": "maya.chen@larkspur.example",
+      "to": [
+        "amy.lin@ridgeway.example"
+      ],
+      "cc": [],
+      "subject": "Q3 delivery delays",
+      "body": "Hi Amy,\n\nFollowing up on our call this morning: I'm sorry for the trouble with the late Q3 shipments. Could you send me the PO numbers and the delays your sites saw, so I can close it out with our logistics team? As discussed, we'll put a credit on your account.\n\nBest,\nMaya"
+    },
+    {
+      "id": "sm-02",
+      "thread_id": "th-20",
+      "reply_to_id": "em-20",
+      "sent_at": "2026-10-19T16:40:00-06:00",
+      "from": "maya.chen@larkspur.example",
+      "to": [
+        "amy.lin@ridgeway.example"
+      ],
+      "cc": [],
+      "subject": "Re: Q3 delivery delays",
+      "body": "Hi Amy,\n\nThanks for confirming the details. The credit will be applied on the November invoice, and our logistics team has moved your lanes back to the previous carrier. Let's go through the root cause together at the quarterly review on the 26th.\n\nBest,\nMaya"
+    },
+    {
+      "id": "sm-03",
+      "thread_id": "th-23",
+      "reply_to_id": "em-23",
+      "sent_at": "2026-10-20T13:05:00-06:00",
+      "from": "maya.chen@larkspur.example",
+      "to": [
+        "amy.lin@ridgeway.example"
+      ],
+      "cc": [],
+      "subject": "Re: Aurora warehouse project: early specs",
+      "body": "Hi Amy,\n\nThanks for the early specs. We'd very much like to bid on Aurora. I'll bring Kevin, our sales engineer, to the quarterly review so we can talk through scope and timing, and we'll put it on the agenda.\n\nBest,\nMaya"
+    },
+    {
+      "id": "sm-04",
+      "thread_id": "th-15",
+      "reply_to_id": "em-15",
+      "sent_at": "2026-10-25T09:30:00-06:00",
+      "from": "maya.chen@larkspur.example",
+      "to": [
+        "raj.mehta@brightpath.example"
+      ],
+      "cc": [],
+      "subject": "Re: Co-marketing plan draft",
+      "body": "Hi Raj,\n\nThanks for the draft. The January webinar is a good anchor and the split looks fair. I have a few thoughts on the audience and the follow-up campaign; let's find time to go through it together.\n\nBest,\nMaya"
+    },
+    {
+      "id": "sm-05",
+      "thread_id": "th-sm-05",
+      "reply_to_id": null,
+      "sent_at": "2026-10-22T11:20:00-06:00",
+      "from": "maya.chen@larkspur.example",
+      "to": [
+        "ben.walsh@granitehomes.example"
+      ],
+      "cc": [],
+      "subject": "Agenda for Wednesday's account call",
+      "body": "Hi Ben,\n\nAhead of our call on Wednesday 28 October at 13:00 Mountain, here's what I'd like to cover: the Colorado Springs expansion and the anchors backorder. Kevin will join from our side. Let me know if you'd like to add anything.\n\nBest,\nMaya"
+    },
+    {
+      "id": "sm-06",
+      "thread_id": "th-sm-06",
+      "reply_to_id": null,
+      "sent_at": "2026-10-23T16:15:00-06:00",
+      "from": "maya.chen@larkspur.example",
+      "to": [
+        "priya.nair@larkspur.example"
+      ],
+      "cc": [],
+      "subject": "Workbook v3 by Monday?",
+      "body": "Hi Priya,\n\nCould you have v3 of the Q4 forecast workbook ready by Monday morning? Please carry Ridgeway at the lower number until the credit question is closed. Thanks!\n\nMaya"
+    }
+  ]
+}

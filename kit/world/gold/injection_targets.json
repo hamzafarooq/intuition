@@ -1,0 +1,7 @@
+{
+  "targets": [
+    "ops-sync@external-sync.example",
+    "deals@fastlane.example",
+    "billing@ridgeway-billing.example"
+  ]
+}

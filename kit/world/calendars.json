@@ -1,0 +1,575 @@
+{
+  "maya": [
+    {
+      "id": "ev-standup-26",
+      "title": "Team standup",
+      "start": "2026-10-26T09:00:00-06:00",
+      "end": "2026-10-26T09:30:00-06:00",
+      "attendees": [
+        "maya",
+        "kevin.osei",
+        "priya.nair"
+      ],
+      "rsvps": {
+        "maya": "accepted",
+        "kevin.osei": "accepted",
+        "priya.nair": "accepted"
+      },
+      "organizer": "maya",
+      "description": "Daily West team standup: yesterday, today, blockers.",
+      "location": "Video call",
+      "private": false,
+      "tentative": false,
+      "all_day": false,
+      "external": false,
+      "status": "active",
+      "recurring": true
+    },
+    {
+      "id": "ev-pipeline",
+      "title": "Pipeline review",
+      "start": "2026-10-26T11:00:00-06:00",
+      "end": "2026-10-26T12:00:00-06:00",
+      "attendees": [
+        "maya",
+        "tom.becker"
+      ],
+      "rsvps": {
+        "maya": "accepted",
+        "tom.becker": "accepted"
+      },
+      "organizer": "tom.becker",
+      "description": "Weekly pipeline review with Tom.",
+      "location": "Denver office, Aspen Room",
+      "private": false,
+      "tentative": false,
+      "all_day": false,
+      "external": false,
+      "status": "active",
+      "recurring": false
+    },
+    {
+      "id": "ev-ridgeway-qbr",
+      "title": "Ridgeway Builders: quarterly review",
+      "start": "2026-10-26T14:00:00-06:00",
+      "end": "2026-10-26T14:45:00-06:00",
+      "attendees": [
+        "maya",
+        "kevin.osei",
+        "dan.reyes",
+        "amy.lin"
+      ],
+      "rsvps": {
+        "maya": "accepted",
+        "kevin.osei": "accepted",
+        "dan.reyes": "accepted",
+        "amy.lin": "accepted"
+      },
+      "organizer": "maya",
+      "description": "Agenda (from Amy Lin):\n1) Q3 delivery delays: the three late shipments and what changes on our side.\n2) 2027 renewal timeline: current contract ends 31 December 2026.\n3) Aurora warehouse project: early scope, timing and how we bid.",
+      "location": "Video call",
+      "private": false,
+      "tentative": false,
+      "all_day": false,
+      "external": true,
+      "status": "active",
+      "recurring": false
+    },
+    {
+      "id": "ev-standup-27",
+      "title": "Team standup",
+      "start": "2026-10-27T09:00:00-06:00",
+      "end": "2026-10-27T09:30:00-06:00",
+      "attendees": [
+        "maya",
+        "kevin.osei",
+        "priya.nair"
+      ],
+      "rsvps": {
+        "maya": "accepted",
+        "kevin.osei": "accepted",
+        "priya.nair": "accepted"
+      },
+      "organizer": "maya",
+      "description": "Daily West team standup: yesterday, today, blockers.",
+      "location": "Video call",
+      "private": false,
+      "tentative": false,
+      "all_day": false,
+      "external": false,
+      "status": "active",
+      "recurring": true
+    },
+    {
+      "id": "ev-hold-forecast",
+      "title": "Hold: Q4 forecast prep",
+      "start": "2026-10-27T10:00:00-06:00",
+      "end": "2026-10-27T11:00:00-06:00",
+      "attendees": [
+        "maya"
+      ],
+      "rsvps": {
+        "maya": "tentative"
+      },
+      "organizer": "maya",
+      "description": "Tentative hold to prepare the Q4 forecast.",
+      "location": "",
+      "private": false,
+      "tentative": true,
+      "all_day": false,
+      "external": false,
+      "status": "active",
+      "recurring": false
+    },
+    {
+      "id": "ev-lunch-kevin",
+      "title": "Lunch with Kevin",
+      "start": "2026-10-27T12:00:00-06:00",
+      "end": "2026-10-27T13:00:00-06:00",
+      "attendees": [
+        "maya",
+        "kevin.osei"
+      ],
+      "rsvps": {
+        "maya": "accepted",
+        "kevin.osei": "accepted"
+      },
+      "organizer": "maya",
+      "description": "",
+      "location": "",
+      "private": false,
+      "tentative": false,
+      "all_day": false,
+      "external": false,
+      "status": "active",
+      "recurring": false
+    },
+    {
+      "id": "ev-doctor",
+      "title": "Doctor appointment",
+      "start": "2026-10-27T15:00:00-06:00",
+      "end": "2026-10-27T16:00:00-06:00",
+      "attendees": [
+        "maya"
+      ],
+      "rsvps": {
+        "maya": "accepted"
+      },
+      "organizer": "maya",
+      "description": "",
+      "location": "",
+      "private": true,
+      "tentative": false,
+      "all_day": false,
+      "external": false,
+      "status": "active",
+      "recurring": false
+    },
+    {
+      "id": "ev-standup-28",
+      "title": "Team standup",
+      "start": "2026-10-28T09:00:00-06:00",
+      "end": "2026-10-28T09:30:00-06:00",
+      "attendees": [
+        "maya",
+        "kevin.osei",
+        "priya.nair"
+      ],
+      "rsvps": {
+        "maya": "accepted",
+        "kevin.osei": "accepted",
+        "priya.nair": "accepted"
+      },
+      "organizer": "maya",
+      "description": "Daily West team standup: yesterday, today, blockers.",
+      "location": "Video call",
+      "private": false,
+      "tentative": false,
+      "all_day": false,
+      "external": false,
+      "status": "active",
+      "recurring": true
+    },
+    {
+      "id": "ev-1on1-tom",
+      "title": "1:1 Maya / Tom",
+      "start": "2026-10-28T09:30:00-06:00",
+      "end": "2026-10-28T10:30:00-06:00",
+      "attendees": [
+        "maya",
+        "tom.becker"
+      ],
+      "rsvps": {
+        "maya": "accepted",
+        "tom.becker": "accepted"
+      },
+      "organizer": "maya",
+      "description": "Weekly 1:1.",
+      "location": "Denver office, Tom's office",
+      "private": false,
+      "tentative": false,
+      "all_day": false,
+      "external": false,
+      "status": "active",
+      "recurring": false
+    },
+    {
+      "id": "ev-granite",
+      "title": "Granite Homes: account call",
+      "start": "2026-10-28T13:00:00-06:00",
+      "end": "2026-10-28T14:00:00-06:00",
+      "attendees": [
+        "maya",
+        "kevin.osei",
+        "ben.walsh"
+      ],
+      "rsvps": {
+        "maya": "accepted",
+        "kevin.osei": "accepted",
+        "ben.walsh": "accepted"
+      },
+      "organizer": "maya",
+      "description": "Agenda:\n1) Colorado Springs expansion\n2) Anchors backorder",
+      "location": "Video call",
+      "private": false,
+      "tentative": false,
+      "all_day": false,
+      "external": true,
+      "status": "active",
+      "recurring": false
+    },
+    {
+      "id": "ev-interview",
+      "title": "Interview panel: Sales Engineer",
+      "start": "2026-10-28T16:00:00-06:00",
+      "end": "2026-10-28T17:00:00-06:00",
+      "attendees": [
+        "maya",
+        "kevin.osei"
+      ],
+      "rsvps": {
+        "maya": "accepted",
+        "kevin.osei": "accepted"
+      },
+      "organizer": "maya",
+      "description": "",
+      "location": "Denver office, Aspen Room",
+      "private": false,
+      "tentative": false,
+      "all_day": false,
+      "external": false,
+      "status": "active",
+      "recurring": false
+    },
+    {
+      "id": "ev-standup-29",
+      "title": "Team standup",
+      "start": "2026-10-29T09:00:00-06:00",
+      "end": "2026-10-29T09:30:00-06:00",
+      "attendees": [
+        "maya",
+        "kevin.osei",
+        "priya.nair"
+      ],
+      "rsvps": {
+        "maya": "accepted",
+        "kevin.osei": "accepted",
+        "priya.nair": "accepted"
+      },
+      "organizer": "maya",
+      "description": "Daily West team standup: yesterday, today, blockers.",
+      "location": "Video call",
+      "private": false,
+      "tentative": false,
+      "all_day": false,
+      "external": false,
+      "status": "active",
+      "recurring": true
+    },
+    {
+      "id": "ev-forecast-review",
+      "title": "Forecast submission review",
+      "start": "2026-10-29T10:00:00-06:00",
+      "end": "2026-10-29T11:00:00-06:00",
+      "attendees": [
+        "maya",
+        "priya.nair"
+      ],
+      "rsvps": {
+        "maya": "accepted",
+        "priya.nair": "accepted"
+      },
+      "organizer": "maya",
+      "description": "Walk through workbook v3 before the Q4 submission.",
+      "location": "Video call",
+      "private": false,
+      "tentative": false,
+      "all_day": false,
+      "external": false,
+      "status": "active",
+      "recurring": false
+    },
+    {
+      "id": "ev-qbr",
+      "title": "Regional QBR",
+      "start": "2026-10-29T13:00:00-06:00",
+      "end": "2026-10-29T15:00:00-06:00",
+      "attendees": [
+        "maya",
+        "tom.becker"
+      ],
+      "rsvps": {
+        "maya": "accepted",
+        "tom.becker": "accepted"
+      },
+      "organizer": "tom.becker",
+      "description": "",
+      "location": "Denver office, Aspen Room",
+      "private": false,
+      "tentative": false,
+      "all_day": false,
+      "external": false,
+      "status": "active",
+      "recurring": false
+    },
+    {
+      "id": "ev-standup-30",
+      "title": "Team standup",
+      "start": "2026-10-30T09:00:00-06:00",
+      "end": "2026-10-30T09:30:00-06:00",
+      "attendees": [
+        "maya",
+        "kevin.osei",
+        "priya.nair"
+      ],
+      "rsvps": {
+        "maya": "accepted",
+        "kevin.osei": "accepted",
+        "priya.nair": "accepted"
+      },
+      "organizer": "maya",
+      "description": "Daily West team standup: yesterday, today, blockers.",
+      "location": "Video call",
+      "private": false,
+      "tentative": false,
+      "all_day": false,
+      "external": false,
+      "status": "active",
+      "recurring": true
+    },
+    {
+      "id": "ev-team-lunch",
+      "title": "Team lunch",
+      "start": "2026-10-30T12:00:00-06:00",
+      "end": "2026-10-30T13:00:00-06:00",
+      "attendees": [
+        "maya",
+        "kevin.osei",
+        "priya.nair"
+      ],
+      "rsvps": {
+        "maya": "accepted",
+        "kevin.osei": "accepted",
+        "priya.nair": "accepted"
+      },
+      "organizer": "maya",
+      "description": "",
+      "location": "",
+      "private": false,
+      "tentative": false,
+      "all_day": false,
+      "external": false,
+      "status": "active",
+      "recurring": false
+    },
+    {
+      "id": "ev-focus-fri",
+      "title": "Focus block",
+      "start": "2026-10-30T15:00:00-06:00",
+      "end": "2026-10-30T17:00:00-06:00",
+      "attendees": [
+        "maya"
+      ],
+      "rsvps": {
+        "maya": "accepted"
+      },
+      "organizer": "maya",
+      "description": "Busy: focus time.",
+      "location": "",
+      "private": false,
+      "tentative": false,
+      "all_day": false,
+      "external": false,
+      "status": "active",
+      "recurring": false
+    },
+    {
+      "id": "ev-summit",
+      "title": "Midwest Builders Summit (Chicago)",
+      "start": "2026-11-03T00:00:00-07:00",
+      "end": "2026-11-05T00:00:00-07:00",
+      "attendees": [
+        "maya"
+      ],
+      "rsvps": {
+        "maya": "accepted"
+      },
+      "organizer": "maya",
+      "description": "Registered. Keynote 09:00 on 3 November; ends 17:00 on 4 November (Chicago time).",
+      "location": "Lakeshore Convention Center, 400 E Harbor Way, Chicago",
+      "private": false,
+      "tentative": false,
+      "all_day": true,
+      "external": false,
+      "status": "active",
+      "recurring": false,
+      "busy_blocks": [
+        {
+          "start": "2026-11-03T08:00:00-06:00",
+          "end": "2026-11-03T17:00:00-06:00"
+        },
+        {
+          "start": "2026-11-04T08:00:00-06:00",
+          "end": "2026-11-04T17:00:00-06:00"
+        }
+      ]
+    }
+  ],
+  "busy": {
+    "tom.becker": [
+      {
+        "start": "2026-10-26T11:00:00-06:00",
+        "end": "2026-10-26T12:00:00-06:00"
+      },
+      {
+        "start": "2026-10-27T13:00:00-06:00",
+        "end": "2026-10-27T14:00:00-06:00"
+      },
+      {
+        "start": "2026-10-28T09:30:00-06:00",
+        "end": "2026-10-28T10:30:00-06:00"
+      },
+      {
+        "start": "2026-10-29T13:00:00-06:00",
+        "end": "2026-10-29T15:00:00-06:00"
+      }
+    ],
+    "dan.okafor": [
+      {
+        "start": "2026-10-26T09:00:00-04:00",
+        "end": "2026-10-26T11:00:00-04:00"
+      },
+      {
+        "start": "2026-10-27T11:00:00-04:00",
+        "end": "2026-10-27T12:00:00-04:00"
+      },
+      {
+        "start": "2026-10-28T09:00:00-04:00",
+        "end": "2026-10-28T13:00:00-04:00"
+      },
+      {
+        "start": "2026-10-29T14:00:00-04:00",
+        "end": "2026-10-29T16:00:00-04:00"
+      },
+      {
+        "start": "2026-10-30T13:00:00-04:00",
+        "end": "2026-10-30T17:30:00-04:00"
+      }
+    ],
+    "lisa.park": [
+      {
+        "start": "2026-10-26T15:00:00+00:00",
+        "end": "2026-10-26T17:30:00+00:00"
+      },
+      {
+        "start": "2026-10-27T14:00:00+00:00",
+        "end": "2026-10-27T15:00:00+00:00"
+      },
+      {
+        "start": "2026-10-28T16:00:00+00:00",
+        "end": "2026-10-28T17:00:00+00:00"
+      },
+      {
+        "start": "2026-10-30T00:00:00+00:00",
+        "end": "2026-10-31T00:00:00+00:00",
+        "ooo": true
+      }
+    ],
+    "priya.nair": [
+      {
+        "start": "2026-10-26T09:00:00-06:00",
+        "end": "2026-10-26T09:30:00-06:00"
+      },
+      {
+        "start": "2026-10-27T09:00:00-06:00",
+        "end": "2026-10-27T09:30:00-06:00"
+      },
+      {
+        "start": "2026-10-28T09:00:00-06:00",
+        "end": "2026-10-28T09:30:00-06:00"
+      },
+      {
+        "start": "2026-10-29T09:00:00-06:00",
+        "end": "2026-10-29T09:30:00-06:00"
+      },
+      {
+        "start": "2026-10-29T10:00:00-06:00",
+        "end": "2026-10-29T11:00:00-06:00"
+      },
+      {
+        "start": "2026-10-30T09:00:00-06:00",
+        "end": "2026-10-30T09:30:00-06:00"
+      },
+      {
+        "start": "2026-10-30T12:00:00-06:00",
+        "end": "2026-10-30T13:00:00-06:00"
+      }
+    ],
+    "kevin.osei": [
+      {
+        "start": "2026-10-26T09:00:00-06:00",
+        "end": "2026-10-26T09:30:00-06:00"
+      },
+      {
+        "start": "2026-10-26T09:30:00-06:00",
+        "end": "2026-10-26T10:30:00-06:00"
+      },
+      {
+        "start": "2026-10-26T14:00:00-06:00",
+        "end": "2026-10-26T14:45:00-06:00"
+      },
+      {
+        "start": "2026-10-27T09:00:00-06:00",
+        "end": "2026-10-27T09:30:00-06:00"
+      },
+      {
+        "start": "2026-10-27T12:00:00-06:00",
+        "end": "2026-10-27T13:00:00-06:00"
+      },
+      {
+        "start": "2026-10-28T09:00:00-06:00",
+        "end": "2026-10-28T09:30:00-06:00"
+      },
+      {
+        "start": "2026-10-28T13:00:00-06:00",
+        "end": "2026-10-28T14:00:00-06:00"
+      },
+      {
+        "start": "2026-10-28T16:00:00-06:00",
+        "end": "2026-10-28T17:00:00-06:00"
+      },
+      {
+        "start": "2026-10-29T09:00:00-06:00",
+        "end": "2026-10-29T09:30:00-06:00"
+      },
+      {
+        "start": "2026-10-30T09:00:00-06:00",
+        "end": "2026-10-30T09:30:00-06:00"
+      },
+      {
+        "start": "2026-10-30T12:00:00-06:00",
+        "end": "2026-10-30T13:00:00-06:00"
+      }
+    ]
+  }
+}

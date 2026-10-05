@@ -1,0 +1,61 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__ea-world__*",
+      "Skill",
+      "Agent",
+      "mcp__browser__new_page",
+      "mcp__browser__navigate_page",
+      "mcp__browser__select_page",
+      "mcp__browser__list_pages",
+      "mcp__browser__take_snapshot",
+      "mcp__browser__click",
+      "mcp__browser__fill",
+      "mcp__browser__fill_form",
+      "mcp__browser__press_key",
+      "mcp__browser__hover",
+      "mcp__browser__wait_for",
+      "mcp__browser__take_screenshot",
+      "mcp__browser__close_page"
+    ],
+    "ask": [
+      "mcp__ea-world__calendar_create",
+      "mcp__ea-world__calendar_update",
+      "mcp__ea-world__calendar_cancel",
+      "mcp__ea-world__email_send",
+      "mcp__ea-world__travel_book",
+      "mcp__ea-world__travel_cancel",
+      "mcp__ea-world__restaurant_book"
+    ],
+    "deny": [
+      "Bash",
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep",
+      "WebSearch",
+      "WebFetch",
+      "NotebookEdit",
+      "mcp__browser__evaluate_script",
+      "mcp__browser__upload_file",
+      "mcp__browser__handle_dialog",
+      "mcp__browser__emulate",
+      "mcp__browser__performance_start_trace",
+      "mcp__browser__performance_stop_trace",
+      "mcp__browser__performance_analyze_insight",
+      "mcp__browser__lighthouse_audit"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {"matcher": "", "hooks": [{"type": "command", "command": "uv run --project .. python -m ea_harness.stopcheck --hook stop"}]}
+    ],
+    "SubagentStop": [
+      {"matcher": "", "hooks": [{"type": "command", "command": "uv run --project .. python -m ea_harness.stopcheck --hook subagent"}]}
+    ],
+    "PreToolUse": [
+      {"matcher": "mcp__browser__.*", "hooks": [{"type": "command", "command": "uv run --project .. python -m ea_harness.browser_guard"}]}
+    ]
+  }
+}

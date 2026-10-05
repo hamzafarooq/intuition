@@ -1,0 +1,32 @@
+name: existing-early-flight
+description: Maya already has booking bk-001 on the Tuesday 06:00 flight fl-sk418-y.
+clock: null
+add:
+  inbox: []
+  maya_events: []
+  busy: {}
+  bookings:
+    - id: bk-001
+      kind: flight
+      option_id: fl-sk418-y
+      hold_id: null
+      travelers: [maya]
+      guests: []
+      check_in: null
+      check_out: null
+      nights: null
+      date: "2026-11-03"
+      time: "06:00"
+      party_size: null
+      unit_price_usd: 242
+      total_usd: 242
+      status: active
+      created_at: "2026-10-20T14:05:00-06:00"
+      approval_note: null
+  contacts: []
+remove:
+  hotels: []
+  flights: []
+  restaurants: []
+  inbox: []
+reactions: []

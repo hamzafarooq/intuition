@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "ea-world": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "--project", "..", "ea-world"],
+      "env": {
+        "EA_MODE": "${EA_MODE:-mock}",
+        "EA_WORLD_VARIANT": "${EA_WORLD_VARIANT:-}",
+        "EA_FAULTS": "${EA_FAULTS:-}",
+        "SERPAPI_API_KEY": "${SERPAPI_API_KEY:-}"
+      }
+    }
+  }
+}

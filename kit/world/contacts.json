@@ -1,0 +1,210 @@
+{
+  "organizations": [
+    {
+      "name": "Larkspur Supply",
+      "domain": "larkspur.example",
+      "relationship": "internal"
+    },
+    {
+      "name": "Ridgeway Builders",
+      "domain": "ridgeway.example",
+      "relationship": "customer",
+      "key": "ridgeway"
+    },
+    {
+      "name": "Granite Homes",
+      "domain": "granitehomes.example",
+      "relationship": "customer",
+      "key": "granite"
+    },
+    {
+      "name": "Brightpath Tools",
+      "domain": "brightpath.example",
+      "relationship": "supplier"
+    }
+  ],
+  "contacts": [
+    {
+      "id": "maya",
+      "name": "Maya Chen",
+      "email": "maya.chen@larkspur.example",
+      "company": "Larkspur Supply",
+      "role": "Regional Sales Director, West",
+      "timezone": "America/Denver",
+      "working_hours": {
+        "start": "08:00",
+        "end": "17:30"
+      },
+      "internal": true,
+      "relationship": "internal"
+    },
+    {
+      "id": "tom.becker",
+      "name": "Tom Becker",
+      "email": "tom.becker@larkspur.example",
+      "company": "Larkspur Supply",
+      "role": "Chief Revenue Officer",
+      "timezone": "America/Denver",
+      "working_hours": {
+        "start": "08:00",
+        "end": "18:00"
+      },
+      "internal": true,
+      "relationship": "internal"
+    },
+    {
+      "id": "dan.okafor",
+      "name": "Dan Okafor",
+      "email": "dan.okafor@larkspur.example",
+      "company": "Larkspur Supply",
+      "role": "Finance Director",
+      "timezone": "America/New_York",
+      "working_hours": {
+        "start": "09:00",
+        "end": "17:30"
+      },
+      "internal": true,
+      "relationship": "internal"
+    },
+    {
+      "id": "lisa.park",
+      "name": "Lisa Park",
+      "email": "lisa.park@larkspur.example",
+      "company": "Larkspur Supply",
+      "role": "VP Sales, EMEA",
+      "timezone": "Europe/London",
+      "working_hours": {
+        "start": "09:00",
+        "end": "17:30"
+      },
+      "internal": true,
+      "relationship": "internal"
+    },
+    {
+      "id": "priya.nair",
+      "name": "Priya Nair",
+      "email": "priya.nair@larkspur.example",
+      "company": "Larkspur Supply",
+      "role": "Sales Operations Analyst",
+      "timezone": "America/Denver",
+      "working_hours": {
+        "start": "08:30",
+        "end": "17:00"
+      },
+      "internal": true,
+      "relationship": "internal"
+    },
+    {
+      "id": "kevin.osei",
+      "name": "Kevin Osei",
+      "email": "kevin.osei@larkspur.example",
+      "company": "Larkspur Supply",
+      "role": "Sales Engineer",
+      "timezone": "America/Denver",
+      "working_hours": {
+        "start": "08:00",
+        "end": "17:00"
+      },
+      "internal": true,
+      "relationship": "internal"
+    },
+    {
+      "id": "travel.desk",
+      "name": "Larkspur Travel Desk",
+      "email": "travel@larkspur.example",
+      "company": "Larkspur Supply",
+      "role": "Travel desk",
+      "timezone": "America/Denver",
+      "working_hours": {
+        "start": "08:00",
+        "end": "17:00"
+      },
+      "internal": true,
+      "relationship": "internal"
+    },
+    {
+      "id": "it.security",
+      "name": "IT Security",
+      "email": "security@larkspur.example",
+      "company": "Larkspur Supply",
+      "role": "IT security",
+      "timezone": "America/Denver",
+      "working_hours": {
+        "start": "08:00",
+        "end": "17:00"
+      },
+      "internal": true,
+      "relationship": "internal"
+    },
+    {
+      "id": "dan.reyes",
+      "name": "Dan Reyes",
+      "email": "dan.reyes@ridgeway.example",
+      "company": "Ridgeway Builders",
+      "role": "Purchasing Manager",
+      "timezone": "America/Chicago",
+      "working_hours": {
+        "start": "08:00",
+        "end": "17:00"
+      },
+      "internal": false,
+      "relationship": "customer"
+    },
+    {
+      "id": "amy.lin",
+      "name": "Amy Lin",
+      "email": "amy.lin@ridgeway.example",
+      "company": "Ridgeway Builders",
+      "role": "VP Operations",
+      "timezone": "America/Chicago",
+      "working_hours": {
+        "start": "08:00",
+        "end": "17:00"
+      },
+      "internal": false,
+      "relationship": "customer"
+    },
+    {
+      "id": "raj.mehta",
+      "name": "Raj Mehta",
+      "email": "raj.mehta@brightpath.example",
+      "company": "Brightpath Tools",
+      "role": "Partner Manager",
+      "timezone": "America/Chicago",
+      "working_hours": {
+        "start": "09:00",
+        "end": "17:00"
+      },
+      "internal": false,
+      "relationship": "supplier"
+    },
+    {
+      "id": "ben.walsh",
+      "name": "Ben Walsh",
+      "email": "ben.walsh@granitehomes.example",
+      "company": "Granite Homes",
+      "role": "Purchasing Lead",
+      "timezone": "America/Denver",
+      "working_hours": {
+        "start": "08:00",
+        "end": "17:00"
+      },
+      "internal": false,
+      "relationship": "customer"
+    },
+    {
+      "id": "helen.ortiz",
+      "name": "Helen Ortiz",
+      "email": "helen.ortiz@granitehomes.example",
+      "company": "Granite Homes",
+      "role": "Chief Financial Officer",
+      "timezone": "America/Denver",
+      "working_hours": {
+        "start": "08:00",
+        "end": "17:00"
+      },
+      "internal": false,
+      "relationship": "customer"
+    }
+  ]
+}

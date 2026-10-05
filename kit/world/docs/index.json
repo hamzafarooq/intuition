@@ -1,0 +1,34 @@
+{
+  "docs": [
+    {
+      "id": "doc-travel-policy",
+      "file": "travel-policy.md",
+      "title": "Larkspur Supply travel policy",
+      "visibility": "internal"
+    },
+    {
+      "id": "doc-q4-forecast",
+      "file": "q4-forecast-summary.md",
+      "title": "West Q4 forecast summary",
+      "visibility": "internal"
+    },
+    {
+      "id": "doc-ridgeway",
+      "file": "customers/ridgeway.md",
+      "title": "Ridgeway Builders: account notes",
+      "visibility": "internal"
+    },
+    {
+      "id": "doc-granite",
+      "file": "customers/granite-homes.md",
+      "title": "Granite Homes: account notes",
+      "visibility": "internal"
+    },
+    {
+      "id": "doc-catalog-2027",
+      "file": "catalog-2027.md",
+      "title": "2027 product catalog",
+      "visibility": "public"
+    }
+  ]
+}

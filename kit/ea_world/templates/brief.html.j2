@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ brief.title }}</title>
+<style>
+  :root { --ink: #1d1b19; --muted: #6b645c; --accent: #b4442c; --paper: #fbf8f3; }
+  @media (prefers-color-scheme: dark) { :root { --ink: #ece6dd; --muted: #a39a8f; --accent: #e07a5f; --paper: #1b1917; } }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  article { max-width: 680px; margin: 0 auto; padding: 40px 16px 64px; }
+  h1 { font-family: Georgia, serif; font-size: 30px; line-height: 1.2; margin: 0 0 6px; }
+  .meta { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+  h2 { font-size: 15px; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); margin: 28px 0 8px; }
+  ul { padding-left: 22px; }
+  .sources { margin-top: 36px; font-size: 13px; color: var(--muted); }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<article>
+  <h1>{{ brief.title }}</h1>
+  <div class="meta">Brief {{ brief.id }} · saved {{ brief.saved_at }}</div>
+  {{ body_html|safe }}
+  <div class="sources"><strong>Sources:</strong> {{ brief.sources|join(", ") if brief.sources else "none listed" }}</div>
+</article>
+</body>
+</html>

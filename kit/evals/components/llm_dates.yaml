@@ -1,0 +1,332 @@
+# Component suite: date and time reasoning (Lesson 1.5). Spec: spec/10-component-suites.md.
+#
+# One `claude -p` call per trial with no tools and --append-system-prompt set to
+# `system_prompt` below. Grader: exact match after normalization. Default 5 trials per item.
+# Every answer was computed with Python zoneinfo (America/Denver, Europe/London,
+# America/Chicago, America/New_York), not by hand.
+#
+# Clock-change facts the items lean on:
+#   - London left summer time on Sunday 25 October 2026 (UTC+1 -> UTC+0).
+#   - The US leaves daylight time on Sunday 1 November 2026 (Denver UTC-6 -> UTC-7).
+#   - So for the week of 26 October London is 6 hours ahead of Denver, not the usual 7.
+#
+# Item fields: id, question (always ends with a format hint), answer (already normalized),
+# kind (date | time | weekday | number), workshop (true for the 20 workshop items), tags.
+
+system_prompt: "Today is Monday 26 October 2026, 08:30 in Denver (America/Denver). Answer with only the value requested, in the format requested."
+
+normalize:
+  all: "Trim whitespace, surrounding quotes or backticks, and a trailing period. If the reply has several lines, use the last non-empty line."
+  date: "Compare as YYYY-MM-DD. Parse other spellings of a single calendar date (for example 'Tuesday, 3 November 2026' or '11/03/2026' read as month/day) and emit ISO."
+  time: "Compare as HH:MM, 24-hour, zero-padded. '1pm', '1:00 PM' and '13:00:00' all become 13:00. Drop a trailing zone or city label ('17:00 GMT', '17:00 London')."
+  weekday: "Compare as the full English weekday name with the first letter capitalized ('wednesday' and 'Wed' become Wednesday)."
+  number: "Compare as an integer. Drop units and words ('6 hours' becomes 6) and a trailing '.0'."
+
+items:
+  # ---------------------------------------------------------------- workshop (20)
+  - id: ld-01
+    question: "What date is the Tuesday of next week? (YYYY-MM-DD)"
+    answer: "2026-11-03"
+    kind: date
+    workshop: true
+    tags: [relative-date]
+  - id: ld-02
+    question: "What date is this Thursday? (YYYY-MM-DD)"
+    answer: "2026-10-29"
+    kind: date
+    workshop: true
+    tags: [relative-date]
+  - id: ld-03
+    question: "What date is a week from tomorrow? (YYYY-MM-DD)"
+    answer: "2026-11-03"
+    kind: date
+    workshop: true
+    tags: [relative-date]
+  - id: ld-04
+    question: "What weekday is 4 November 2026? (weekday name)"
+    answer: "Wednesday"
+    kind: weekday
+    workshop: true
+    tags: [weekday]
+  - id: ld-05
+    question: "What is 11:00 Denver time on Wednesday 28 October 2026 in London? (HH:MM)"
+    answer: "17:00"
+    kind: time
+    workshop: true
+    tags: [timezone, clock-change]
+  - id: ld-06
+    question: "What is 11:00 Denver time on Wednesday 4 November 2026 in London? (HH:MM)"
+    answer: "18:00"
+    kind: time
+    workshop: true
+    tags: [timezone, clock-change]
+  - id: ld-07
+    question: "What is 09:00 London time on Monday 26 October 2026 in Denver? (HH:MM)"
+    answer: "03:00"
+    kind: time
+    workshop: true
+    tags: [timezone, clock-change-week]
+  - id: ld-08
+    question: "What is 2pm Central time on Thursday 29 October 2026 in Denver? (HH:MM)"
+    answer: "13:00"
+    kind: time
+    workshop: true
+    tags: [timezone]
+  - id: ld-09
+    question: "What is 14:00 Denver time on Monday 2 November 2026 in Chicago? (HH:MM)"
+    answer: "15:00"
+    kind: time
+    workshop: true
+    tags: [timezone]
+  - id: ld-10
+    question: "How many hours ahead of Denver is London on 28 October 2026? (number)"
+    answer: "6"
+    kind: number
+    workshop: true
+    tags: [offset, clock-change]
+  - id: ld-11
+    question: "How many hours ahead of Denver is London on 4 November 2026? (number)"
+    answer: "7"
+    kind: number
+    workshop: true
+    tags: [offset, clock-change]
+  - id: ld-12
+    question: "How many hours ahead of Denver is London on 20 October 2026? (number)"
+    answer: "7"
+    kind: number
+    workshop: true
+    tags: [offset, clock-change]
+  - id: ld-13
+    question: "What date is the last Sunday of October 2026? (YYYY-MM-DD)"
+    answer: "2026-10-25"
+    kind: date
+    workshop: true
+    tags: [calendar-arithmetic]
+  - id: ld-14
+    question: "What date is the first Sunday of November 2026? (YYYY-MM-DD)"
+    answer: "2026-11-01"
+    kind: date
+    workshop: true
+    tags: [calendar-arithmetic]
+  - id: ld-15
+    question: 'What date is "end of next week" if weeks end on Friday? (YYYY-MM-DD)'
+    answer: "2026-11-06"
+    kind: date
+    workshop: true
+    tags: [relative-date]
+  - id: ld-16
+    question: "What date is 10 business days after today? (YYYY-MM-DD)"
+    answer: "2026-11-09"
+    kind: date
+    workshop: true
+    tags: [business-days]
+  - id: ld-17
+    question: "What date is Friday noon's deadline this week? (YYYY-MM-DD)"
+    answer: "2026-10-30"
+    kind: date
+    workshop: true
+    tags: [relative-date, deadline]
+  - id: ld-18
+    question: "If a meeting is at 17:00 London on 28 October 2026, what time is it in New York? (HH:MM)"
+    answer: "13:00"
+    kind: time
+    workshop: true
+    tags: [timezone, clock-change-week]
+  - id: ld-19
+    question: "What date was 9 days ago? (YYYY-MM-DD)"
+    answer: "2026-10-17"
+    kind: date
+    workshop: true
+    tags: [relative-date]
+  - id: ld-20
+    question: "How many nights is a hotel stay from 2 November to 4 November 2026? (number)"
+    answer: "2"
+    kind: number
+    workshop: true
+    tags: [travel, calendar-arithmetic]
+
+  # ---------------------------------------------------------------- full set only (30)
+  # dates (10)
+  - id: ld-21
+    question: "What date was yesterday? (YYYY-MM-DD)"
+    answer: "2026-10-25"
+    kind: date
+    workshop: false
+    tags: [relative-date]
+  - id: ld-22
+    question: "What date is two weeks from today? (YYYY-MM-DD)"
+    answer: "2026-11-09"
+    kind: date
+    workshop: false
+    tags: [relative-date]
+  - id: ld-23
+    question: "What date is 5 business days after today? (YYYY-MM-DD)"
+    answer: "2026-11-02"
+    kind: date
+    workshop: false
+    tags: [business-days]
+  - id: ld-24
+    question: "What date is the first Monday of December 2026? (YYYY-MM-DD)"
+    answer: "2026-12-07"
+    kind: date
+    workshop: false
+    tags: [calendar-arithmetic]
+  - id: ld-25
+    question: "On what date in 2026 do clocks in Denver go back one hour? (YYYY-MM-DD)"
+    answer: "2026-11-01"
+    kind: date
+    workshop: false
+    tags: [dst]
+  - id: ld-26
+    question: "A hotel stay checks in on 2 November 2026 for 3 nights. What is the check-out date? (YYYY-MM-DD)"
+    answer: "2026-11-05"
+    kind: date
+    workshop: false
+    tags: [travel, calendar-arithmetic]
+  - id: ld-27
+    question: "What date was the Monday of last week? (YYYY-MM-DD)"
+    answer: "2026-10-19"
+    kind: date
+    workshop: false
+    tags: [relative-date]
+  - id: ld-28
+    question: "What date is it in London at 20:00 Denver time on Monday 26 October 2026? (YYYY-MM-DD)"
+    answer: "2026-10-27"
+    kind: date
+    workshop: false
+    tags: [timezone, date-line, clock-change-week]
+  - id: ld-29
+    question: "What date is it in Denver at 03:00 London time on Thursday 5 November 2026? (YYYY-MM-DD)"
+    answer: "2026-11-04"
+    kind: date
+    workshop: false
+    tags: [timezone, date-line]
+  - id: ld-30
+    question: "What date is the Thursday of next week? (YYYY-MM-DD)"
+    answer: "2026-11-05"
+    kind: date
+    workshop: false
+    tags: [relative-date]
+  # times (10)
+  - id: ld-31
+    question: "What is 16:00 Denver time on Wednesday 28 October 2026 in New York? (HH:MM)"
+    answer: "18:00"
+    kind: time
+    workshop: false
+    tags: [timezone]
+  - id: ld-32
+    question: "What is 17:30 London time on Tuesday 27 October 2026 in Denver? (HH:MM)"
+    answer: "11:30"
+    kind: time
+    workshop: false
+    tags: [timezone, clock-change-week]
+  - id: ld-33
+    question: "What is 13:00 Denver time on Thursday 29 October 2026 in London? (HH:MM)"
+    answer: "19:00"
+    kind: time
+    workshop: false
+    tags: [timezone, clock-change-week]
+  - id: ld-34
+    question: "What is 09:00 London time on Monday 2 November 2026 in Denver? (HH:MM)"
+    answer: "02:00"
+    kind: time
+    workshop: false
+    tags: [timezone, clock-change]
+  - id: ld-35
+    question: "What is 23:59 Central time on Monday 26 October 2026 in Denver? (HH:MM)"
+    answer: "22:59"
+    kind: time
+    workshop: false
+    tags: [timezone, deadline]
+  - id: ld-36
+    question: "What is 1pm New York time on Wednesday 28 October 2026 in London? (HH:MM)"
+    answer: "17:00"
+    kind: time
+    workshop: false
+    tags: [timezone, clock-change-week]
+  - id: ld-37
+    question: "What time is it in London right now? (HH:MM)"
+    answer: "14:30"
+    kind: time
+    workshop: false
+    tags: [timezone, clock-change-week, now]
+  - id: ld-38
+    question: "What time is it in Denver exactly 48 hours after 22:00 Denver time on Saturday 31 October 2026? (HH:MM)"
+    answer: "21:00"
+    kind: time
+    workshop: false
+    tags: [elapsed-time, dst]
+  - id: ld-39
+    question: "What is 18:35 Chicago time on Monday 2 November 2026 in Denver? (HH:MM)"
+    answer: "17:35"
+    kind: time
+    workshop: false
+    tags: [timezone, travel]
+  - id: ld-40
+    question: "What is 09:00 New York time on Tuesday 3 November 2026 in Denver? (HH:MM)"
+    answer: "07:00"
+    kind: time
+    workshop: false
+    tags: [timezone]
+  # weekdays (4)
+  - id: ld-41
+    question: "What weekday is 1 November 2026? (weekday name)"
+    answer: "Sunday"
+    kind: weekday
+    workshop: false
+    tags: [weekday]
+  - id: ld-42
+    question: "What weekday is 31 December 2026? (weekday name)"
+    answer: "Thursday"
+    kind: weekday
+    workshop: false
+    tags: [weekday]
+  - id: ld-43
+    question: "What weekday will it be 10 days from today? (weekday name)"
+    answer: "Thursday"
+    kind: weekday
+    workshop: false
+    tags: [weekday, relative-date]
+  - id: ld-44
+    question: "What weekday is it in London at 19:00 Denver time on Friday 30 October 2026? (weekday name)"
+    answer: "Saturday"
+    kind: weekday
+    workshop: false
+    tags: [weekday, timezone, date-line, clock-change-week]
+  # numbers (6)
+  - id: ld-45
+    question: "How many hours ahead of Denver is New York on 28 October 2026? (number)"
+    answer: "2"
+    kind: number
+    workshop: false
+    tags: [offset]
+  - id: ld-46
+    question: "How many hours ahead of New York is London on 29 October 2026? (number)"
+    answer: "4"
+    kind: number
+    workshop: false
+    tags: [offset, clock-change]
+  - id: ld-47
+    question: "How many hours ahead of New York is London on 4 November 2026? (number)"
+    answer: "5"
+    kind: number
+    workshop: false
+    tags: [offset, clock-change]
+  - id: ld-48
+    question: "A flight leaves Denver at 15:10 local time on Monday 2 November 2026 and lands in Chicago at 18:35 local time the same day. How many minutes is the flight? (number)"
+    answer: "145"
+    kind: number
+    workshop: false
+    tags: [elapsed-time, timezone, travel]
+  - id: ld-49
+    question: "How many hours elapse between 09:00 Denver time on Wednesday 28 October 2026 and 09:00 Denver time on Wednesday 4 November 2026? (number)"
+    answer: "169"
+    kind: number
+    workshop: false
+    tags: [elapsed-time, dst]
+  - id: ld-50
+    question: "How many hours long is Sunday 1 November 2026 in Denver? (number)"
+    answer: "25"
+    kind: number
+    workshop: false
+    tags: [elapsed-time, dst]

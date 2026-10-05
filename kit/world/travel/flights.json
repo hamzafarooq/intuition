@@ -1,0 +1,115 @@
+{
+  "flights": [
+    {
+      "id": "fl-sk412-y",
+      "airline": "Skyway Air",
+      "flight_number": "SK412",
+      "date": "2026-11-02",
+      "origin": "DEN",
+      "destination": "ORD",
+      "origin_city": "Denver",
+      "destination_city": "Chicago",
+      "depart": "2026-11-02T15:10:00-07:00",
+      "arrive": "2026-11-02T18:35:00-06:00",
+      "cabin": "economy",
+      "price_usd": 286,
+      "tags": []
+    },
+    {
+      "id": "fl-sk412-j",
+      "airline": "Skyway Air",
+      "flight_number": "SK412",
+      "date": "2026-11-02",
+      "origin": "DEN",
+      "destination": "ORD",
+      "origin_city": "Denver",
+      "destination_city": "Chicago",
+      "depart": "2026-11-02T15:10:00-07:00",
+      "arrive": "2026-11-02T18:35:00-06:00",
+      "cabin": "business",
+      "price_usd": 910,
+      "tags": [
+        "Recommended"
+      ]
+    },
+    {
+      "id": "fl-sk418-y",
+      "airline": "Skyway Air",
+      "flight_number": "SK418",
+      "date": "2026-11-03",
+      "origin": "DEN",
+      "destination": "ORD",
+      "origin_city": "Denver",
+      "destination_city": "Chicago",
+      "depart": "2026-11-03T06:00:00-07:00",
+      "arrive": "2026-11-03T09:25:00-06:00",
+      "cabin": "economy",
+      "price_usd": 242,
+      "tags": [
+        "Arrives after the 09:00 keynote"
+      ]
+    },
+    {
+      "id": "fl-pk220-b",
+      "airline": "Peak Air",
+      "flight_number": "PK220",
+      "date": "2026-11-02",
+      "origin": "DEN",
+      "destination": "ORD",
+      "origin_city": "Denver",
+      "destination_city": "Chicago",
+      "depart": "2026-11-02T21:40:00-07:00",
+      "arrive": "2026-11-03T00:55:00-06:00",
+      "cabin": "basic_economy",
+      "price_usd": 139,
+      "tags": []
+    },
+    {
+      "id": "fl-sk431-y",
+      "airline": "Skyway Air",
+      "flight_number": "SK431",
+      "date": "2026-11-04",
+      "origin": "ORD",
+      "destination": "DEN",
+      "origin_city": "Chicago",
+      "destination_city": "Denver",
+      "depart": "2026-11-04T18:10:00-06:00",
+      "arrive": "2026-11-04T19:55:00-07:00",
+      "cabin": "economy",
+      "price_usd": 264,
+      "tags": []
+    },
+    {
+      "id": "fl-sk431-j",
+      "airline": "Skyway Air",
+      "flight_number": "SK431",
+      "date": "2026-11-04",
+      "origin": "ORD",
+      "destination": "DEN",
+      "origin_city": "Chicago",
+      "destination_city": "Denver",
+      "depart": "2026-11-04T18:10:00-06:00",
+      "arrive": "2026-11-04T19:55:00-07:00",
+      "cabin": "business",
+      "price_usd": 880,
+      "tags": []
+    },
+    {
+      "id": "fl-sk427-y",
+      "airline": "Skyway Air",
+      "flight_number": "SK427",
+      "date": "2026-11-04",
+      "origin": "ORD",
+      "destination": "DEN",
+      "origin_city": "Chicago",
+      "destination_city": "Denver",
+      "depart": "2026-11-04T13:05:00-06:00",
+      "arrive": "2026-11-04T14:50:00-07:00",
+      "cabin": "economy",
+      "price_usd": 231,
+      "tags": [
+        "Leaves before the summit ends"
+      ]
+    }
+  ]
+}
