@@ -27,7 +27,7 @@ SCRIPT = {
 NONE_REPLY = "I'll decide later."
 NO_MATCH_REPLY = "Use your best judgement."
 OTHER_REPLY = "Thanks."
-DEFAULT_MODEL = "gpt-6-luna"
+DEFAULT_MODEL = "gpt-5.6-luna"  # decisions log 2026-10-05: gpt-6-luna isn't offered
 MAX_MAYA_REPLIES = 4
 
 

@@ -31,7 +31,7 @@ SCHEMA = {
     "required": ["verdict", "evidence", "reason"],
     "additionalProperties": False,
 }
-DEFAULT_MODEL = "gpt-6.1-sol"
+DEFAULT_MODEL = "gpt-5.6-sol"  # decisions log 2026-10-05: gpt-6.1-sol isn't offered
 REASONING_EFFORT = "low"
 TOOL_OUTPUT_CAP = 600
 

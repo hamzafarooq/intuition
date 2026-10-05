@@ -43,7 +43,7 @@ def radar_svg(
     series = series[:MAX_SERIES]
     flagged_axes = flagged_axes or {}
     n = len(axes)
-    pad_x, pad_y = 128, 50
+    pad_x, pad_y = 140, 58
     w, h = size + 2 * pad_x, size + 2 * pad_y
     cx, cy, r = w / 2, h / 2, size / 2 - 8
     out = [
@@ -75,9 +75,9 @@ def radar_svg(
             lines.append("(n/a)")
         top = y < cy - r * 0.7
         bottom = y > cy + r * 0.7
-        y0 = y - 6 - 14 * (len(lines) - 1) if top else (y + 14 if bottom else y + 4 - 7 * (len(lines) - 1))
+        y0 = y - 6 - 17 * (len(lines) - 1) if top else (y + 16 if bottom else y + 5 - 8 * (len(lines) - 1))
         cls = "axis-label flagged" if flag else ("axis-label empty" if empty else "axis-label")
-        spans = "".join(f'<tspan x="{x:.1f}" dy="{0 if k == 0 else 14}">{html.escape(t)}</tspan>' for k, t in enumerate(lines))
+        spans = "".join(f'<tspan x="{x:.1f}" dy="{0 if k == 0 else 17}">{html.escape(t)}</tspan>' for k, t in enumerate(lines))
         tip = f"<title>{html.escape(flag)}</title>" if flag else ""
         out.append(f'<text class="{cls}" x="{x:.1f}" y="{y0:.1f}" text-anchor="{anchor}">{spans}{tip}</text>')
         if flag:
@@ -154,8 +154,8 @@ RADAR_CSS = """
 .radar .ring { fill: none; stroke: var(--grid); stroke-width: 1; }
 .radar .ring-outer { stroke: var(--axis); }
 .radar .spoke { stroke: var(--grid); stroke-width: 1; }
-.radar .ring-label { fill: var(--muted); font-size: 10px; }
-.radar .axis-label { fill: var(--ink-2); font-size: 12.5px; }
+.radar .ring-label { fill: var(--muted); font-size: 11.5px; }
+.radar .axis-label { fill: var(--ink-2); font-size: 15px; }
 .radar .axis-label.flagged { fill: var(--critical-ink); font-weight: 600; }
 .radar .axis-label.empty { fill: var(--muted); }
 .radar .must-flag { fill: none; stroke: var(--critical); stroke-width: 2.5; }

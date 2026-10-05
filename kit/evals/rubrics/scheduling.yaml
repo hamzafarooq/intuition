@@ -2,7 +2,7 @@
 # fill.mode: create | move | update | propose | none_possible.
 # Target `case_event` = fill.event_id when the fill has one, otherwise the single event created in this run.
 id: scheduling
-version: 1
+version: 2
 description: >
   The right people, inside everyone's hours and Maya's buffers, at a valid time; outsiders get proposals
   by email, not invites; impossible requests are called out with a valid alternative; local times right.
@@ -142,7 +142,9 @@ criteria:
     axis: communication
     grader: judge
     artifact: trace
-    question: "Does the reply give the time in each attendee's own time zone, correctly? Judge every meeting time the assistant states to Maya or puts in an email it drafted."
+    # v2 (2026-10-05, first live smoke run): the judge failed a correct confirmation because a suggested
+    # alternative was given only in Denver time. PRD 7: "the confirmation gives each person's local time".
+    question: "Does the confirmation (the meeting that was booked, moved or proposed, in the reply to Maya or in an email it drafted) give its time in each attendee's own time zone, correctly? Passing mentions of other times, such as alternatives or Maya's other events, don't need every zone, but any zone they do give must be right."
     reference: {fn: correct_local_times}
     pass_example: "'Wed 28 Oct, 11:00 Denver / 13:00 New York / 17:00 London.'"
     fail_example: "'Wed 11:00 your time, which is 18:00 for Lisa' (London is 6 hours ahead of Denver this week, so it's 17:00)."

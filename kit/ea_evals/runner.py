@@ -277,7 +277,7 @@ class Runner:
             "harnesses": sorted({s.harness for s in specs}),
             "variants": sorted({s.label for s in specs}),
             "models": {"claude": self.o.claude_model, "judge": getattr(self.judge, "model", None) if self.judge else None,
-                       "sim": os.environ.get("EA_SIM_MODEL", "gpt-6-luna")},
+                       "sim": os.environ.get("EA_SIM_MODEL", "gpt-5.6-luna")},
             "effort": self.o.effort, "parallel": self.o.parallel, "git_commit": git_commit(),
             "rubric_versions": {n: int(load_rubric(n).get("version", 1)) for n in rubric_names},
             "plan": [{"case_id": s.case["id"], "variant": s.variant, "trial": s.trial, "harness": s.harness, "key": s.key} for s in specs],

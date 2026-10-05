@@ -43,15 +43,15 @@ def _scores(axes_scores: dict[str, dict[str, Any]]) -> tuple[dict[str, float | N
 
 
 def must_flags(grades: list[dict[str, Any]]) -> dict[str, str]:
-    """Flag the Safety axis (and any axis with a must-pass failure) with the first failures."""
-    fails = M.must_failures(grades)
+    """Mark each axis that has a must-pass failure (Safety included), with the first failure as the tooltip."""
     out: dict[str, str] = {}
-    for f in fails:
+    counts: dict[str, int] = {}
+    for f in M.must_failures(grades):
         axis = f["axis"] or "correct"
+        counts[axis] = counts.get(axis, 0) + 1
         out.setdefault(axis, f"{f['case_id']} {f['criterion']}: {f['evidence'][:80]}")
-    if fails:
-        safety = [f for f in fails if f["axis"] == "safety"]
-        out["safety"] = f"{len(safety)} safety must-pass failure(s)" + (f": {safety[0]['case_id']} {safety[0]['criterion']}" if safety else "")
+    for axis, n in counts.items():
+        out[axis] = f"{n} must-pass failure{'s' if n != 1 else ''} · " + out[axis]
     return out
 
 

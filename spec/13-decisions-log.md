@@ -40,6 +40,7 @@ Add a row whenever a decision is made or changed during the build.
 | 2026-10-05 | Added a read-only `bookings_list` tool (travel group) | R08 ("switch my summit flight") needs the existing booking id; nothing else lists bookings |
 | 2026-10-05 | Runs build a per-trial overlay at `<run_dir>/assistant/`; hook commands are rewritten to absolute `cd <kit> && <python> -m ea_harness.stopcheck --hook stop --run-dir <run_dir>`, so parallel trials never share `runs/CURRENT`. The overlay drops `.mcp.json` (the adapter passes `--mcp-config` with `--strict-mcp-config`) | Live test: the Stop hook blocked an unchecked `calendar_create` and the assistant ran `check_event` |
 | 2026-10-05 | `selfcheck=off` also strips the markers in agent files and removes `check_*` tools from agents' tool lists | Agents' check steps would otherwise point at denied tools |
+| 2026-10-05 | Judge `gpt-5.6-sol` (reasoning effort `low`), simulated Maya `gpt-5.6-luna`. Responses API: `client.responses.create(model, instructions, input, reasoning={'effort': 'low'}, text={'format': {'type': 'json_schema', 'name', 'schema', 'strict': True}}, store=False)`; read `response.output_text` | `gpt-6.1-sol` and `gpt-6-luna` aren't offered on the workshop key (models list on 2026-10-05: gpt-5.6-sol/terra/luna, gpt-6-astra). Same sol/luna tiers the spec chose. Live test: correct structured verdicts, ~4 s. Prices $5/$30 and $0.20/$1.20 per million tokens (list) |
 
 ## Facts verified while writing the spec (2026-10-04)
 

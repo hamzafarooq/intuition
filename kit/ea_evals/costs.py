@@ -11,10 +11,11 @@ from dataclasses import dataclass, field
 
 # Per million tokens (input, output). Checked against OpenAI's pricing page at build time; see the decisions log.
 OPENAI_PRICES: dict[str, tuple[float, float]] = {
-    "gpt-6.1-sol": (2.50, 10.00),
-    "gpt-6-luna": (0.15, 0.60),
+    "gpt-5.6-sol": (5.00, 30.00),   # list price, Oct 2026 (promotional $4/$20 until 21 Nov 2026)
+    "gpt-5.6-luna": (0.20, 1.20),
+    "gpt-5.6-terra": (2.00, 10.00),
 }
-FALLBACK_PRICE = (2.50, 10.00)
+FALLBACK_PRICE = (5.00, 30.00)  # unknown models are costed like the judge, so the cap errs safe
 
 
 def openai_prices() -> dict[str, tuple[float, float]]:
