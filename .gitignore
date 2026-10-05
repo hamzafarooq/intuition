@@ -1,0 +1,16 @@
+# secrets
+.env
+.env.*
+!.env.example
+# run artifacts
+runs/
+**/runs/
+evals/results/
+**/evals/results/
+reports/
+**/reports/
+# python
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
