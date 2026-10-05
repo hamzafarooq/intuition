@@ -1,8 +1,8 @@
 # Acceptance: every PRD requirement and its evidence
 
-Generated 2026-10-05 01:43 PDT by `uv run python tools/acceptance.py`. Offline suite: 1511 passed, 0 failed.
+Generated 2026-10-05 02:08 PDT by `uv run python tools/acceptance.py`. Offline suite: 1608 passed, 0 failed.
 
-✅ 41 verified · 🟡 28 verified so far, a larger live run or a person's check still to do · ❌ 5 failing · ⚪ 1 accepted exception · 75 requirements
+✅ 46 verified · 🟡 28 verified so far, a larger live run or a person's check still to do · ❌ 0 failing · ⚪ 1 accepted exception · 75 requirements
 
 Live evidence comes from runs in `evals/results/` (`smoke-s01`: S01 through Claude Code with the OpenAI judge; `live-r01-browser`: R01 booked through Brave on the mock sites). The reference run (63 cases × 3 trials) and the lesson slices need the owner's go-ahead because they use the Claude plan.
 
@@ -67,13 +67,13 @@ Live evidence comes from runs in `evals/results/` (`smoke-s01`: S01 through Clau
 | E15 | Rubrics are versioned, and the version is recorded with every result | Changing a rubric never silently changes old scores | ✅ | versions recorded: {'scheduling': 2, 'conduct': 2} |
 | E16 | Spider charts for the assistant, the team and each task type, with up to three runs overlaid and the exact numbers beside them | Any two runs can be compared in the report; must-pass failures are flagged on the chart | ✅ | `tests/test_report.py` (7 passed) |
 | E17 | Browser bookings are graded by the same rubrics as direct bookings | The `browser=on` variant passes and fails the same criteria | ✅ | booking.yaml adds a hold-before-booking criterion under browser=on<br>live `live-r01-browser` R01: passed |
-| F1 | Overview, setup and five lessons; each step has a "why", a prompt with a copy button and a "what to expect" list | All lessons published | ❌ | `tests/test_site.py`: no tests found |
-| F2 | A short check at the end of each lesson, and a "what you have built so far" tracker | Present on every lesson page | ❌ | `tests/test_site.py`: no tests found |
-| F3 | Progress saved in the browser | Ticks survive a reload | ❌ | `tests/test_site.py`: no tests found<br>**Person to check:** tick survives reload (checked in Brave by the site builder) |
-| F4 | Recorded replays for steps that take long or may fail live | At least one per lesson | ❌ | `tests/test_site.py`: no tests found |
+| F1 | Overview, setup and five lessons; each step has a "why", a prompt with a copy button and a "what to expect" list | All lessons published | ✅ | `tests/test_site.py` (97 passed) |
+| F2 | A short check at the end of each lesson, and a "what you have built so far" tracker | Present on every lesson page | ✅ | `tests/test_site.py` (97 passed) |
+| F3 | Progress saved in the browser | Ticks survive a reload | 🟡 | `tests/test_site.py` (97 passed)<br>**Person to check:** tick survives reload (checked in Brave by the site builder) |
+| F4 | Recorded replays for steps that take long or may fail live | At least one per lesson | ✅ | `tests/test_site.py` (97 passed) |
 | F5 | Readable on a phone and a laptop | Checked at both widths | 🟡 | **Person to check:** checked at 1440 and 390 px in Brave, light and dark |
-| F6 | Not public for now: shared with attendees only | Ships inside the starter repo and opens locally; no public URL | ❌ | site/dist ships in the starter and opens from disk; no public URL |
-| F7 | Local setup guide for Mac, Windows (WSL2) and Linux, `make doctor`, and one-command `make start` | From a clean machine with Claude Code logged in, the app opens and answers in under 15 minutes ([spec/15-setup.md](spec/15-setup.md)) | 🟡 | files present (3)<br>`make doctor ARGS=--quick`: 6/6 green<br>**Person to check:** dry run from a clean account on macOS, Linux and WSL2, timed (under 15 minutes) |
+| F6 | Not public for now: shared with attendees only | Ships inside the starter repo and opens locally; no public URL | ✅ | site/dist ships in the starter and opens from disk; no public URL |
+| F7 | Local setup guide for Mac, Windows (WSL2) and Linux, `make doctor`, and one-command `make start` | From a clean machine with Claude Code logged in, the app opens and answers in under 15 minutes ([spec/15-setup.md](spec/15-setup.md)) | 🟡 | files present (3)<br>`make doctor ARGS=--quick`: 5/6 green<br>**Person to check:** dry run from a clean account on macOS, Linux and WSL2, timed (under 15 minutes) |
 | G1 | An onboarding page with its own name (Intuition), look and wording, nothing copied from Instinct or WhatsApp | Reviewed side by side; no borrowed names, logos, colours or copy | 🟡 | **Person to check:** side-by-side review: own name, palette, icons and copy; no Instinct or WhatsApp names, logos, colours or wording |
 | G2 | Setup: Maya's persona, a toggle per connector, search mode, harness choice, auto-approve option | Starting a session reflects every choice | ✅ | `tests/test_app.py` (23 passed) |
 | G3 | A messaging simulator docked on the side of the page on desktop, full screen on a phone | Visual check at 1440 and 390 px wide | 🟡 | **Person to check:** docked at 1440, full screen at 390 (checked in Brave) |
@@ -82,4 +82,4 @@ Live evidence comes from runs in `evals/results/` (`smoke-s01`: S01 through Clau
 | G6 | A behind-the-scenes view: the live trace and Maya's world (calendar, inbox, outbox, bookings, outputs, connectors) | Updates after every write | ✅ | `tests/test_app.py` (23 passed) |
 | G7 | Turning a connector off disconnects it in the tool server | The disconnect case can be shown by hand | ✅ | `tests/test_app.py::test_connector_disconnect_via_api` (1 passed) |
 | G8 | Voice (stretch): dictation and read-aloud using the browser's speech features, hidden where unsupported | Works in Chrome and Safari | 🟡 | **Person to check:** voice in Chrome and Safari (Brave hides the mic: no speech recognition) |
-| G9 | When Maya asks for a reservation, the assistant visibly works in a Brave window on the mock booking sites, stops at holds, and books only after approval; screenshots appear behind the scenes | Live demo of R01 in the app, with Brave beside it | 🟡 | live `live-r01-browser` R01: passed<br>**Still to run:** the same R01 demo from inside the app, with Brave beside it |
+| G9 | When Maya asks for a reservation, the assistant visibly works in a Brave window on the mock booking sites, stops at holds, and books only after approval; screenshots appear behind the scenes | Live demo of R01 in the app, with Brave beside it | ✅ | app session `app-20261005-014448`: 3 bookings from site holds, 3 approvals in the app, 9 browser screenshots behind the scenes<br>live `live-r01-browser` R01: passed |

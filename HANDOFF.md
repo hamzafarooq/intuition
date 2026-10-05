@@ -1,6 +1,6 @@
 # Handoff: Intuition, the executive-assistant evals workshop
 
-Status on 4 October 2026: **design and specification complete; nothing built yet.** The next session starts development.
+Status on 5 October 2026: **the kit is built and verified offline; smoke-sized live checks pass.** What's left is the reference run and the lesson slices on the owner's Claude plan (they need the owner's go-ahead), a dry run on a clean laptop, and a few decisions. See "Build status" below.
 
 ## What this is
 
@@ -22,7 +22,7 @@ In the lessons, students build the assistant's parts and evaluate each layer: to
 
 ## Read in this order
 
-1. [PRD.md](PRD.md): what and why. Requirements A1–A19, B1–B11, C1–C6, D1–D5, E1–E16, F1–F7, G1–G8.
+1. [PRD.md](PRD.md): what and why. Requirements A1–A19, B1–B12, C1–C6, D1–D5, E1–E17, F1–F7, G1–G9.
 2. [spec/00-README.md](spec/00-README.md): how to use the spec, and the build sequence with checkpoints.
 3. `spec/01` to `spec/15`, in order. They define the names used everywhere: tools, check functions, trace events.
 4. [plan/01-lessons.md](plan/01-lessons.md): the lesson flow the guide site turns into steps.
@@ -48,20 +48,40 @@ evals/
   starter/    generated from kit/ by tools/make_starter.py
 ```
 
-## Start of next session: do these first
+## Build status (5 October 2026)
 
-1. **Environment on this Mac:**
-   - Install uv (`brew install uv`), then `uv python install 3.12`. The system Python is 3.9.6, which is too old.
-   - Install the Claude Code CLI (`brew install --cask claude-code`, or `curl -fsSL https://claude.ai/install.sh | bash`) and log in with `claude auth login`. It isn't on the PATH today; the VS Code extension doesn't provide it.
-   - Node is already installed (`/opt/homebrew/bin/npx`) and Brave is in `/Applications`, which browser bookings need.
-   - `cd evals && git init`. A `.gitignore` that excludes `.env` is already in place. **`.env` holds real OpenAI and Google keys; never commit or print it.**
-2. **Settle three unknowns with quick live tests before building on them.** Nobody knows the answers yet; the docs disagree or are silent, and the CLI wasn't installed when the spec was written. The builder settles them, not the owner ([spec/13-decisions-log.md](spec/13-decisions-log.md#still-to-verify-at-build-time)). Write a throwaway MCP server with an `approval_prompt` tool and one gated tool, and run `claude -p` with `--permission-prompt-tool`:
-   - **The approval tool's reply shape.** Reports differ between `{"behavior": …}` and `{"decision": {"behavior": …}}`.
-   - **Whether `.claude/agents/` loads in `-p` mode.** If it doesn't, use `--agents` JSON.
-   - **Whether Brave opens `http://skyway.localhost:8766`.** If it doesn't, the mock sites use paths instead (`localhost:8766/skyway`).
+Everything in the build sequence (spec/00-README.md) is done except step 16 (the reference run and the dry run). Sixteen commits on `master` in `evals/`.
 
-   Record the answers in the decisions log.
-3. Then follow the build sequence in [spec/00-README.md](spec/00-README.md#build-sequence). Write the checkpoint tests at each step, make them pass, and commit.
+| Area | State | Evidence |
+|---|---|---|
+| Mock world, tool server (34 tools + `approval_prompt`), verifiers, faults, feedback | Built | `make test` (1,608 offline tests) |
+| Assistant (`kit/assistant/`: brief, 8 skills, 8 agents, settings, hooks) | Built | Live: S01 smoke passes; the Stop hook blocks an unchecked write |
+| Claude Code adapter, stop check, overlays, browser guard | Built | Recorded stream-json fixtures; live runs |
+| Golden dataset (63 cases), 11 rubrics, slices, thresholds, 14 fixture traces | Built | `tests/test_golden_schema.py`, `test_rubrics.py`, `test_checks.py` |
+| Runner, judge (OpenAI `gpt-5.6-sol`), simulated Maya (`gpt-5.6-luna`), metrics, report with spider charts | Built | `reports/smoke-s01.html`, `reports/live-r01-browser.html` |
+| Component suites (dates, tool use, skill triggers) | Built | One live item each |
+| Intuition app (`make start`): live hero, docked phone, pop-out phone, behind-the-scenes view, approval cards, colourful connector tiles | Built | A real 3-turn session: triage, R01 holds made in Brave, booked on "Yes, go ahead." |
+| Mock booking sites (Skyway, Stays, Tables) | Built | Live R01 through Brave passes the booking rubric |
+| Guide site (`make site`, 11 pages, 14 replays) and starter repo (`make starter`) | Built | `tests/test_site.py`; the planted find_free test fails in `starter/` and passes in `kit/` |
+| `make doctor` | Built | All green except a busy port while the app was running |
+| Acceptance | `kit/reports/acceptance.md` | 46 verified, 28 verified so far with a larger live run or a person's check to do, 0 failing, 1 exception (independent harness, deferred) |
+
+### Waiting for the owner
+
+1. **The reference run** (63 cases × 3 trials, about 190 Claude Code conversations) and the lesson slices. They use the Claude plan, so they weren't started. Measured so far: about $0.35–$0.50 of plan usage (API-equivalent) per simple trial, about $2 for a browser booking, plus $0.10–$0.20 of OpenAI judging per trial (more than the PRD's "few cents": `gpt-5.6-sol` is $5/$30 per million tokens). Start with `uv run ea-eval run --slice setup-baseline` to see a first report, then `uv run ea-eval run --cases all --trials 3 --run-id reference`.
+2. **Real Expedia search in the live demo** (requested 5 October): opening expedia.com from the browser tool was blocked by Claude Code's auto-mode classifier as a real-world transaction. If you want it, decide the scope (search only, no sign-in or checkout), add a permission rule for the Brave MCP, and it can be built as an opt-in instructor-demo mode.
+3. The open decisions below (student default model, trials per plan, name check, Instinct sources).
+4. A SerpAPI key in `.env` turns on live search in the app (none is set yet).
+
+### Things a person still checks
+
+The dry run from a clean account on macOS, Linux and WSL2, timed (docs/SETUP.md); voice in Chrome and Safari; the side-by-side originality review of the app (no Instinct or WhatsApp names, logos, colours or copy).
+
+### Where to look
+
+- How every decision was made during the build: spec/13-decisions-log.md (rows dated 2026-10-05).
+- What each PRD requirement rests on: kit/reports/acceptance.md (`uv run python tools/acceptance.py` regenerates it).
+- The live runs: kit/evals/results/ (`smoke-s01`, `live-r01-browser`) and the app session in kit/runs/app-*.
 
 ## Skills to load during the build
 
@@ -83,7 +103,3 @@ evals/
 3. Whether students keep their assistant after the workshop.
 4. A name check of the fictional companies and people.
 5. Checking the three Instinct incidents against the original reports before they appear in the guide. So far they come from Vellum, a competitor.
-
-## Prompt to start the build
-
-> Build the Intuition workshop kit described in `evals/spec/`, in `evals/kit/`. Read HANDOFF.md, the PRD and every spec file first. Start with the environment setup in HANDOFF.md, then settle the two headless unknowns (approval-tool reply shape; whether `.claude/agents/` loads in `claude -p`) with a throwaway test, and record the answers in `spec/13-decisions-log.md`. Then follow `spec/00-README.md`'s build sequence exactly: at each step write the checkpoint tests, make them pass, and commit. Never print or commit `.env`. Load the dataviz skill before the spider charts. Ask before running anything larger than the smoke test against my Claude Code plan. Finish with `reports/acceptance.md` mapping every PRD requirement to its evidence.
