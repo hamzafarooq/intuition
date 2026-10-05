@@ -46,9 +46,11 @@
           </div>
           <p class="hero-note">Built for a workshop. Maya, her company and her week are fictional.</p>
         </div>
-        <div class="hero-visual" aria-hidden="true">
+        <div class="hero-visual" aria-hidden="true" id="hero-visual">
           <div class="hero-glow"></div>
-          <div class="phone phone--hero">
+          <div class="hero-shadow" id="hero-shadow"></div>
+          <div class="hero-float">
+          <div class="phone phone--hero demo" id="hero-phone">
             <div class="phone-frame"><div class="phone-screen">
               <div class="island"></div>
               <div class="statusbar">
@@ -62,28 +64,47 @@
               <div class="chat-head">
                 <span class="chat-back"><svg class="icon"><use href="/static/icons.svg#i-back"/></svg></span>
                 <span class="avatar"><svg class="mark"><use href="/static/icons.svg#i-mark"/></svg></span>
-                <span class="chat-id"><span class="chat-name">Intuition</span><span class="chat-sub">online</span></span>
+                <span class="chat-id"><span class="chat-name">Intuition</span>
+                  <span class="chat-sub sub-stack"><span class="d-in" data-cue="online">online</span><span class="d-tmp working" data-cue="typing">typing…</span></span></span>
               </div>
               <div class="chat-wall"><div class="chat-body">
                 <div class="day-chip">Today</div>
-                <div class="row me"><div class="bubble me tail"><div class="txt"><p>Find 30 minutes with Dan and Lisa this week</p></div><span class="meta">08:31 <svg class="tick read"><use href="/static/icons.svg#i-read"/></svg></span></div></div>
-                <div class="row them"><div class="bubble them tail"><div class="txt"><p>Wednesday 11:00 works for all three: 13:00 for Dan in New York, 17:00 for Lisa in London.</p></div><span class="meta">08:31</span></div></div>
-                <div class="row them"><div class="approval mini">
-                  <div class="ap-head"><svg class="icon"><use href="/static/icons.svg#i-shield"/></svg> Needs your OK</div>
-                  <div class="ap-title">Create this event?</div>
-                  <div class="ap-rows"><div><span>Event</span><b>Forecast sync</b></div><div><span>When</span><b>Wed 28 Oct, 11:00–11:30</b></div></div>
-                  <div class="ap-actions"><span class="btn btn-ghost btn-s">Deny</span><span class="btn btn-primary btn-s">Approve</span></div>
-                </div></div>
-                <div class="row them"><div class="bubble them tail"><div class="txt"><p>Done. Dan and Lisa both accepted.</p></div><span class="meta">08:32</span></div></div>
-                <div class="row them under"><span class="chip chip-done"><i></i>Done</span></div>
+                <div class="row me first d-in" data-cue="m1"><div class="bubble me tail"><div class="txt"><p>Find 30 minutes with Dan and Lisa this week</p></div><span class="meta">08:31 <span class="ticks"><svg class="tick sent d-tmp" data-cue="sent"><use href="/static/icons.svg#i-sent"/></svg><svg class="tick read d-in" data-cue="read"><use href="/static/icons.svg#i-read"/></svg></span></span></div></div>
+                <div class="slot">
+                  <div class="row them first d-tmp" data-cue="dots1"><div class="bubble them tail typing"><i></i><i></i><i></i></div></div>
+                  <div class="row them first d-in" data-cue="r1"><div class="bubble them tail"><div class="txt"><p>Wednesday 11:00 works for all three: 13:00 for Dan in New York, 17:00 for Lisa in London.</p></div><span class="meta">08:31</span></div></div>
+                </div>
+                <div class="slot">
+                  <div class="row them first d-tmp" data-cue="dots2"><div class="bubble them tail typing"><i></i><i></i><i></i></div></div>
+                  <div class="row them first card-row d-in" data-cue="card"><div class="approval mini decided" id="hero-card">
+                    <div class="ap-head"><svg class="icon"><use href="/static/icons.svg#i-shield"/></svg> Needs your OK</div>
+                    <div class="ap-title">Create this event?</div>
+                    <div class="ap-rows"><div><span>Event</span><b>Forecast sync</b></div><div><span>When</span><b>Wed 28 Oct, 11:00–11:30</b></div></div>
+                    <div class="ap-swap">
+                      <div class="ap-actions d-tmp" data-cue="actions"><span class="btn btn-ghost btn-s btn-pill">Deny</span><span class="btn btn-primary btn-s btn-pill ap-approve" id="hero-approve" data-cue="press">Approve</span></div>
+                      <div class="ap-result allow d-in" data-cue="approved"><svg class="icon"><use href="/static/icons.svg#i-check"/></svg> Approved</div>
+                    </div>
+                  </div></div>
+                </div>
+                <div class="slot">
+                  <div class="row them first d-tmp" data-cue="dots3"><div class="bubble them tail typing"><i></i><i></i><i></i></div></div>
+                  <div class="row them first d-in" data-cue="r2"><div class="bubble them tail"><div class="txt"><p>Done. Dan and Lisa both accepted.</p></div><span class="meta">08:32</span></div></div>
+                </div>
+                <div class="row them under d-in" data-cue="chip"><span class="chip chip-done"><i></i><span class="lab">Done</span></span></div>
               </div></div>
               <div class="composer static">
                 <span class="comp-plus"><svg class="icon"><use href="/static/icons.svg#i-plus"/></svg></span>
-                <span class="comp-field">Message</span>
-                <span class="comp-send"><svg class="icon"><use href="/static/icons.svg#i-mic"/></svg></span>
+                <span class="comp-field">
+                  <span class="ph d-in" data-cue="ph">Message</span>
+                  <span class="typed d-tmp" data-cue="typed"><span class="tl">Find 30 minutes with Dan<i class="cover"></i></span><span class="tl">and Lisa this week<i class="cover c2"></i></span></span>
+                </span>
+                <span class="comp-send stack" data-cue="sendpress"><span class="send-fill d-tmp" data-cue="send"></span><svg class="icon d-in" data-cue="mic"><use href="/static/icons.svg#i-mic"/></svg><svg class="icon on-fill d-tmp" data-cue="send"><use href="/static/icons.svg#i-send"/></svg></span>
               </div>
               <div class="home-bar"></div>
+              <div class="touch d-tmp" id="hero-touch" data-cue="touch"><span class="ring"></span></div>
+              <div class="sheen" id="hero-sheen"></div>
             </div></div>
+          </div>
           </div>
         </div>
       </section>

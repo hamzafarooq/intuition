@@ -117,6 +117,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 .hero-actions .btn { padding: 14px 28px; font-size: var(--step-1); }
 .hero-note { margin-top: 22px; font-size: var(--step--1); color: var(--muted); }
 .hero-visual { position: relative; display: grid; place-items: center; min-height: 600px; }
+.hero-visual > * { grid-area: 1 / 1; }
 .hero-glow {
   position: absolute; width: 78%; aspect-ratio: 1; border-radius: 50%;
   background: radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 66%);
@@ -398,12 +399,97 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 .jump .icon { width: 15px; height: 15px; }
 
 /* hero phone: smaller, tilted, inert */
-.phone--hero { --phone-w: 330px; --phone-h: 660px; transform: rotate(-4deg); }
+.phone--hero {
+  --phone-w: 330px; --phone-h: 660px; --rx: 3deg; --ry: -7deg; --rz: -4deg;
+  transform: perspective(1400px) rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz));
+}
+.phone--hero .phone-frame { box-shadow: 0 2px 4px rgb(30 20 10 / .18), inset 0 0 0 1.5px color-mix(in srgb, white 10%, transparent); }
 .phone--hero .bubble, .phone--hero .approval { font-size: 13.5px; }
 .phone--hero .ap-rows { font-size: 12px; }
 .phone--hero .island { width: 86px; }
 .phone--hero .statusbar { padding: 6px 22px 0 30px; }
 .phone--hero .chat-body { position: absolute; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; }
+
+/* ------------------------------------------------------------------ the live hero
+   The phone tilts toward the pointer (app.js sets --rx/--ry on wide screens with a mouse) and its
+   conversation plays on a loop. Only transform and opacity animate. Without .playing (reduced
+   motion, or before the script runs) the final frame shows. */
+
+.hero-float { display: grid; place-items: center; will-change: transform; }
+.hero-shadow {
+  width: 270px; height: 560px; border-radius: 60px; background: rgb(40 26 12 / .34); filter: blur(34px);
+  transform: translate3d(22px, 40px, 0) scale(.92); will-change: transform; pointer-events: none;
+}
+.sheen {
+  position: absolute; inset: -30% -70%; z-index: 7; pointer-events: none; will-change: transform;
+  background: linear-gradient(104deg, transparent 40%, rgb(255 255 255 / .17) 47.5%, rgb(255 255 255 / .05) 52%, transparent 58%);
+  transform: translate3d(-4%, 0, 0);
+}
+:root[data-theme="dark"] .sheen { opacity: .55; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .sheen { opacity: .55; } }
+
+.demo .slot { display: grid; }
+.demo .slot > .row { grid-area: 1 / 1; }
+.demo .slot > .row.d-tmp { align-self: start; }
+.demo .sub-stack { display: grid; }
+.demo .sub-stack > * { grid-area: 1 / 1; }
+.demo .ticks { display: inline-grid; }
+.demo .ticks > * { grid-area: 1 / 1; }
+.demo .ap-swap { display: grid; margin-top: 12px; align-items: center; }
+.demo .ap-swap > * { grid-area: 1 / 1; margin: 0; }
+.demo .ap-swap .ap-result { justify-self: start; }
+.demo .comp-field { display: grid; align-items: center; }
+.demo .comp-field > * { grid-area: 1 / 1; }
+.demo .typed { display: flex; flex-direction: column; font-size: 11.5px; line-height: 14px; color: var(--ink); }
+.demo .tl { position: relative; justify-self: start; align-self: flex-start; white-space: nowrap; }
+.demo .cover { position: absolute; inset: -1px -2px; background: var(--surface-3); transform-origin: right center; }
+.demo .comp-send.stack { position: relative; display: grid; place-items: center; transition: transform .15s var(--ease); }
+.demo .comp-send.stack > * { grid-area: 1 / 1; }
+.demo .send-fill { position: absolute; inset: 0; border-radius: 50%; background: var(--accent); }
+.demo .on-fill { color: var(--accent-ink); position: relative; }
+.demo .comp-send.on { transform: scale(.86); }
+.demo .ap-approve { position: relative; transition: transform .14s var(--ease); }
+.demo .ap-approve::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: #000; opacity: 0; transition: opacity .14s; }
+.demo .ap-approve.on { transform: scale(.92); }
+.demo .ap-approve.on::after { opacity: .18; }
+.demo .approval { transition: box-shadow .3s, border-color .3s; }
+.demo .touch {
+  position: absolute; left: 0; top: 0; z-index: 8; width: 38px; height: 38px; margin: -19px 0 0 -19px; border-radius: 50%;
+  background: rgb(31 27 22 / .26); border: 2px solid rgb(255 255 255 / .9); box-shadow: 0 4px 14px rgb(0 0 0 / .25);
+  transform: translate3d(var(--sx, 250px), var(--sy, 600px), 0); pointer-events: none;
+}
+.demo .touch.move { transform: translate3d(var(--tx, 200px), var(--ty, 400px), 0); }
+.demo .touch.tap { transform: translate3d(var(--tx, 200px), var(--ty, 400px), 0) scale(.8); }
+.demo .touch .ring { position: absolute; inset: -6px; border-radius: 50%; border: 2px solid var(--accent); opacity: 0; transform: scale(.6); }
+.demo .touch.tap .ring { animation: tap-ring .55s ease-out; }
+@keyframes tap-ring { 0% { opacity: .9; transform: scale(.6); } 100% { opacity: 0; transform: scale(1.7); } }
+
+/* final frame (static) */
+.demo .d-tmp { opacity: 0; }
+/* playing */
+.demo.playing .d-in, .demo.playing .d-tmp { opacity: 0; transition: opacity .32s var(--ease), transform .5s var(--ease); }
+.demo.playing .d-in.on, .demo.playing .d-tmp.on { opacity: 1; }
+.demo.playing .row.d-in, .demo.playing .row.d-tmp { transform: translate3d(0, 10px, 0) scale(.96); transform-origin: left bottom; }
+.demo.playing .row.me { transform: translate3d(12px, 12px, 0) scale(.94); transform-origin: right bottom; }
+.demo.playing .row.card-row { transform: scale(.88); transform-origin: left top; transition: opacity .3s var(--ease), transform .5s cubic-bezier(.3, 1.4, .5, 1); }
+.demo.playing .row.on { transform: none; }
+.demo.playing .row.under { transform: translate3d(0, 6px, 0); }
+.demo.playing .row.under.on { transform: none; }
+.demo.playing .cover { transform: scaleX(1); }
+.demo.playing .typed.on .cover { transform: scaleX(0); transition: transform .75s steps(24, end) .05s; }
+.demo.playing .typed.on .cover.c2 { transition: transform .6s steps(18, end) .85s; }
+.demo.playing .touch.d-tmp { transition: opacity .25s var(--ease), transform .95s cubic-bezier(.35, .1, .2, 1); }
+.demo.playing .touch.tap { transition: opacity .25s var(--ease), transform .12s var(--ease); }
+.demo.instant, .demo.instant * { transition: none !important; }
+
+/* touch screens and narrow windows: a gentle idle float instead of the tilt */
+@media (hover: none), (pointer: coarse), (max-width: 900px) {
+  .hero-float { animation: hero-float 7s ease-in-out infinite; }
+  .hero-shadow { animation: hero-shadow 7s ease-in-out infinite; }
+}
+@keyframes hero-float { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -9px, 0) rotate(.6deg); } }
+@keyframes hero-shadow { 0%, 100% { transform: translate3d(12px, 40px, 0) scale(.9); opacity: 1; } 50% { transform: translate3d(12px, 48px, 0) scale(.84); opacity: .8; } }
+.hero-visual.paused .hero-float, .hero-visual.paused .hero-shadow { animation-play-state: paused; }
 
 /* ------------------------------------------------------------------ workspace */
 
@@ -548,6 +634,7 @@ body[data-view="chat"] #nav-session { display: flex; }
   .display { max-width: 12ch; }
   .hero-visual { min-height: 0; padding: 36px 0 24px; }
   .phone--hero { transform: rotate(-3deg) scale(.92); margin: -26px 0; }
+  .hero-shadow { transform: translate3d(0, 34px, 0) scale(.86); }
   .steps { grid-template-columns: minmax(0, 1fr); gap: 0; }
   .steps li { padding: 20px 0; }
 }

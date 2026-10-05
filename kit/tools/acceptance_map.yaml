@@ -1,0 +1,212 @@
+# Every PRD requirement and the evidence that proves it (spec/12-acceptance.md "Requirement traceability").
+# tools/acceptance.py evaluates this and writes reports/acceptance.md.
+#
+# Evidence kinds:
+#   tests:  pytest node prefixes ("tests/test_x.py" or "tests/test_x.py::test_name_prefix"); green when every matching test passed and at least one ran
+#   files:  paths (relative to the kit) that must exist
+#   check:  a named check in tools/acceptance.py
+#   live:   {run, case, criteria?: [rubric/id, ...], passed?: bool} against evals/results/<run>; green when present and matching
+#   pending: a live check that needs a larger run on the owner's Claude plan (named slice or the reference run)
+#   manual: a check a person does (visual review, dry run)
+#   exception: an accepted, written exception
+
+A1:
+  tests: [tests/test_tools.py::test_calendar_list, tests/test_tools.py::test_email_search, tests/test_tools.py::test_contacts_lookup]
+  live: [{run: smoke-s01, case: S01, passed: true}]
+  pending: "W02 and X08 (calendar answers) run in the reference run"
+A2:
+  tests: [tests/test_world.py::test_slot, tests/test_tools.py::test_find_free, tests/test_verifiers.py::test_check_event]
+  live: [{run: smoke-s01, case: S01, criteria: [scheduling/within-rules, scheduling/valid-slot]}]
+  pending: "every scheduling case (S01–S10) in the reference run"
+A3:
+  tests: [tests/test_tools.py::test_contacts_lookup_dan_returns_both_dans, tests/test_checks.py]
+  live: [{run: smoke-s01, case: S01, criteria: [scheduling/never-invite, scheduling/right-attendees]}]
+A4:
+  tests: [tests/test_checks.py, tests/test_tools.py::test_email_read_thread_and_dropped_thread]
+  pending: "T01–T06 in the reference run"
+A5:
+  tests: [tests/test_verifiers.py::test_check_brief, tests/test_numbers.py]
+  pending: "B01–B06 in the reference run"
+A6:
+  tests: [tests/test_verifiers.py::test_check_deck, tests/test_tools.py::test_deck_create]
+  pending: "D01–D04 in the reference run"
+A7:
+  tests: [tests/test_tools.py::test_web, tests/test_checks.py]
+  pending: "W01, W04, W06 in the reference run"
+A8:
+  tests: [tests/test_verifiers.py::test_check_booking, tests/test_feedback.py]
+  live: [{run: live-r01-browser, case: R01, criteria: [booking/policy, booking/booked], passed: true}]
+  pending: "R01–R08 in the reference run"
+A9:
+  tests: [tests/test_approval_tool.py, tests/test_runner_offline.py::test_thumbs_up, tests/test_runner_offline.py::test_explicit_yes, tests/test_checks.py]
+  live: [{run: smoke-s01, case: S01, criteria: [conduct/no-unauthorized-attempt]}, {run: live-r01-browser, case: R01, criteria: [booking/asked-first, conduct/no-unauthorized-attempt]}]
+  pending: "lesson4-gate slice × 5 trials (pass^5)"
+A10:
+  tests: [tests/test_tools.py::test_web_fetch, tests/test_checks.py]
+  pending: "lesson4-safety slice and X01/X03/X05/W03/X12 in the reference run"
+A11:
+  tests: [tests/test_tools.py::test_connector_disconnect, tests/test_checks.py, tests/test_app.py::test_connector_disconnect_via_api]
+  pending: "X07 in the reference run"
+A12:
+  tests: [tests/test_verifiers.py::test_check_email_private_detail, tests/test_checks.py]
+  pending: "X09 and X10 in the reference run"
+A13:
+  tests: [tests/test_checks.py, tests/test_stopcheck.py]
+  live: [{run: smoke-s01, case: S01, criteria: [conduct/honest-claims]}, {run: live-r01-browser, case: R01, criteria: [conduct/honest-claims]}]
+A14:
+  files: [assistant/.claude/agents/scheduler.md, assistant/.claude/agents/inbox.md, assistant/.claude/agents/briefer.md, assistant/.claude/agents/travel.md]
+  check: specialists_have_scoped_tools
+  live: [{run: smoke-s01, case: S01, delegated: scheduler}, {run: live-r01-browser, case: R01, delegated: travel}]
+  pending: "routing across all task types in the reference run"
+A15:
+  files: [assistant/.claude/skills/monday-brief/SKILL.md, assistant/.claude/agents/planner.md, assistant/.claude/agents/challenger.md, assistant/.claude/agents/qa.md]
+  tests: [tests/test_checks.py]
+  pending: "M01 and lesson5-team slice"
+A16:
+  check: skills_have_definitions_of_done
+A17:
+  tests: [tests/test_stopcheck.py, tests/test_claude_adapter_offline.py::test_stop_check_block_merged]
+  live: [{run: smoke-s01, case: S01, criteria: [scheduling/checked]}, {run: live-r01-browser, case: R01, criteria: [booking/checked]}]
+A18:
+  files: [assistant/.claude/agents/reviewer.md]
+  check: skills_route_drafts_to_reviewer
+  pending: "reviewer verdicts in E01/B01/D01 traces (reference run); accuracy against student labels comes from Lesson 3 calibration"
+A19:
+  tests: [tests/test_feedback.py]
+  pending: "S07 (Lisa declines Friday) in the reference run"
+
+B1:
+  tests: [tests/test_world.py]
+B2:
+  tests: [tests/test_world.py, tests/test_golden_schema.py]
+B3:
+  tests: [tests/test_tools.py, tests/test_verifiers.py, tests/test_numbers.py, tests/test_feedback.py, tests/test_faults.py]
+B4:
+  check: fresh_world_identical
+B5:
+  tests: [tests/test_tools.py::test_every_call_is_logged]
+B6:
+  tests: [tests/test_tools.py::test_email_send_moves_draft_to_outbox_and_nothing_else]
+B7:
+  tests: [tests/test_feedback.py]
+B8:
+  check: modes_share_tool_names
+  manual: "live search in the app with a SerpAPI key (no key on this machine yet)"
+B9:
+  tests: [tests/test_tools.py::test_web_search]
+  manual: "record mode with a SerpAPI key"
+B10:
+  tests: [tests/test_faults.py]
+B11:
+  tests: [tests/test_starter.py]
+B12:
+  tests: [tests/test_sites.py]
+  live: [{run: live-r01-browser, case: R01, passed: true}]
+
+C1:
+  tests: [tests/test_golden_schema.py]
+  check: sixty_three_cases
+C2:
+  tests: [tests/test_golden_schema.py]
+C3:
+  check: kinds_marked
+C4:
+  check: workshop_subset
+  pending: "time the 20-case subset (lesson3-agents slice) under 10 minutes"
+C5:
+  check: promote_works
+C6:
+  check: cases_mention_no_harness
+
+D1:
+  files: [assistant/CLAUDE.md, assistant/.claude/settings.json, assistant/.mcp.json]
+  tests: [tests/test_overlay.py]
+D2:
+  live: [{run: smoke-s01, case: S01, passed: true}]
+  check: no_anthropic_key_used
+D3:
+  tests: [tests/test_claude_adapter_offline.py, tests/test_app.py::test_every_trace_event_type, tests/test_report.py, tests/test_checks.py]
+D4:
+  tests: [tests/test_overlay.py, tests/test_runner_offline.py]
+  pending: "lesson5-harness slice (hooks, sub-agents, model side by side)"
+D5:
+  exception: "Deferred by the owner (2026-10-04): the independent harness comes later; spec/later/independent-harness.md keeps the design"
+
+E1:
+  tests: [tests/test_runner_offline.py]
+  live: [{run: smoke-s01, case: S01}]
+E2:
+  tests: [tests/test_checks.py, tests/test_rubrics.py]
+E3:
+  tests: [tests/test_checks.py, tests/test_stopcheck.py]
+E4:
+  tests: [tests/test_rubrics.py, tests/test_golden_schema.py]
+  live: [{run: smoke-s01, case: S01, criteria: [conduct/honest-claims, scheduling/local-times]}]
+E5:
+  check: calibration_tooling
+  pending: "student labels in Lesson 3 give TPR and TNR per judged criterion"
+E6:
+  tests: [tests/test_runner_offline.py]
+E7:
+  tests: [tests/test_runner_offline.py::test_pass_at_k, tests/test_runner_offline.py::test_repeat_trials]
+E8:
+  tests: [tests/test_runner_offline.py]
+  pending: "lesson3-selfcheck slice × 3 (overclaims with and without self-checks)"
+E9:
+  tests: [tests/test_report.py]
+  pending: "lesson5-harness slice"
+E10:
+  check: thresholds_written
+E11:
+  live: [{run: smoke-s01, case: S01, usage: true}]
+E12:
+  check: reports_exist
+E13:
+  files: [.github/workflows/regression.yml]
+E14:
+  check: report_has_criteria_table
+E15:
+  check: rubric_versions_recorded
+E16:
+  tests: [tests/test_report.py]
+E17:
+  live: [{run: live-r01-browser, case: R01, passed: true}]
+  check: browser_hold_criterion
+
+F1:
+  tests: [tests/test_site.py]
+F2:
+  tests: [tests/test_site.py]
+F3:
+  tests: [tests/test_site.py]
+  manual: "tick survives reload (checked in Brave by the site builder)"
+F4:
+  tests: [tests/test_site.py]
+F5:
+  manual: "checked at 1440 and 390 px in Brave, light and dark"
+F6:
+  check: guide_ships_locally
+F7:
+  files: [docs/SETUP.md, Makefile, README.md]
+  check: doctor_quick_runs
+  manual: "dry run from a clean account on macOS, Linux and WSL2, timed (under 15 minutes)"
+
+G1:
+  manual: "side-by-side review: own name, palette, icons and copy; no Instinct or WhatsApp names, logos, colours or wording"
+G2:
+  tests: [tests/test_app.py]
+G3:
+  manual: "docked at 1440, full screen at 390 (checked in Brave)"
+G4:
+  tests: [tests/test_app.py::test_every_trace_event_type]
+G5:
+  tests: [tests/test_app.py::test_approval_round_trip, tests/test_app.py::test_auto_approve]
+G6:
+  tests: [tests/test_app.py]
+G7:
+  tests: [tests/test_app.py::test_connector_disconnect_via_api]
+G8:
+  manual: "voice in Chrome and Safari (Brave hides the mic: no speech recognition)"
+G9:
+  live: [{run: live-r01-browser, case: R01, passed: true}]
+  pending: "the same R01 demo from inside the app, with Brave beside it"

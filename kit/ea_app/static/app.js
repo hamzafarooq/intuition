@@ -1029,6 +1029,130 @@
   }
   window.addEventListener("pagehide", () => { if (PHONE && chan && S.sid) chan.postMessage({ type: "closed", sid: S.sid }); });
 
+  // ------------------------------------------------------------------ the live hero
+
+  // The landing phone plays a short conversation on a loop while it's on screen, and tilts toward
+  // the pointer on wide screens with a mouse. Only transform and opacity change; layout is read
+  // once per loop (where the Approve button is), never inside the animation frames.
+  function initHero() {
+    const visual = $("#hero-visual"), phone = $("#hero-phone");
+    if (!visual || !phone) return;
+    const screen = phone.querySelector(".phone-screen"), touch = $("#hero-touch"), card = $("#hero-card");
+    const approve = $("#hero-approve"), sheen = $("#hero-sheen"), shadow = $("#hero-shadow"), hero = $(".hero");
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+    const tiltable = matchMedia("(hover: hover) and (pointer: fine) and (min-width: 901px)");
+    const cues = new Map();
+    for (const n of phone.querySelectorAll("[data-cue]")) {
+      const k = n.dataset.cue; if (!cues.has(k)) cues.set(k, []); cues.get(k).push(n);
+    }
+    const on = (...names) => names.forEach((k) => (cues.get(k) || []).forEach((n) => n.classList.add("on")));
+    const off = (...names) => names.forEach((k) => (cues.get(k) || []).forEach((n) => n.classList.remove("on")));
+    function offsetIn(node, root) {
+      let x = 0, y = 0;
+      while (node && node !== root) { x += node.offsetLeft; y += node.offsetTop; node = node.offsetParent; }
+      return [x, y];
+    }
+    function placeTouch() {
+      const [x, y] = offsetIn(approve, screen);
+      touch.style.setProperty("--tx", `${x + approve.offsetWidth / 2}px`);
+      touch.style.setProperty("--ty", `${y + approve.offsetHeight / 2}px`);
+      touch.style.setProperty("--sx", `${screen.clientWidth * 0.82}px`);
+      touch.style.setProperty("--sy", `${screen.clientHeight * 0.94}px`);
+    }
+    const reset = () => {
+      off(...cues.keys());
+      on("online", "ph", "mic");
+      card.classList.remove("decided");
+      touch.classList.remove("move", "tap");
+    };
+    const typing = (show) => { if (show) { off("online"); on("typing"); } else { off("typing"); on("online"); } };
+    const LOOP = 12800;
+    const CUES = [
+      [0, reset],
+      [450, () => { off("ph", "mic"); on("typed", "send"); }],
+      [1950, () => on("sendpress")],
+      [2120, () => { off("sendpress", "typed", "send"); on("ph", "mic", "m1", "sent"); }],
+      [2800, () => { off("sent"); on("read"); }],
+      [3050, () => { typing(true); on("dots1"); }],
+      [4300, () => { off("dots1"); on("r1"); typing(false); }],
+      [4850, () => { typing(true); on("dots2"); }],
+      [5750, () => { off("dots2"); on("card", "actions"); typing(false); }],
+      [6450, () => { placeTouch(); on("touch"); }],
+      [6600, () => touch.classList.add("move")],
+      [7600, () => { touch.classList.add("tap"); on("press"); }],
+      [7880, () => { off("press", "actions"); on("approved"); card.classList.add("decided"); touch.classList.remove("tap"); }],
+      [8150, () => off("touch")],
+      [8550, () => { typing(true); on("dots3"); }],
+      [9550, () => { off("dots3"); on("r2"); typing(false); }],
+      [10050, () => on("chip")],
+      [12150, () => off("m1", "read", "r1", "card", "approved", "r2", "chip")],
+    ];
+    let t = 0, idx = 0, last = 0, raf = 0, running = false, inView = false, held = false, begun = false;
+    function begin() {
+      phone.classList.add("instant", "playing");
+      CUES[0][1](); idx = 1; t = 0; begun = true;
+      requestAnimationFrame(() => requestAnimationFrame(() => phone.classList.remove("instant")));
+    }
+    function frame(now) {
+      if (!running) return;
+      const dt = last ? Math.min(now - last, 100) : 0; last = now; t += dt;
+      while (idx < CUES.length && CUES[idx][0] <= t) { CUES[idx][1](); idx++; }
+      if (t >= LOOP) { t = 0; idx = 0; }
+      tiltStep(dt);
+      raf = requestAnimationFrame(frame);
+    }
+    function update() {
+      const go = inView && !document.hidden && !reduce.matches && !held;
+      visual.classList.toggle("paused", !go);
+      if (reduce.matches) { phone.classList.remove("playing"); begun = false; }
+      if (go && !running) { if (!begun) begin(); running = true; last = 0; raf = requestAnimationFrame(frame); }
+      else if (!go && running) { running = false; cancelAnimationFrame(raf); }
+    }
+
+    // tilt: an eased follow toward the pointer, about +/-8 degrees around the resting pose
+    const REST = { x: 3, y: -7, z: -4 }, cur = { x: 0, y: 0 }, tgt = { x: 0, y: 0 };
+    let box = null;
+    function tiltStep(dt) {
+      if (!tiltable.matches || reduce.matches) {
+        if (phone.style.transform) { phone.style.transform = ""; sheen.style.transform = ""; shadow.style.transform = ""; }
+        return;
+      }
+      const k = 1 - Math.exp(-dt / 160);
+      cur.x += (tgt.x - cur.x) * k; cur.y += (tgt.y - cur.y) * k;
+      const rx = REST.x + cur.x, ry = REST.y + cur.y;
+      phone.style.transform = `perspective(1400px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) rotateZ(${REST.z}deg)`;
+      sheen.style.transform = `translate3d(${(cur.y * 2.2 - 4).toFixed(2)}%, ${(-cur.x * 1.6).toFixed(2)}%, 0)`;
+      shadow.style.transform = `translate3d(${(-ry * 3.2).toFixed(1)}px, ${(40 + rx * 2.4).toFixed(1)}px, 0) scale(.92)`;
+    }
+    hero.addEventListener("pointerenter", () => { box = visual.getBoundingClientRect(); });
+    hero.addEventListener("pointermove", (ev) => {
+      if (ev.pointerType !== "mouse" || !tiltable.matches) return;
+      if (!box) box = visual.getBoundingClientRect();
+      const cx = box.left + box.width / 2, cy = box.top + box.height / 2;
+      const nx = Math.max(-1, Math.min(1, (ev.clientX - cx) / (box.width / 2 + 260)));
+      const ny = Math.max(-1, Math.min(1, (ev.clientY - cy) / (box.height / 2 + 120)));
+      tgt.y = nx * 8; tgt.x = -ny * 8;
+    });
+    hero.addEventListener("pointerleave", () => { tgt.x = 0; tgt.y = 0; box = null; });
+    window.addEventListener("scroll", () => { box = null; }, { passive: true });
+    window.addEventListener("resize", () => { box = null; });
+
+    new IntersectionObserver((entries) => { inView = entries.some((e) => e.isIntersecting); update(); }, { threshold: 0.3 }).observe(visual);
+    document.addEventListener("visibilitychange", update);
+    reduce.addEventListener?.("change", update);
+    // For screenshots and live demos: intuitionHero.seek(7700) shows the moment of the tap.
+    window.intuitionHero = {
+      seek(ms) {
+        held = true; update();
+        if (!begun) begin();
+        CUES[0][1](); idx = 1;
+        while (idx < CUES.length && CUES[idx][0] <= ms) { CUES[idx][1](); idx++; }
+        t = ms;
+      },
+      play() { held = false; update(); },
+    };
+  }
+
   // ------------------------------------------------------------------ theme
 
   const THEMES = ["auto", "light", "dark"];
@@ -1134,6 +1258,7 @@
     setFull();
     wire();
     traceInit();
+    if (!PHONE) initHero();
     if (PHONE) $("#chat-back").setAttribute("aria-label", "Close this window");
     try { S.cfg = await api("GET", "/api/config"); }
     catch (err) { $("#start-error").textContent = `The app's server didn't answer: ${err.message}`; return; }

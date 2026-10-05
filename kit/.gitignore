@@ -3,7 +3,8 @@
 !.env.example
 runs/
 evals/results/
-reports/
+reports/*
+!reports/acceptance.md
 site/dist/
 .ea_cache/
 .venv/

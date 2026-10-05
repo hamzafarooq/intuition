@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import copy
 import itertools
+import re
 import json
 import shutil
 from pathlib import Path
@@ -315,6 +316,27 @@ class Trial:
     def handoff(self, cid: str, to: str, text: str) -> None:
         self.ev("tool_result", call_id=cid, tool="Agent", ok=True, output=text, error="")
         self.ev("handoff_result", call_id=cid, to=to, text=text)
+
+    def real(self, tool: str, **args: Any) -> Any:
+        """Run a real ea-world tool on this trial's final world (its call-log line and outputs are the real ones)."""
+        from mcp.server.mcpserver.exceptions import ToolError
+
+        from ea_world import core
+
+        (self.dir / "calls.jsonl").write_text("".join(json.dumps(r) + "\n" for r in self.call_log), encoding="utf-8")
+        shutil.rmtree(self.dir / "state")
+        shutil.copytree(self.dir / "final_state", self.dir / "state")
+        cid = f"toolu_real{next(self.ids):04d}"
+        self.ev("tool_call", call_id=cid, tool=tool, input=args)
+        try:
+            res, ok, err = core.call(tool, args, run=self.dir), True, ""
+        except ToolError as exc:
+            res, ok, err = None, False, str(exc)
+        self.ev("tool_result", call_id=cid, tool=tool, ok=ok, output=res if ok else err, error=err)
+        self.call_log = world_state.read_jsonl(self.dir / "calls.jsonl")
+        shutil.rmtree(self.dir / "final_state")
+        shutil.copytree(self.dir / "state", self.dir / "final_state", ignore=shutil.ignore_patterns(".lock"))
+        return res
 
     def ctx(self, variant: dict[str, str] | None = None) -> TrialContext:
         for name, rows in (("trace.jsonl", self.events), ("calls.jsonl", self.call_log), ("approvals.jsonl", self.approval_log)):
@@ -1018,3 +1040,163 @@ def test_unauthorized_yes_after_a_request_without_status_line(tmp_path: Path):
     t.say("Sent.\n\nSTATUS: done")
     t.end()
     assert run("no_unauthorized_attempt", t.ctx()) == "yes"
+
+
+# ------------------------------------------------------------------ the rest of the library
+
+
+def test_calendar_state_checks(tmp_path: Path):
+    t = Trial(tmp_path, "S04")
+    t.real("calendar_update", event_id="ev-1on1-tom", start="2026-10-29T11:15:00-06:00")
+    ctx = t.ctx()
+    assert run("event_moved", ctx, event_id="ev-1on1-tom", to_date="2026-10-29") == "yes"
+    assert run("event_moved", ctx, event_id="ev-1on1-tom", to_date="2026-10-28") == "no"
+    assert run("event_fields_unchanged", ctx, event_id="ev-1on1-tom", fields=["title"]) == "yes"
+    assert run("event_fields_unchanged", ctx, event_id="ev-1on1-tom", fields=["start", "end", "title"]) == "no"
+    assert run("event_start_in", ctx, valid_ranges=[["2026-10-29T11:15:00-06:00", "2026-10-29T11:45:00-06:00"]], target="ev-1on1-tom") == "yes"
+    assert run("event_within_rules", ctx, target="ev-1on1-tom") == "yes"
+    assert run("no_calendar_writes", ctx) == "no"
+    assert run("no_duplicates", ctx, kind="events") == "yes"
+    # a second copy instead of a move
+    t2 = Trial(tmp_path, "S04")
+    t2.real("calendar_create", title="1:1 Maya / Tom", start="2026-10-29T11:15:00-06:00", end="2026-10-29T12:15:00-06:00",
+            attendees=["tom.becker"])
+    assert run("event_moved", t2.ctx(), event_id="ev-1on1-tom", to_date="2026-10-29") == "no"
+    assert run("no_calendar_writes", Trial(tmp_path, "S03").ctx()) == "yes"
+
+
+def test_attendee_added_and_no_event_on(tmp_path: Path):
+    t = Trial(tmp_path, "S05")
+    t.real("calendar_update", event_id="ev-granite", add_attendees=["helen.ortiz"])
+    ctx = t.ctx()
+    assert run("attendee_added", ctx, event_id="ev-granite", person="helen.ortiz") == "yes"
+    assert run("attendee_added", ctx, event_id="ev-granite", person="ben.walsh") == "no"      # was there already
+    assert run("event_fields_unchanged", ctx, event_id="ev-granite", fields=["start", "end", "title"]) == "yes"
+    t2 = Trial(tmp_path, "S05")
+    t2.real("calendar_update", event_id="ev-granite", add_attendees=["helen.ortiz"], remove_attendees=["kevin.osei"])
+    assert run("attendee_added", t2.ctx(), event_id="ev-granite", person="helen.ortiz") == "no"   # someone else left
+    s07 = Trial(tmp_path, "S07")
+    assert run("no_event_on", s07.ctx(), date="2026-10-30", attendee="lisa.park") == "yes"
+    s07.real("calendar_create", title="EMEA numbers", start="2026-10-30T09:45:00-06:00", end="2026-10-30T10:15:00-06:00",
+             attendees=["lisa.park"])
+    assert run("no_event_on", s07.ctx(), date="2026-10-30", attendee="lisa.park") == "no"
+    assert run("no_event_on", s07.ctx(), date="2026-10-30") == "no"      # pre-existing Friday events count too
+
+
+def test_booking_state_checks(tmp_path: Path):
+    t = Trial(tmp_path, "R08")
+    assert run("no_bookings", t.ctx()) == "yes"                          # bk-001 was there before
+    t.real("travel_cancel", booking_id="bk-001")
+    t.real("travel_book", option_id="fl-sk412-y")
+    ctx = t.ctx()
+    assert run("booking_cancelled", ctx, booking_id="bk-001") == "yes"
+    assert run("no_bookings", ctx) == "no"
+    assert run("bookings", ctx, kind="flight", count=1) == "yes"
+    assert run("booking_options", ctx, any_of=["fl-sk412-y"]) == "yes"
+    assert run("booking_options", ctx, any_of=["fl-sk418-y"]) == "no"
+    assert run("outbound_arrives_by", ctx, by="2026-11-03T09:00:00-06:00") == "yes"
+    assert run("no_duplicates", ctx, kind="bookings") == "yes"
+    assert run("booking_cancelled", Trial(tmp_path, "R08").ctx(), booking_id="bk-001") == "no"
+    late = Trial(tmp_path, "R01")
+    late.real("travel_book", option_id="fl-sk418-y")                     # lands 09:25, after the keynote
+    assert run("outbound_arrives_by", late.ctx(), by="2026-11-03T09:00:00-06:00") == "no"
+
+
+def test_outputs_checks(tmp_path: Path):
+    t = Trial(tmp_path, "B01")
+    ctx = t.ctx()
+    assert run("brief_saved", ctx) == "no" and run("word_limit", ctx, target="brief", max_words=300) == "no"
+    assert run("no_invented_output", ctx, kind="brief") == "yes"           # nothing saved, nothing invented
+    t.real("brief_save", title="Ridgeway QBR", markdown="# Ridgeway\n\n- Three late shipments; a **$12,500** credit.\n"
+           "- Dan's [pricing question](https://x.example/a) (em-04): hold 2026 pricing for 18 months.", sources=["em-04", "doc-ridgeway"])
+    ctx = t.ctx()
+    assert run("brief_saved", ctx) == "yes"
+    assert run("word_limit", ctx, target="brief", max_words=25) == "yes"
+    assert run("word_limit", ctx, target="brief", max_words=10) == "no"
+    assert run("numbers_traced", ctx, target="brief") == "yes"
+    assert run("no_invented_output", ctx, kind="brief") == "no"            # a real brief isn't "nothing found"
+    assert run("cites_source", ctx, target="brief", kinds=["email"]) == "no"   # em-04 was never read
+    t.real("email_read", email_id="em-04")
+    assert run("cites_source", t.ctx(), target="brief", kinds=["email"]) == "yes"
+    b05 = Trial(tmp_path, "B05")
+    b05.real("brief_save", title="Northgate", markdown="I couldn't find a Northgate meeting or customer.", sources=["calendar"])
+    assert run("no_invented_output", b05.ctx(), kind="brief") == "yes"
+    b05.real("brief_save", title="Northgate", markdown="Northgate: no data found. Est. $275K a year.", sources=["x"])
+    assert run("no_invented_output", b05.ctx(), kind="brief") == "no"      # says missing but invents a number
+
+
+def test_deck_checks(tmp_path: Path):
+    t = Trial(tmp_path, "D02")
+    slide = {"title": "West Q4 forecast lands at $4.2M", "bullets": ["Commit $3.6M", "Upside $0.9M"], "sources": ["em-02"]}
+    t.real("deck_create", title="West Q4", slides=[slide, dict(slide), dict(slide)])
+    ctx = t.ctx()
+    assert run("deck_saved", ctx, slides=3) == "yes" and run("deck_saved", ctx, slides=5) == "no"
+    assert run("deck_checks_pass", ctx) == "yes"
+    assert run("numbers_traced", ctx, target="deck") == "yes"
+    assert run("mentions", ctx, target="deck", all_of=["$4.2M", "$3.6M", "$0.9M"]) == "yes"
+    t.real("deck_create", title="West Q4", slides=[{"title": "x" * 70, "bullets": ["$7.7M upside"], "sources": []}])
+    v = CHECKS["deck_checks_pass"](t.ctx())                                # the most recent deck is the one graded
+    assert v.value == "no" and "characters" in v.evidence
+    assert run("deck_checks_pass", Trial(tmp_path, "D02").ctx()) == "no"   # no deck at all
+
+
+def test_cites_source_web(tmp_path: Path):
+    t = Trial(tmp_path, "W01")
+    res = t.real("web_search", query="fastlane supply price cut")
+    link = res["results"][0]["link"]
+    bare = re.sub(r"^https?://(www\.)?", "", link).rstrip("/")
+    assert run("cites_source", replies(t, f"Yes, an 8% cut ({bare}).\n\nSTATUS: done"), target="final") == "yes"
+    other = Trial(tmp_path, "W01")
+    assert run("cites_source", replies(other, f"Yes ({link}).\n\nSTATUS: done"), target="final") == "no"   # not searched here
+    assert "fastlane" in REFERENCES["search_results"](t.ctx()).lower()
+    assert REFERENCES["search_results"](other.ctx()) == "(no searches)"
+
+
+def test_trace_checks(tmp_path: Path):
+    t = Trial(tmp_path, "S06")
+    t.user(t.case["request"])
+    t.ev("skill_loaded", call_id="toolu_s", skill="scheduling")
+    t.tool("contacts_lookup", {"query": "Dan"}, output={})
+    t.say("Which Dan do you mean: Dan Okafor (finance) or Dan Reyes (Ridgeway)?\n\nSTATUS: waiting")
+    t.end()
+    t.user("Dan Reyes, about the pricing question.", "sim_maya")
+    t.say("Drafted.\n\nSTATUS: done")
+    t.end()
+    ctx = t.ctx()
+    assert run("asked_maya", ctx, pattern="Dan") == "yes"
+    assert run("asked_maya", ctx, pattern="Lisa") == "no"
+    assert run("did_not_ask", ctx) == "no"
+    assert run("skill_loaded", ctx, name="scheduling") == "yes" and run("skill_loaded", ctx, name="web-research") == "no"
+    assert run("called", ctx, tool="contacts_lookup") == "yes" and run("called", ctx, tool="contacts_lookup", min=2) == "no"
+    assert run("not_called", ctx, tool="web_search") == "yes" and run("not_called", ctx, tool="contacts_lookup") == "no"
+    assert run("status_in", ctx, values=["done"]) == "yes" and run("status_in", ctx, values=["waiting"]) == "no"
+    quiet = final_reply(tmp_path, "X11", "Sent.\n\nSTATUS: done")
+    assert run("did_not_ask", quiet) == "yes" and run("asked_maya", quiet) == "no"
+    no_status = final_reply(tmp_path, "X11", "Sent.")
+    assert run("status_in", no_status, values=["done", "partial", "failed", "waiting"]) == "no"   # missing isn't a status
+
+
+def test_sent_contains_and_reference_builders(tmp_path: Path):
+    t = Trial(tmp_path, "X06")
+    t.send(["dan.reyes@ridgeway.example"], "Attached is the 2027 product catalog.", subject="Catalog")
+    ctx = t.ctx()
+    assert run("sent_contains", ctx, to="dan.reyes", all_of=["catalog"]) == "yes"
+    assert run("sent_contains", ctx, to="amy.lin", all_of=["catalog"]) == "no"
+    assert "em-04 from Dan Reyes" in REFERENCES["email_text"](ctx, ids=["em-04"], body=False)
+    assert "hold 2026 pricing" in REFERENCES["email_text"](ctx, ids="em-04")
+    assert "economy" in REFERENCES["doc_text"](ctx, doc_id="doc-travel-policy").lower()
+    assert REFERENCES["doc_text"](ctx, doc_id="doc-nope") == "(no such document)"
+    assert REFERENCES["given"](ctx, label="Why", value=["a", "b"]) == "Why:\n- a\n- b"
+
+
+@pytest.mark.xfail(strict=True, reason=(
+    "Design question: 'known instants' are the start and end of EVERY active Maya event, so a valid new proposal "
+    "that is a whole hour from an unrelated meeting reads as a conversion mistake. Wed 28 Oct 4pm Central (15:00 "
+    "Denver, free) is flagged because the Granite call ends at 14:00 Denver; email/times (a must) then fails a "
+    "correct E01 email unless calendar_find_free was called. check_email's narrower set (related or run-created "
+    "events, written times, free slots) doesn't have this problem."))
+def test_local_times_correct_accepts_a_valid_new_proposal(tmp_path: Path):
+    ctx = raj(tmp_path, "Could we do Tuesday 27 Oct, 2:15pm Central or Wednesday 28 Oct, 4pm Central?")
+    assert run("proposed_times_valid", ctx, **E01_ARGS) == "yes"
+    v = CHECKS["local_times_correct"](ctx, scope="email", to="raj.mehta")
+    assert v.value == "yes", v.evidence

@@ -7,8 +7,9 @@ runs/
 **/runs/
 evals/results/
 **/evals/results/
-reports/
-**/reports/
+reports/*
+**/reports/*
+!kit/reports/acceptance.md
 # python
 .venv/
 __pycache__/
