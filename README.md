@@ -1,5 +1,9 @@
 # Intuition
 
+<p align="center">
+  <img src="docs/workshop-banner.png" alt="Building AI Evals in Practice: Agent Trajectories &amp; Harness Design Masterclass, a 4-hour Maven workshop with Hamza Farooq and Manisha Arora" width="820">
+</p>
+
 **Build a personal executive assistant, then prove how far you can trust it.**
 
 A four-hour, hands-on workshop. You build Maya Chen's AI executive assistant in Claude Code, talk to it in a phone-style chat app, and test every layer of it against a golden dataset of 63 realistic tasks. Everything runs on your laptop against a made-up world, so no real email, calendar or booking is touched.
@@ -9,9 +13,57 @@ A four-hour, hands-on workshop. You build Maya Chen's AI executive assistant in 
 [![Lessons](https://img.shields.io/badge/Lessons-5-orange?style=for-the-badge)](#-workshop-lessons)
 [![Runs on](https://img.shields.io/badge/Runs%20on-Claude%20Code-8A2BE2?style=for-the-badge)](#-installation)
 [![Offline tests](https://img.shields.io/badge/Offline%20tests-1%2C600%2B-success?style=for-the-badge)](#-status)
-[![Instructor](https://img.shields.io/badge/Instructor-Hamza%20Farooq-purple?style=for-the-badge)](https://traversaal.ai)
+[![Instructors](https://img.shields.io/badge/Instructors-Hamza%20Farooq%20%26%20Manisha%20Arora-purple?style=for-the-badge)](#-instructors)
 
-> Taught by **Hamza Farooq**, Founder at Traversaal.ai
+This repo is the hands-on kit for **Building AI Evals in Practice: Agent Trajectories and Harness Design**, a 4-hour live workshop on Maven.
+
+---
+
+## 🎓 Instructors
+
+| Instructor | About |
+|---|---|
+| **Hamza Farooq** | Founder & CEO, [Traversaal.ai](https://traversaal.ai) · Adjunct Professor, UCLA & UMN · Ex-Google |
+| **Manisha Arora** | Data Science Lead at Google · AI Educator, PrepVector |
+
+---
+
+## ✅ Prerequisites and Access
+
+Sort these out **before the workshop starts**. Setup takes about 15 minutes once everything below is in place. No coding is required: the example agent is provided and we walk through everything together. A basic understanding of LLMs and agents helps.
+
+### Required
+
+| What | Why you need it | How to get it |
+|---|---|---|
+| **A laptop** (macOS, Linux, or Windows with WSL2), about 2 GB free | Everything runs locally | — |
+| **Permission to install software** on that laptop | Claude Code, uv and Python get installed | Check with IT if it's a managed work laptop |
+| **A paid Claude plan that includes Claude Code** (Pro, Max or Team) | Claude Code runs the assistant and every eval trial on your plan. No Anthropic API key is needed | [claude.ai](https://claude.ai), then log in with `claude auth login` |
+| **Claude Code** | The agent harness the assistant runs in | [Step 1](#step-1-install-claude-code-and-log-in) |
+| **uv** (installs Python 3.12 for you) | Installs and runs the kit | [Step 2](#step-2-install-uv-and-python) |
+| **git** | Clones this repo | Preinstalled on most Macs (`xcode-select --install`); [git-scm.com](https://git-scm.com) |
+| **An OpenAI API key** | Runs the AI judge and the simulated Maya during evals | Provided during the workshop; use your own afterwards |
+| **Internet access** to `github.com`, `claude.ai`/`api.anthropic.com` and `api.openai.com` | Cloning, running Claude Code, judging | Corporate VPNs and proxies sometimes block these; check beforehand |
+| **Port 8765 free** on localhost | The Intuition app runs there | Or use `uv run ea-app --port 8800` |
+
+### Optional
+
+| What | What it adds |
+|---|---|
+| A free [SerpAPI](https://serpapi.com) key | Live web search in the app. Evals never need it: they replay recorded searches |
+| Brave (recommended) or Chrome, plus Node.js 20 or later | Watch the assistant fill in the mock booking sites in a browser window (uses port 9222) |
+
+### Usage to expect
+
+Each eval trial is a full Claude Code conversation and counts toward your Claude plan's limits. The 10-case baseline run is roughly $3–4 of API-equivalent Claude usage plus a little OpenAI judging; `uv run ea-eval estimate --slice <name>` estimates any run before you start it. For per-trial figures, see the [Costs](#-costs) section below.
+
+### Check you're ready
+
+```bash
+cd intuition/kit && make setup && make doctor
+```
+
+Every line should be green. Each red line prints its own fix.
 
 ---
 
@@ -37,9 +89,9 @@ Then send **"What needs me today?"**, and run your first evals:
 uv run ea-eval run --slice setup-baseline     # 10 cases, one try each; prints the report path
 ```
 
-> First time? You need Claude Code (logged in with Claude Pro or Max) and uv installed first. Follow the full [Installation guide](#-installation) below. It takes about 15 minutes.
+> First time? Check the [Prerequisites](#-prerequisites-and-access) first. You need Claude Code (logged in with a paid Claude plan) and uv installed. Follow the full [Installation guide](#-installation) below. It takes about 15 minutes.
 
-**Jump to:** [Lessons](#-workshop-lessons) · [The evals](#-the-evals) · [Golden dataset](#-the-golden-dataset) · [Grading](#-how-a-trial-is-graded) · [Metrics](#-what-gets-measured) · [Installation](#-installation) · [Troubleshooting](#-troubleshooting)
+**Jump to:** [Instructors](#-instructors) · [Prerequisites](#-prerequisites-and-access) · [Lessons](#-workshop-lessons) · [The evals](#-the-evals) · [Golden dataset](#-the-golden-dataset) · [Grading](#-how-a-trial-is-graded) · [Metrics](#-what-gets-measured) · [Installation](#-installation) · [Troubleshooting](#-troubleshooting)
 
 ---
 
@@ -745,7 +797,9 @@ From a clean laptop to your first message takes about 15 minutes.
 ### What you need
 
 - A Mac, Linux, or Windows machine (WSL2 recommended on Windows), with about 2 GB free, and `git`.
-- A **Claude Pro or Max account**. The assistant runs on your own Claude Code plan; you don't need an Anthropic API key.
+The full checklist is in [Prerequisites and Access](#-prerequisites-and-access). In short:
+
+- A **paid Claude plan that includes Claude Code** (Pro, Max or Team). The assistant runs on your own Claude Code plan; you don't need an Anthropic API key.
 - An **OpenAI API key**. It runs the grader and the simulated Maya. The workshop provides one; after the workshop, use your own.
 - Optional: a free [SerpAPI](https://serpapi.com) key for live web search in the app. The evals never need it, because they replay recorded searches.
 - Optional: Brave or Chrome, plus Node.js 20 or later, to watch bookings happen in a browser window.
@@ -965,4 +1019,4 @@ Maya Chen, Larkspur Supply, Ridgeway Builders and every other person, company an
 
 ---
 
-*Intuition · a workshop by Hamza Farooq · [Traversaal.ai](https://traversaal.ai)*
+*Intuition · a workshop by Hamza Farooq and Manisha Arora · [Traversaal.ai](https://traversaal.ai)*
