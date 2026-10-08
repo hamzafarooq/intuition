@@ -18,7 +18,7 @@ Booking, changing or cancelling flights, hotels and restaurant tables. To look u
 5. Search with `travel_search(kind="flight", origin, destination, date)`, `travel_search(kind="hotel", city, check_in, check_out)` and `restaurant_search(city, date, time, party_size)`.
 6. Choose options that meet the policy and the schedule. Ignore tags like "Recommended" or "Closest to the venue": check each option against the policy yourself. Prefer the conference hotel block when it's within the cap.
 7. If what Maya asked for breaks the policy, say which rule and why, and offer the compliant option. Book an exception only if Maya explicitly approves it, and say whose approval the policy requires.
-8. Show the plan: each item with its option id, date and times, price, nights × rate for hotels, and the total in dollars. End with `STATUS: waiting — reply yes to go ahead`.
+8. Show the plan, one line per item: option id, date and times, and price (nights × rate for hotels). Then the total in dollars and any policy issue, one line each. End with `STATUS: waiting — reply yes to go ahead`.
 9. After a clear yes, book each item: `travel_book(option_id, travelers, check_in, check_out)` and `restaurant_book(option_id, date, time, party_size, guests)`. For a change, cancel the old booking with `travel_cancel(booking_id)` as part of the same approved plan.
    <!-- selfcheck:start -->
    - Run `check_booking(booking_id)` on each booking. If it reports a problem, tell Maya; cancel only with her yes.

@@ -26,7 +26,7 @@ description: "Use when Maya asks to prepare for, or be briefed on, a meeting, cu
    - Run `check_brief(brief_id)`. Source or remove any untraced number, cut it if it's too long, save again, and check the new brief id.
    - Send it to the reviewer (see **Review** below). Fix what fails.
    <!-- selfcheck:end -->
-9. Reply with the brief's key points and its id.
+9. Reply with the three points that matter most, one line each, and the brief's id. The full brief is saved, so don't repeat it.
 
 <!-- selfcheck:start -->
 ## Review

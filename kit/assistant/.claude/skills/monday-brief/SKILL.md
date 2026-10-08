@@ -19,7 +19,7 @@ A small team writes the brief: specialists called one after another with the `Ag
 4. **Planner, revision.** `Agent` with `subagent_type: "planner"` again. Pass Maya's request, today's date, its first draft and the challenger's issues, both word for word. Ask it to fix what the evidence supports, say which issues it rejected and why, and return the revised brief.
 5. **QA.** `Agent` with `subagent_type: "qa"`. Pass today's date, the revised brief word for word, and the coverage list below word for word. Ask for pass or fail on each item, with a one-line reason.
 6. If QA fails anything, fix it from QA's evidence (one more planner revision if it's more than a line or two), then present. Don't loop more than once.
-7. Present the brief: today first, then the rest of the week, on one screen. Every item has its time with the zone and why it matters. End with **Team notes**: one line each for what the challenger raised, what changed in the revision, and QA's result.
+7. Present the brief on one screen: today first, then the rest of the week. One line per item, 15 words or fewer: the time with its zone and why it matters. End with one **Team notes** line: what the challenger added and QA's result.
 8. Change nothing. The brief is read-only: no emails, events, bookings or saved files. Offer next steps instead ("Want me to book the summit trip?").
 
 If the specialists aren't available, do each role yourself in turn: draft, challenge your draft against the sources, revise, then check it against the coverage list.
