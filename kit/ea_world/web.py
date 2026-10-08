@@ -3,6 +3,7 @@
 import logging
 import os
 import re
+import time
 from pathlib import Path
 from typing import Annotated, Any
 
@@ -104,17 +105,38 @@ def web_search(
     return _serpapi(query, n)
 
 
+SERPAPI_SEARCH = "https://serpapi.com/search.json"
+SERPAPI_ARCHIVE = "https://serpapi.com/searches/{id}.json"
+SERPAPI_DEADLINE = 40.0  # seconds for the whole search
+
+
+def serpapi_fetch(query: str, key: str) -> dict[str, Any]:
+    """One Google search through SerpAPI, finished within SERPAPI_DEADLINE seconds or a ToolError.
+
+    A synchronous SerpAPI request can hold the connection open for half an hour on a slow search, and
+    httpx's timeout only limits each read. So submit with async=true and poll the searches archive."""
+    deadline = time.monotonic() + SERPAPI_DEADLINE
+    try:
+        data = httpx.get(SERPAPI_SEARCH, params={"engine": "google", "q": query, "api_key": key, "async": "true"},
+                         timeout=15).json()
+        while (data.get("search_metadata") or {}).get("status") in ("Queued", "Processing"):
+            if time.monotonic() >= deadline:
+                raise ToolError(f"Search took longer than {SERPAPI_DEADLINE:.0f} seconds. Try again in a minute.")
+            time.sleep(1)
+            url = SERPAPI_ARCHIVE.format(id=data["search_metadata"]["id"])
+            data = httpx.get(url, params={"api_key": key}, timeout=10).json()
+    except ToolError:
+        raise
+    except Exception as exc:
+        raise ToolError(f"Search failed: {exc}") from exc
+    return data
+
+
 def _serpapi(query: str, n: int) -> dict[str, Any]:
     key = os.environ.get("SERPAPI_API_KEY", "")
     if not key:
         raise ToolError("Live search needs SERPAPI_API_KEY. Set it in .env, or use mock mode.")
-    try:
-        resp = httpx.get(
-            "https://serpapi.com/search", params={"engine": "google", "q": query, "api_key": key}, timeout=15
-        )
-        data = resp.json()
-    except Exception as exc:
-        raise ToolError(f"Search failed: {exc}") from exc
+    data = serpapi_fetch(query, key)
     if data.get("error"):
         if "hasn't returned any results" in data["error"]:
             data = {"organic_results": []}

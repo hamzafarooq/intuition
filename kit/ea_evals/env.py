@@ -5,6 +5,9 @@ from pathlib import Path
 
 from ea_world import paths
 
+# Names people commonly use instead of the one the kit reads.
+ALIASES = {"SERPAPI_API_KEY": ["SERP_API_KEY", "SERPAPI_KEY"]}
+
 
 def dotenv_paths() -> list[Path]:
     kit = paths.kit_root()
@@ -25,5 +28,9 @@ def load_dotenv(override: bool = False) -> Path | None:
             value = value.strip().strip('"').strip("'")
             if value and (override or not os.environ.get(key)):
                 os.environ[key] = value
+        for name, others in ALIASES.items():
+            alias = next((os.environ[o] for o in others if os.environ.get(o)), "")
+            if alias and not os.environ.get(name):
+                os.environ[name] = alias
         return p
     return None

@@ -202,10 +202,10 @@ def check_serpapi(with_search: bool) -> Result:
         return Result(None, "SERPAPI_API_KEY not set: live search in the app is off (evals always use recorded results)", "optional: add a free key from serpapi.com to .env")
     if not with_search:
         return Result(True, "SERPAPI_API_KEY set (not tested; --with-search uses 1 search)")
-    import httpx
+    from ea_world.web import serpapi_fetch
 
     try:
-        data = httpx.get("https://serpapi.com/search", params={"engine": "google", "q": "construction supply news", "api_key": key}, timeout=20).json()
+        data = serpapi_fetch("construction supply news", key)
     except Exception as exc:
         return Result(False, f"SerpAPI failed: {exc}", "check your network and key")
     if data.get("error") and "hasn't returned any results" not in data["error"]:

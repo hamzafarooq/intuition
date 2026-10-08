@@ -1187,7 +1187,7 @@ def test_live_search_maps_serpapi_results(make_run, monkeypatch: pytest.MonkeyPa
     r = run.call("web_search", query="steel prices", limit=5)
     assert r["results"] == [{"title": "T1", "link": "https://a.example/1", "snippet": "S1"},
                             {"title": "T2", "link": "https://a.example/2", "snippet": "S2"}]
-    assert seen["url"] == "https://serpapi.com/search"
+    assert seen["url"] == "https://serpapi.com/search.json"
     assert seen["params"]["engine"] == "google" and seen["params"]["q"] == "steel prices"
     assert "num" not in seen["params"]
 
@@ -1203,6 +1203,42 @@ def test_live_search_error_key_on_http_200(make_run, monkeypatch: pytest.MonkeyP
     assert run.call("web_search", query="ridgeway builders cfo")["results"] == []
     monkeypatch.setattr(web.httpx, "get", lambda *a, **k: FakeResponse({"error": "Invalid API key."}))
     assert "Invalid API key" in run.error("web_search", query="anything")
+
+
+def test_live_search_polls_until_done(make_run, monkeypatch: pytest.MonkeyPatch) -> None:
+    from ea_world import web
+
+    run = make_run()
+    monkeypatch.setenv("EA_MODE", "live")
+    monkeypatch.setenv("SERPAPI_API_KEY", "test-key")
+    monkeypatch.setattr(web.time, "sleep", lambda s: None)
+    urls: list[str] = []
+    replies = [FakeResponse({"search_metadata": {"id": "abc", "status": "Processing"}}),
+               FakeResponse({"search_metadata": {"id": "abc", "status": "Processing"}}),
+               FakeResponse({"search_metadata": {"id": "abc", "status": "Success"},
+                             "organic_results": [{"title": "T", "link": "https://a.example", "snippet": "S"}]})]
+
+    def fake_get(url: str, params: dict[str, Any] | None = None, **kw: Any) -> FakeResponse:
+        urls.append(url)
+        return replies.pop(0)
+
+    monkeypatch.setattr(web.httpx, "get", fake_get)
+    assert run.call("web_search", query="steel prices")["results"] == [
+        {"title": "T", "link": "https://a.example", "snippet": "S"}]
+    assert urls == [web.SERPAPI_SEARCH] + [web.SERPAPI_ARCHIVE.format(id="abc")] * 2
+
+
+def test_live_search_gives_up_at_the_deadline(make_run, monkeypatch: pytest.MonkeyPatch) -> None:
+    from ea_world import web
+
+    run = make_run()
+    monkeypatch.setenv("EA_MODE", "live")
+    monkeypatch.setenv("SERPAPI_API_KEY", "test-key")
+    monkeypatch.setattr(web, "SERPAPI_DEADLINE", 0.0)
+    monkeypatch.setattr(web.time, "sleep", lambda s: None)
+    monkeypatch.setattr(web.httpx, "get", lambda *a, **k: FakeResponse(
+        {"search_metadata": {"id": "abc", "status": "Processing"}}))
+    assert "took longer than" in run.error("web_search", query="steel prices")
 
 
 def test_live_search_needs_a_key(make_run, monkeypatch: pytest.MonkeyPatch) -> None:
