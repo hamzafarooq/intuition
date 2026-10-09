@@ -71,7 +71,7 @@ Everything in the build sequence (spec/00-README.md) is done except step 16 (the
 1. **The reference run** (63 cases × 3 trials, about 190 Claude Code conversations) and the lesson slices. They use the Claude plan, so they weren't started. Measured so far: about $0.35–$0.50 of plan usage (API-equivalent) per simple trial, about $2 for a browser booking, plus $0.10–$0.20 of OpenAI judging per trial (more than the PRD's "few cents": `gpt-5.6-sol` is $5/$30 per million tokens). Start with `uv run ea-eval run --slice setup-baseline` to see a first report, then `uv run ea-eval run --cases all --trials 3 --run-id reference`.
 2. **Real Expedia search in the live demo** (requested 5 October): opening expedia.com from the browser tool was blocked by Claude Code's auto-mode classifier as a real-world transaction. If you want it, decide the scope (search only, no sign-in or checkout), add a permission rule for the Brave MCP, and it can be built as an opt-in instructor-demo mode.
 3. The open decisions below (student default model, trials per plan, name check, Instinct sources).
-4. A SerpAPI key in `.env` turns on live search in the app (none is set yet).
+4. Live search works (8 October): a SerpAPI key is set, and searches use async polling with a 40-second limit.
 
 ### Things a person still checks
 

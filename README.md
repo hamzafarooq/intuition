@@ -54,6 +54,7 @@ Intuition is a local web app: an onboarding page with a mock phone and a chat be
 - **Talk to it like a person.** Ask it to find time, triage the inbox, prep a meeting, write a reply or book a trip.
 - **Approve before it acts.** Sending, booking and inviting outsiders show an approval card. Nothing happens until Maya says a clear yes.
 - **Watch it work.** A behind-the-scenes view shows every tool call, skill, hand-off and check. When Maya asks to book, you can watch the assistant fill in mock booking sites (Skyway, Stays, Tables) in a Brave window. The browser only places holds; the booking waits for Maya's yes.
+- **Search the real web (optional).** With a SerpAPI key, the app's Search setting switches to live Google results. The fictional companies won't show up there, and evals always replay recorded searches.
 
 By the end of the day you have a report that shows where your assistant works, where it fails, whether it's honest about its own results, and what it costs.
 
@@ -84,7 +85,7 @@ The assistant is plain files that Claude Code reads. There's no hidden code: wha
 
 | Part | What it is | Lives in |
 |------|------------|----------|
-| **Brief** | Who Maya is, the 13 house rules, what always needs approval, and the status line every reply ends with | `kit/assistant/CLAUDE.md` |
+| **Brief** | Who Maya is, the 13 house rules, what always needs approval, the status line every reply ends with, and a reply budget: lead with the answer, about 80 words, one line per list item | `kit/assistant/CLAUDE.md` |
 | **Skills (8)** | `scheduling`, `inbox-triage`, `meeting-brief`, `meeting-deck`, `email-reply`, `travel-booking`, `web-research`, `monday-brief`. Each one ends with a **definition of done** | `kit/assistant/.claude/skills/<name>/SKILL.md` |
 | **Specialists (8)** | `scheduler`, `inbox`, `briefer` and `travel` do the work; `reviewer` checks drafts; `planner`, `challenger` and `qa` form the Monday-brief team. None of them can send or book | `kit/assistant/.claude/agents/<name>.md` |
 | **Approval gate** | Sending, booking, moving events and inviting outsiders always ask first, and only a clear yes approves | `kit/assistant/.claude/settings.json` |
@@ -820,7 +821,9 @@ OPENAI_API_KEY=sk-...
 SERPAPI_API_KEY=...        # optional
 ```
 
-`.env` is already in `.gitignore`, so it won't be committed.
+`.env` is already in `.gitignore`, so it won't be committed. A `.env` in the repo root works too, and the kit also accepts `SERP_API_KEY` as the name of the SerpAPI key.
+
+To test the SerpAPI key, run `make doctor ARGS=--with-search`. It makes one real search, using 1 of the free plan's 250 a month. In the app, live search is on by default once a key is set. You can switch back to recorded results with **Search: Mock** during onboarding.
 
 ### Step 6: Check everything
 
@@ -927,17 +930,20 @@ Cases can be selected by id (`S01,E02`), type (`type:email`), tag (`tag:injectio
 - **Building and offline tests:** free. Offline tests use recorded conversations.
 - **Each trial** is a full Claude Code conversation and counts toward your plan limits. A simple case uses about $0.35–$0.50 of API-equivalent usage, and a booking through the browser about $2. OpenAI judging adds about $0.10–$0.20 a trial.
 - **Lessons** run small slices two at a time (`--parallel 2`). If you hit a plan limit, the runner pauses and tells you when to resume.
+- **Live search** in the app uses your SerpAPI plan. The free plan allows 250 searches a month.
 - **A full reference run** (63 cases × 3 trials) hasn't been measured yet; see [`HANDOFF.md`](HANDOFF.md).
 
 ---
 
 ## 📈 Status
 
-The kit is built and passes about 1,600 offline tests. Live runs through Claude Code have checked three things:
+The kit is built and passes about 1,600 offline tests. Live runs have checked these:
 
 - a scheduling case (S01, shown above)
 - a browser booking on the mock sites (R01)
 - a full three-turn conversation in the app
+- live web search through SerpAPI: about 17 seconds for a new search, about 2 seconds for a repeat
+- shorter replies: "What needs me today?" went from 568 to 145 words, and the S01 confirmation from 152 to 52, with both still passing
 
 [`kit/reports/acceptance.md`](kit/reports/acceptance.md) maps every requirement to its evidence. Still to do: the full reference run, a timed dry run on a clean laptop, and a name check of the fictional companies and people.
 
@@ -954,6 +960,8 @@ The kit is built and passes about 1,600 offline tests. Live runs through Claude 
 | Port 8765 is busy | `uv run ea-app --port 8800` |
 | A usage-limit message from Claude | Wait for the limit to reset, then `uv run ea-eval resume <run-id>` |
 | Bookings don't show in a browser | Run `make browser`, then reload the app |
+| **Search: Live** is greyed out in onboarding | Add `SERPAPI_API_KEY` (or `SERP_API_KEY`) to `.env` and restart the app |
+| A search fails with "took longer than 40 seconds" | SerpAPI can be slow on new searches. Try again; repeats come back in a second or two |
 
 More detail, including Windows notes and resetting the world, is in [`kit/docs/SETUP.md`](kit/docs/SETUP.md).
 
