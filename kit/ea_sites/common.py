@@ -238,8 +238,8 @@ class SiteRequest:
 
     def user(self) -> dict[str, Any]:
         p = self.persona()
-        me = self.contact(p.get("id", "maya")) or {}
-        return {"id": p.get("id", "maya"), "name": p.get("name") or me.get("name", ""),
+        me = self.contact(p.get("id", "sarah")) or {}
+        return {"id": p.get("id", "sarah"), "name": p.get("name") or me.get("name", ""),
                 "email": me.get("email") or p.get("email", ""), "company": p.get("company", "")}
 
     # request data -----------------------------------------------------------------

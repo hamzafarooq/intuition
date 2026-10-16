@@ -8,7 +8,7 @@ tags: [dropped-thread]
 request: "Anything I've dropped?"
 turns: []
 world: {variants: [], faults: ""}
-maya:
+sarah:
   answers: {}
   approvals: none
   edit: ""
@@ -18,5 +18,5 @@ fill:
   must_include: [em-04]
 budgets: {max_cost_usd: 0.60, max_seconds: 180}
 notes: >
-  em-04 (Sat 17 Oct, Dan Reyes, "Pricing question on the 2027 renewal") has no reply from Maya in
+  em-04 (Sat 17 Oct, Dan Reyes, "Pricing question on the 2027 renewal") has no reply from Sarah in
   sent.json, and em-24 asks about it again today.

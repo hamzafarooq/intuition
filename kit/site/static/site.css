@@ -237,8 +237,8 @@ code, pre, kbd { font-family: var(--font-mono); }
 .chat-avatar { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); font-weight: 700; font-family: var(--font-serif); }
 .chat-body { list-style: none; margin: 0; padding: 18px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
 .msg p { padding: 10px 14px; border-radius: 18px; font-size: var(--step--1); line-height: 1.45; max-width: 88%; }
-.msg-maya { justify-self: end; display: flex; justify-content: flex-end; }
-.msg-maya p { background: var(--bubble-me); color: var(--bubble-me-ink); border-bottom-right-radius: 6px; }
+.msg-sarah { justify-self: end; display: flex; justify-content: flex-end; }
+.msg-sarah p { background: var(--bubble-me); color: var(--bubble-me-ink); border-bottom-right-radius: 6px; }
 .msg-assistant p { background: var(--bubble-them); color: var(--bubble-them-ink); border: 1px solid var(--line); border-bottom-left-radius: 6px; }
 .chat-trace { display: inline-block; font-family: var(--font-mono); font-size: var(--step--2); color: var(--muted); padding: 2px 10px; border-left: 2px solid var(--c-tools); }
 .chat-approval { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--c-approvals); border-radius: var(--radius-m); padding: 12px 14px; max-width: 92%; }

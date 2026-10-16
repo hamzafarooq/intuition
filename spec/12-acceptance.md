@@ -18,7 +18,7 @@ Everything must be verifiable without trusting the builder's word. Offline tests
 | `test_claude_adapter_offline.py` | The Claude Code adapter on **recorded stream-json files** (captured once from real runs and checked in): event mapping (text, thinking, tool_use and tool_result, Skill, Agent, sub-agent attribution), session id capture, merging of `calls.jsonl`, `approvals.jsonl` and `stopcheck.jsonl`, status parsing, usage, a usage-limit message, trace completeness (every `tool_call` has a `tool_result`) |
 | `test_approval_tool.py` | `approval_prompt` in `script`, `app` (with decision files) and `allow_all` modes; policy rules (a), (b) and (c); idempotency injection; logging |
 | `test_stopcheck.py` | Unverified writes block; verified writes pass; email needs `check_email` before send; at most two blocks a turn; status-line rule |
-| `test_runner_offline.py` | The runner with a fake harness emitting fixture traces: simulated-Maya replies per approval mode, approval policy (a, b, c), grading, metrics (pass@k and pass^k against hand-computed values), cost cap stopping a run, report builds |
+| `test_runner_offline.py` | The runner with a fake harness emitting fixture traces: simulated-Sarah replies per approval mode, approval policy (a, b, c), grading, metrics (pass@k and pass^k against hand-computed values), cost cap stopping a run, report builds |
 | `test_report.py` | Radar SVG has 8 axes in the fixed order, a 0–100 scale, at most 3 series, a numbers table and a must-pass banner |
 | `test_app.py` | See [14-app.md](14-app.md#tests) |
 | `test_sites.py`, `test_browser_guard.py` | See [16-browser-bookings.md](16-browser-bookings.md#tests) |

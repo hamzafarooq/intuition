@@ -18,7 +18,7 @@ It's written for students who are new to agents and have never seen a personal a
 
 ```
 the assistant = files
-   ├── CLAUDE.md          brief: who Maya is, house rules, what needs approval
+   ├── CLAUDE.md          brief: who Sarah is, house rules, what needs approval
    ├── skills             scheduling · inbox-triage · meeting-brief · meeting-deck   (each with its definition of done)
    ├── sub-agents         scheduler · inbox · briefer · travel · reviewer            (least-privilege tools)
    ├── agent team         Monday brief: planner · challenger · QA
@@ -41,14 +41,14 @@ golden dataset (63 cases, rubrics) ──► eval runner, k trials ──► Ope
 | Format | Step-by-step guide site plus a starter repo | Each step is a prompt pasted into Claude Code, with a list of what to expect |
 | Data | Synthetic seeded world, one fictional executive's week | Traps can be planted on purpose and gold labels are known, so graders are exact |
 | Tools | Local MCP server in Python with mock and live modes, plus verifier tools | Same tool names in both modes: evaluate in mock, demo in live |
-| World feedback | Attendees accept or decline, contacts reply, simulated Maya approves, edits, denies or corrects | The assistant can learn it got something wrong without explicit feedback, and that's testable |
+| World feedback | Attendees accept or decline, contacts reply, simulated Sarah approves, edits, denies or corrects | The assistant can learn it got something wrong without explicit feedback, and that's testable |
 | Test set | Golden dataset of 63 cases; 20 in the workshop | One definition of "good", run automatically and repeatedly |
 | Grading | Rubrics as the main tool: outcome, process and team criteria; each criterion graded by code where it's a fact, by a calibrated model judge where it's a judgement | Agent runs vary and many paths are right; rubrics grade properties, not one path |
 | Results display | Spider charts per run, task type and team, up to three runs overlaid, exact numbers beside them | Shows the assistant's shape and how fixes change it |
 | Self-checks | Definition of done in each skill, verifier tools, read-back after writes, a reviewer sub-agent, and a stop check in the harness | Grounded in state and code, not the model's opinion of itself; measured by overclaim rate |
 | Harness | Claude Code only for now, driven headless by the app and the runner on each student's subscription; independent harness later | No Anthropic API key needed; students already have Claude Code subscriptions |
 | Search | `web_search` and `web_fetch` tools on SerpAPI, each student's own key; live in the app, recorded results in evals | Replayed results make trials comparable and keep within the 250-search free plan |
-| Models | Assistant: Claude Code `opus`. Judge and simulated Maya: OpenAI (`gpt-6.1-sol`, `gpt-6-luna`; confirm ids) | A different family as judge avoids self-grading |
+| Models | Assistant: Claude Code `opus`. Judge and simulated Sarah: OpenAI (`gpt-6.1-sol`, `gpt-6-luna`; confirm ids) | A different family as judge avoids self-grading |
 | Keys | OpenAI key provided during the workshop; students bring SerpAPI; no Anthropic API key; Google key unused | Owner decision |
 | Setup | Download the repo, add keys, `make start` (checks, server, app); local only; cloud deployment later and separate | [spec/15-setup.md](spec/15-setup.md) |
 | Guide site | Not public; ships inside the starter repo and opens locally | Shared with attendees only for now |
@@ -62,7 +62,7 @@ golden dataset (63 cases, rubrics) ──► eval runner, k trials ──► Ope
 | Setup | 20m | What a personal assistant agent is; brief, world, MCP server | First request; baseline golden run and first spider chart |
 | 1. Tools | 35m | Fix tool descriptions and a time-zone bug | Tool unit tests; right tool vs right arguments; description A/B; date reasoning with pass@k vs pass^k |
 | 2. Skills | 35m | Four skills, each with its definition of done | Skill-trigger set; with vs without the skill |
-| 3. Sub-agents | 50m | Orchestrator, four specialists, verifiers, reviewer, stop check | Writing rubrics; outcome and process rubrics; simulated Maya; judge calibration; overclaim rate |
+| 3. Sub-agents | 50m | Orchestrator, four specialists, verifiers, reviewer, stop check | Writing rubrics; outcome and process rubrics; simulated Sarah; judge calibration; overclaim rate |
 | Break | 10m | | |
 | 4. Human gate | 35m | Approval for send, book, create | The three Instinct incidents as suites: unapproved action, injection, disconnect; plus privacy |
 | 5. Agent team and harness | 35m | Monday-brief team; how Claude Code runs the assistant | Team rubrics; single vs multi-agent; fault injection; harness settings (hooks, sub-agents, model) |

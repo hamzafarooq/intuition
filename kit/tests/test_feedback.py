@@ -70,7 +70,7 @@ def test_busy_attendee_declines_with_conflict(run: Run) -> None:
 
 def test_valid_slot_is_accepted_and_blocks_the_attendees(run: Run) -> None:
     r = create(run, "2026-10-28T11:00:00-06:00", "2026-10-28T11:30:00-06:00", ["dan.okafor", "lisa.park"], "Q4 forecast")
-    assert r["rsvps"] == {"maya": "accepted", "dan.okafor": "accepted", "lisa.park": "accepted"}
+    assert r["rsvps"] == {"sarah": "accepted", "dan.okafor": "accepted", "lisa.park": "accepted"}
     assert arrivals(run) == [] and signals(run, "calendar_create") == []
     busy = run.call("calendar_list", start="2026-10-28", end="2026-10-28", person="dan.okafor")["busy"]
     assert any(b["start"].startswith("2026-10-28T13:00") for b in busy)  # 13:00 New York

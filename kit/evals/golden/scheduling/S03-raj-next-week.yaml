@@ -8,7 +8,7 @@ tags: [external, tz]
 request: "Find 45 minutes with Raj next week."
 turns: []
 world: {variants: [], faults: ""}
-maya:
+sarah:
   answers: {}
   approvals: explicit_yes
   edit: ""
@@ -27,6 +27,6 @@ fill:
 budgets: {max_cost_usd: 0.80, max_seconds: 240}
 notes: >
   Raj (Brightpath, supplier) is external: propose 2-3 slots by email in Central time, no invite (rule 6),
-  sent after Maya's yes (rule 7b). Next week the US is on standard time (Denver UTC-7, Chicago UTC-6),
+  sent after Sarah's yes (rule 7b). Next week the US is on standard time (Denver UTC-7, Chicago UTC-6),
   still 1 hour apart: Raj's 09:00-17:00 Central = 08:00-16:00 Denver. 3-4 Nov is the Chicago summit
-  (Maya busy), so valid days are Mon 2, Thu 5 and Fri 6 Nov.
+  (Sarah busy), so valid days are Mon 2, Thu 5 and Fri 6 Nov.

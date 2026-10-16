@@ -70,7 +70,7 @@
 <figure class="flow" aria-label="How a request flows through the assistant">
   <div class="flow-node flow-you">
     <span class="flow-kicker">You</span>
-    <strong>Maya sends a message</strong>
+    <strong>Sarah sends a message</strong>
     <span>"Find 30 minutes with Dan and Lisa this week."</span>
   </div>
   <div class="flow-arrow" aria-hidden="true"></div>
@@ -84,12 +84,12 @@
     <span class="flow-kicker">Tools</span>
     <strong>The <code>ea-world</code> tool server</strong>
     <span>Read the calendar, search email, look up contacts, find free time, draft, check.</span>
-    <span class="flow-gate">Send, book, create: <b>asks Maya first</b></span>
+    <span class="flow-gate">Send, book, create: <b>asks Sarah first</b></span>
   </div>
   <div class="flow-arrow" aria-hidden="true"></div>
   <div class="flow-node flow-world">
     <span class="flow-kicker">The world</span>
-    <strong>Maya's mock week</strong>
+    <strong>Sarah's mock week</strong>
     <span>Inbox, calendar, contacts, documents, flights and hotels. All made up, all on your laptop.</span>
   </div>
   <figcaption class="fine">Every step is written to a trace, so you can see exactly what happened and grade it.</figcaption>
@@ -109,7 +109,7 @@
       <div><dt>What to test</dt><dd>{{ l.test|mdi }}</dd></div>
       <div><dt>What to collect</dt><dd>{{ l.collect|mdi }}</dd></div>
       <div><dt>How to grade</dt><dd>{{ l.grade|mdi }}</dd></div>
-      <div class="layer-fail"><dt>A failure from Maya's world</dt><dd>{{ l.example|mdi }}</dd></div>
+      <div class="layer-fail"><dt>A failure from Sarah's world</dt><dd>{{ l.example|mdi }}</dd></div>
     </dl>
     {% if l.run %}{{ codeblock(l.run|as_list|join("\n"), "run", l.name ~ " commands") }}{% endif %}
   </article>

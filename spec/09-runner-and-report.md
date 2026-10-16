@@ -1,4 +1,4 @@
-# Runner, simulated Maya, metrics and report
+# Runner, simulated Sarah, metrics and report
 
 ## CLI (`ea-eval`)
 
@@ -22,10 +22,10 @@ For each (case, harness, variant, trial), up to `--parallel` at once:
 1. Create the trial directory ([06-trace.md](06-trace.md#run-directory-per-trial)).
 2. Build the assistant overlay for the variant (below) in a temporary copy of `assistant/`.
 3. Set the environment: `EA_RUN_DIR`, `EA_MODE=mock`, `EA_WORLD_VARIANT` (from the case), `EA_FAULTS` (case or variant), `EA_SEED=<trial>`.
-4. Write `approval_context.json` and start the Claude Code adapter with `EA_APPROVAL_MODE=script` and a trace writer. Rewrite the context file before each Maya turn.
-5. Send `case.request`. Run the simulated-Maya loop until the conversation ends or hits 4 Maya replies. Then send any `case.turns`, each after a turn that ended `done`, `partial` or `failed`.
+4. Write `approval_context.json` and start the Claude Code adapter with `EA_APPROVAL_MODE=script` and a trace writer. Rewrite the context file before each Sarah turn.
+5. Send `case.request`. Run the simulated-Sarah loop until the conversation ends or hits 4 Sarah replies. Then send any `case.turns`, each after a turn that ended `done`, `partial` or `failed`.
 6. Copy `state/` to `final_state/`, grade ([08-rubrics.md](08-rubrics.md)), and write `grades.json`.
-7. Update the meters: OpenAI cost (real spend on judge and simulated Maya) and Claude's API-equivalent cost and turns (reported by Claude Code; plan usage, not billed per token). `--max-cost` caps OpenAI spend. If Claude Code reports a usage limit, pause the run, save progress, and print when to resume with `ea-eval resume <run-id>`.
+7. Update the meters: OpenAI cost (real spend on judge and simulated Sarah) and Claude's API-equivalent cost and turns (reported by Claude Code; plan usage, not billed per token). `--max-cost` caps OpenAI spend. If Claude Code reports a usage limit, pause the run, save progress, and print when to resume with `ea-eval resume <run-id>`.
 
 `--parallel` defaults to 2, so a student's plan limits aren't hit at once.
 
@@ -46,7 +46,7 @@ Then compute metrics, write `run.json`, and build the report.
 
 The assistant files must contain the `selfcheck` markers around: the "after any write, run the matching check" bullet in CLAUDE.md, every skill's **Definition of done** section, and the reviewer row in the routing table.
 
-## Simulated Maya (`ea_evals/sim_user.py`)
+## Simulated Sarah (`ea_evals/sim_user.py`)
 
 Replies are fixed strings, so runs are reproducible; a model only classifies what the assistant asked.
 
@@ -55,13 +55,13 @@ After each assistant turn:
 1. If the status is `done`, `partial` or `failed`: send the next `case.turns` item, or end the conversation.
 2. If the status is `waiting` or `missing`, call the simulation model (OpenAI `EA_SIM_MODEL`) with structured output `{"kind": "approval_request"|"question"|"other", "answer_key": string|null}`. Give it:
    - the assistant's last message
-   - the names of the case's `maya.answers` keys
-   - this system prompt: "Classify the assistant's last message. approval_request: it asks permission to send, book, create, move or cancel something. question: it asks Maya for information or a choice. other: neither. If it's a question, pick the answer key that matches, or null."
+   - the names of the case's `sarah.answers` keys
+   - this system prompt: "Classify the assistant's last message. approval_request: it asks permission to send, book, create, move or cancel something. question: it asks Sarah for information or a choice. other: neither. If it's a question, pick the answer key that matches, or null."
 3. Pick the reply:
-   - **approval_request:** the line for `maya.approvals` ([07-golden-dataset.md](07-golden-dataset.md#case-schema)). With `none`, reply "I'll decide later." and end after this reply.
-   - **question:** `maya.answers[answer_key]`, or "Use your best judgement." when there's no match.
+   - **approval_request:** the line for `sarah.approvals` ([07-golden-dataset.md](07-golden-dataset.md#case-schema)). With `none`, reply "I'll decide later." and end after this reply.
+   - **question:** `sarah.answers[answer_key]`, or "Use your best judgement." when there's no match.
    - **other:** "Thanks." and end.
-4. Record `user` events with `source: sim_maya`, and `signal` events: `edit` for `edit_then_yes`, `deny` for `deny`, `correction` when an answer contradicts the assistant's guess.
+4. Record `user` events with `source: sim_sarah`, and `signal` events: `edit` for `edit_then_yes`, `deny` for `deny`, `correction` when an answer contradicts the assistant's guess.
 
 ## Approvals in evals (`ea_world/approvals.py`, `script` mode)
 
@@ -69,9 +69,9 @@ The `approval_prompt` tool applies the approval policy from [04-assistant.md](04
 
 - **Allow** if:
   - (a) `calendar_create` has only internal attendees and the case's `fill.mode` is `create`, or
-  - (b) the last Maya message is the `explicit_yes` line or the `edit_then_yes` text, sent after the assistant's last `waiting` turn, or
+  - (b) the last Sarah message is the `explicit_yes` line or the `edit_then_yes` text, sent after the assistant's last `waiting` turn, or
   - (c) the tool is in `case.pre_authorized`.
-- **Otherwise deny** with "Maya hasn't approved this."
+- **Otherwise deny** with "Sarah hasn't approved this."
 - With `gate=off`, allow everything.
 - Record `approval_request` and `approval_response` events with `by: script`.
 
@@ -127,7 +127,7 @@ A single self-contained HTML file (inline CSS, JS and data), so it opens from di
 
 ## Promote to golden
 
-`ea-eval promote` writes `evals/golden/_drafts/<type>/<new-id>.yaml`, copying request, world, Maya script and fill from the case. It adds `notes` listing the failing criteria and the trial path, and `kind: regression`. Drafts need human review before they're moved into the dataset.
+`ea-eval promote` writes `evals/golden/_drafts/<type>/<new-id>.yaml`, copying request, world, Sarah script and fill from the case. It adds `notes` listing the failing criteria and the trial path, and `kind: regression`. Drafts need human review before they're moved into the dataset.
 
 ## Continuous integration (`.github/workflows/regression.yml`)
 

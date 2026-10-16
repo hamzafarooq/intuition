@@ -14,7 +14,7 @@ Everything runs on the laptop:
 |---|---|
 | The assistant | Claude Code CLI, logged in with the student's own Claude account (Pro or Max) |
 | Tool server, runner, report, app, guide | Python 3.12 managed by uv |
-| Judge and simulated Maya | `OPENAI_API_KEY` |
+| Judge and simulated Sarah | `OPENAI_API_KEY` |
 | Live web search in the app | `SERPAPI_API_KEY` (evals always use recorded results) |
 | Bookings in a visible browser (optional, recommended) | Brave or Chrome, and Node.js 20+ (for `npx chrome-devtools-mcp`). `make start` launches the browser with remote debugging on port 9222 |
 

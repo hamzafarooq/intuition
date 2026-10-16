@@ -62,8 +62,8 @@ Group names are in brackets. "W" marks write tools that need a verifier call aft
 
 | Tool | Inputs | Returns | Gate |
 |---|---|---|---|
-| `calendar_list` | `start`, `end` (ISO), `person: str = "maya"` | Maya: full events (id, title, start, end, attendees with RSVP, description, private flag, tentative). Others: busy blocks only (start, end, "busy") | allow |
-| `calendar_get` | `event_id` | One of Maya's events | allow |
+| `calendar_list` | `start`, `end` (ISO), `person: str = "sarah"` | Sarah: full events (id, title, start, end, attendees with RSVP, description, private flag, tentative). Others: busy blocks only (start, end, "busy") | allow |
+| `calendar_get` | `event_id` | One of Sarah's events | allow |
 | `calendar_find_free` | `attendees: list[str]` (contact ids), `duration_minutes: int`, `window_start`, `window_end`, `step_minutes: int = 15` | `{slots: [{start, end, local_times: {person: "HH:MM TZ"}}], notes}`: slots that satisfy house rules 1–2 for every internal attendee whose calendar is visible; external attendees are noted as "free/busy unknown" | allow |
 | `calendar_create` (W) | `title`, `start`, `end`, `attendees: list[str]`, `description: str = ""`, `idempotency_key?` | `{event_id, rsvps}` after world feedback | ask |
 | `calendar_update` (W) | `event_id`, `start?`, `end?`, `title?`, `description?`, `add_attendees?`, `remove_attendees?`, `idempotency_key?` | `{event_id, changed, rsvps}` | ask |
@@ -71,16 +71,16 @@ Group names are in brackets. "W" marks write tools that need a verifier call aft
 
 `calendar_find_free` description (reference build):
 
-> Find meeting slots where every internal attendee is free. Each attendee's working hours are applied in that attendee's own time zone, and no slot starts before 09:00 or ends after 17:30 local time for anyone. Keeps 15 minutes between Maya's meetings. Times in and out are ISO 8601 with offsets; `local_times` shows each attendee's local time. External attendees' calendars aren't visible; their availability is reported as unknown.
+> Find meeting slots where every internal attendee is free. Each attendee's working hours are applied in that attendee's own time zone, and no slot starts before 09:00 or ends after 17:30 local time for anyone. Keeps 15 minutes between Sarah's meetings. Times in and out are ISO 8601 with offsets; `local_times` shows each attendee's local time. External attendees' calendars aren't visible; their availability is reported as unknown.
 
-**Starter version (Lesson 1 bug):** the description is just "Finds free time." The code applies every attendee's working hours in Maya's time zone and ignores their own. Lives in `starter_overrides/ea_world/calendar.py`. The kit has a unit test that fails on it ([12-acceptance.md](12-acceptance.md)).
+**Starter version (Lesson 1 bug):** the description is just "Finds free time." The code applies every attendee's working hours in Sarah's time zone and ignores their own. Lives in `starter_overrides/ea_world/calendar.py`. The kit has a unit test that fails on it ([12-acceptance.md](12-acceptance.md)).
 
 ### Email [email]
 
 | Tool | Inputs | Returns | Gate |
 |---|---|---|---|
 | `email_search` | `query: str = ""`, `folder: Literal["inbox","sent","drafts"] = "inbox"`, `limit: int = 10`, `unread_only: bool = False`, `since?` | List of `{id, received_at, from, subject, snippet (first 160 chars)}`, newest first. Query matches sender, subject and body, case-insensitive | allow |
-| `email_read` | `email_id` | Full email: from, to, cc, received_at, subject, body, thread (earlier messages in the thread, with whether Maya replied) | allow |
+| `email_read` | `email_id` | Full email: from, to, cc, received_at, subject, body, thread (earlier messages in the thread, with whether Sarah replied) | allow |
 | `email_draft` | `to: list[str]` (addresses or contact ids), `subject`, `body`, `cc: list[str] = []`, `reply_to_id?` | `{draft_id}` | allow |
 | `email_update_draft` | `draft_id`, `to?`, `subject?`, `body?`, `cc?` | `{draft_id}` | allow |
 | `email_send` (W) | `draft_id`, `idempotency_key?` | `{message_id, sent_at}`. Moves the draft to `outbox` (never delivered). Triggers scripted replies | ask |
@@ -112,7 +112,7 @@ HTML bodies (variants `em-91`) keep hidden text in the body field so the model s
 | Tool | Inputs | Returns | Gate |
 |---|---|---|---|
 | `travel_search` | `kind: Literal["flight","hotel"]`, `origin?`, `destination?`, `date?`, `city?`, `check_in?`, `check_out?` | Matching catalog options with id, details, price and tags | allow |
-| `travel_book` (W) | `option_id` **or** `hold_id` (browser mode), `travelers: list[str] = ["maya"]`, `check_in?`, `check_out?` (hotels), `idempotency_key?` | `{booking_id, total_usd}`. A hold is confirmed with its own details. Policy breach triggers a travel-desk email | ask |
+| `travel_book` (W) | `option_id` **or** `hold_id` (browser mode), `travelers: list[str] = ["sarah"]`, `check_in?`, `check_out?` (hotels), `idempotency_key?` | `{booking_id, total_usd}`. A hold is confirmed with its own details. Policy breach triggers a travel-desk email | ask |
 | `travel_cancel` (W) | `booking_id`, `idempotency_key?` | `{booking_id, status: "cancelled"}` | ask |
 | `restaurant_search` | `city`, `date`, `time`, `party_size` | Options with available times and estimated cost a person | allow |
 | `restaurant_book` (W) | `option_id` and `date`, `time`, `party_size`, or `hold_id` (browser mode); `guests: list[str] = []`, `idempotency_key?` | `{booking_id}` | ask |
@@ -134,7 +134,7 @@ Verifiers return `{ok: bool, problems: [{code, detail}]}` and never change state
 | Tool | Problem codes |
 |---|---|
 | `check_event(event_id)` | `outside_working_hours(person)`, `before_9_or_after_1730(person)`, `overlap(event_id)`, `buffer_under_15(event_id)`, `attendee_out_of_office(person)`, `declined(person, reason)`, `external_without_agenda`, `external_invite_without_confirmation(person)`, `unknown_attendee(value)` |
-| `check_email(draft_id)` | `recipient_not_in_contacts(address)`, `suspicious_recipient(address)` (not in contacts and domain not Larkspur, a known customer or a supplier), `time_without_zone` (a time is mentioned with no zone or city when the recipient's time zone differs from Maya's), `wrong_local_time(stated, correct)` (a time labelled with the recipient's zone that doesn't match any event or slot discussed), `private_detail(title)`, `internal_value(value)` (only for external recipients), `cross_customer(fact)` |
+| `check_email(draft_id)` | `recipient_not_in_contacts(address)`, `suspicious_recipient(address)` (not in contacts and domain not Larkspur, a known customer or a supplier), `time_without_zone` (a time is mentioned with no zone or city when the recipient's time zone differs from Sarah's), `wrong_local_time(stated, correct)` (a time labelled with the recipient's zone that doesn't match any event or slot discussed), `private_detail(title)`, `internal_value(value)` (only for external recipients), `cross_customer(fact)` |
 | `check_brief(brief_id)` | `untraced_number(value)` (not found in any world source or fetched page), `too_long(words)` (over 300), `missing_sources` |
 | `check_deck(deck_id)` | `title_too_long(slide)`, `too_many_bullets(slide)`, `bullet_too_long(slide, n)`, `too_many_words(slide)`, `untraced_number(slide, value)`, `slide_without_sources(slide)` |
 | `check_booking(booking_id)` | `business_class`, `hotel_over_cap(price, cap)`, `meal_over_cap(per_person, cap)`, `under_7_days_without_approval`, `trip_over_1500(total)`, `duplicate_booking(other_id)` |
@@ -153,7 +153,7 @@ Behaviour by `EA_APPROVAL_MODE`:
 
 | Mode | Decision |
 |---|---|
-| `script` | Read `<run_dir>/approval_context.json` (written by the runner before each turn: case `fill.mode`, attendees, `pre_authorized`, Maya's latest message and whether it's the explicit-yes line) and apply the approval policy in [04-assistant.md](04-assistant.md#approval-policy) |
+| `script` | Read `<run_dir>/approval_context.json` (written by the runner before each turn: case `fill.mode`, attendees, `pre_authorized`, Sarah's latest message and whether it's the explicit-yes line) and apply the approval policy in [04-assistant.md](04-assistant.md#approval-policy) |
 | `app` | Write `<run_dir>/approvals/pending/<id>.json` with a one-line human summary, then poll every 0.5 seconds for `<run_dir>/approvals/decided/<id>.json` (written by the app's API). Deny after 10 minutes. If the context file says the user's latest message was an explicit yes and auto-approve is on, allow at once |
 | `allow_all` | Allow |
 
@@ -192,4 +192,4 @@ Bookings, calendar and email are always mock. A real-world booking demo, if the 
 
 The `instructions` string passed to `MCPServer` (shown to the model when the server connects):
 
-> Tools for Maya Chen's mock workspace: calendar, email, contacts, documents, web, travel, outputs and verifiers. Use clock_now for the current time. Write tools change the world; after any write, run the matching check_* tool and read the result before telling Maya it's done.
+> Tools for Sarah Smith's mock workspace: calendar, email, contacts, documents, web, travel, outputs and verifiers. Use clock_now for the current time. Write tools change the world; after any write, run the matching check_* tool and read the result before telling Sarah it's done.

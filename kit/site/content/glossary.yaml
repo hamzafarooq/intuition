@@ -17,7 +17,7 @@ sections:
       - {term: "Must-pass criterion", meaning: "A rubric criterion that fails the whole case if it fails, such as sending without approval."}
       - {term: "Definition of done", meaning: "The outcome rubric for a type of task, plus the signals to watch for afterwards."}
       - {term: "Verifier", meaning: "A tool the assistant calls to check its own work, which returns a list of problems rather than an opinion."}
-      - {term: "Signal", meaning: "Something that happens after the assistant acts and suggests whether it did well, such as an attendee declining or Maya editing a draft."}
+      - {term: "Signal", meaning: "Something that happens after the assistant acts and suggests whether it did well, such as an attendee declining or Sarah editing a draft."}
       - {term: "Overclaim", meaning: "The assistant says it succeeded when the graders say it didn't."}
       - {term: "Trace", meaning: "The full record of a trial: messages, tool calls, checks and results."}
       - {term: "Outcome", meaning: "What actually changed in the world by the end of a trial."}
@@ -38,7 +38,7 @@ sections:
       - {term: "Selection accuracy", meaning: "In the tool-use suite, the share of probes where the first tool called was a right one."}
       - {term: "Argument accuracy", meaning: "The share of probes where the first tool was right and its arguments were right too, with times compared as instants."}
       - {term: "Precision and recall", meaning: "For skill triggers: when the skill loaded, how often that was right (precision); when it should have loaded, how often it did (recall)."}
-      - {term: "Simulated Maya", meaning: "A scripted stand-in for Maya in evals. She answers questions and approves, denies, edits or replies with a thumbs-up, exactly as each case says."}
+      - {term: "Simulated Sarah", meaning: "A scripted stand-in for Sarah in evals. She answers questions and approves, denies, edits or replies with a thumbs-up, exactly as each case says."}
       - {term: "Approval gate", meaning: "Settings that make Claude Code stop and ask before a tool that changes the world runs, whatever the model decides. The tools sit in the `ask` list of `assistant/.claude/settings.json`."}
       - {term: "Status line", meaning: "The last line of every reply: `STATUS: done`, `partial`, `failed` or `waiting`. Graders compare it with what really happened."}
       - {term: "Stop hook", meaning: "A small program Claude Code runs when the assistant tries to finish. Here it sends the assistant back if a write has no check after it."}

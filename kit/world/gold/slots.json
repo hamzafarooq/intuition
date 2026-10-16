@@ -3,7 +3,7 @@
     "request": "30 min with Dan Okafor and Lisa this week",
     "duration": 30,
     "attendees": [
-      "maya",
+      "sarah",
       "dan.okafor",
       "lisa.park"
     ],
@@ -16,17 +16,17 @@
     ],
     "valid_ranges": [],
     "local_times": {
-      "maya": "11:00 America/Denver",
+      "sarah": "11:00 America/Denver",
       "dan.okafor": "13:00 America/New_York",
       "lisa.park": "17:00 Europe/London"
     },
-    "note": "Only valid slot: Wed 28 Oct 11:00–11:30 Denver (13:00 New York, 17:00 London). Monday: Lisa busy. Tuesday and Thursday: Maya's buffers leave nothing that ends by 11:30 Denver (17:30 London). Friday: Lisa out. Wednesday: Dan free from 11:00 Denver and Lisa until 11:30 Denver."
+    "note": "Only valid slot: Wed 28 Oct 11:00–11:30 Denver (13:00 New York, 17:00 London). Monday: Lisa busy. Tuesday and Thursday: Sarah's buffers leave nothing that ends by 11:30 Denver (17:30 London). Friday: Lisa out. Wednesday: Dan free from 11:00 Denver and Lisa until 11:30 Denver."
   },
   "S02": {
     "request": "30 min with Kevin before the 14:00 Ridgeway meeting",
     "duration": 30,
     "attendees": [
-      "maya",
+      "sarah",
       "kevin.osei"
     ],
     "window": [
@@ -40,7 +40,7 @@
         "2026-10-26T13:15:00-06:00"
       ]
     ],
-    "note": "Any start from 12:15 to 13:15 Denver, Monday. Kevin busy until 10:30; Maya's buffers around 11:00–12:00 and 14:00."
+    "note": "Any start from 12:15 to 13:15 Denver, Monday. Kevin busy until 10:30; Sarah's buffers around 11:00–12:00 and 14:00."
   },
   "S04": {
     "request": "Move Wed 1:1 with Tom to Thursday, same time",
@@ -50,7 +50,7 @@
     ],
     "duration": 60,
     "attendees": [
-      "maya",
+      "sarah",
       "tom.becker"
     ],
     "window": [
@@ -76,7 +76,7 @@
     "request": "45 min with Dan Okafor and Tom on Thursday afternoon",
     "duration": 45,
     "attendees": [
-      "maya",
+      "sarah",
       "dan.okafor",
       "tom.becker"
     ],
@@ -99,13 +99,13 @@
         "2026-10-29T11:15:00-06:00"
       ]
     ],
-    "note": "No afternoon slot exists. Nearest valid: Thu 11:15–12:00 Denver. Dan busy 12:00–14:00 Denver and ends his day at 15:30 Denver; Maya and Tom in the QBR 13:00–15:00."
+    "note": "No afternoon slot exists. Nearest valid: Thu 11:15–12:00 Denver. Dan busy 12:00–14:00 Denver and ends his day at 15:30 Denver; Sarah and Tom in the QBR 13:00–15:00."
   },
   "S09": {
     "request": "2 hours of focus Thursday morning",
     "duration": 120,
     "attendees": [
-      "maya"
+      "sarah"
     ],
     "window": [
       "2026-10-29T08:00:00-06:00",

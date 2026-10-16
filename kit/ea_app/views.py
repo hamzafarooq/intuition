@@ -1,4 +1,4 @@
-"""Read-only views of a run directory for the UI: approval card details and Maya's world."""
+"""Read-only views of a run directory for the UI: approval card details and Sarah's world."""
 
 import json
 import logging
@@ -106,7 +106,7 @@ def _describe(run_dir: Path, tool: str, args: dict[str, Any]) -> dict[str, Any]:
             rows.append(["Agenda", str(args["description"])[:400]])
         return {"title": "Create this event?", "rows": rows}
     if tool in ("calendar_update", "calendar_cancel"):
-        ev = next((e for e in _load(run_dir, "calendars").get("maya", []) if e.get("id") == args.get("event_id")), None)
+        ev = next((e for e in _load(run_dir, "calendars").get("sarah", []) if e.get("id") == args.get("event_id")), None)
         if ev:
             rows += [["Event", ev.get("title", "")], ["Now", _fmt_range(ev.get("start"), ev.get("end"), tz)]]
         else:
@@ -160,7 +160,7 @@ def _describe(run_dir: Path, tool: str, args: dict[str, Any]) -> dict[str, Any]:
                     if nights > 0:
                         rows.append(["Price", f"${o.get('price_usd', 0) * nights}"])
                 elif kind == "flight":
-                    n = len(args.get("travelers") or ["maya"])
+                    n = len(args.get("travelers") or ["sarah"])
                     rows.append(["Price", f"${o.get('price_usd', 0) * n}"])
                 elif kind == "restaurant":
                     for k in ("date", "time", "party_size"):
@@ -183,7 +183,7 @@ def _describe(run_dir: Path, tool: str, args: dict[str, Any]) -> dict[str, Any]:
     return {"title": f"Allow {tool.replace('_', ' ')}?", "rows": [[k, json.dumps(v)[:200]] for k, v in args.items()]}
 
 
-# ---------------------------------------------------------------- Maya's world
+# ---------------------------------------------------------------- Sarah's world
 
 
 def _event_view(ev: dict[str, Any], tz: str) -> dict[str, Any]:

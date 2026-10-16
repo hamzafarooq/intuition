@@ -20,7 +20,7 @@ from conftest import Run
 from ea_world import approvals
 
 P = "mcp__ea-world__"
-DENY = "Maya hasn't approved this."
+DENY = "Sarah hasn't approved this."
 CREATE_INTERNAL = {"title": "Q4 forecast review", "start": "2026-10-28T11:00:00-06:00",
                    "end": "2026-10-28T11:30:00-06:00", "attendees": ["dan.okafor", "lisa.park"]}
 CREATE_EXTERNAL = {**CREATE_INTERNAL, "attendees": ["dan.okafor", "dan.reyes"]}
@@ -85,7 +85,7 @@ def test_deny_reply_is_flat(make_run) -> None:
 # ================================================================ script mode: the approval policy
 
 
-def test_rule_a_internal_meeting_maya_asked_for(make_run) -> None:
+def test_rule_a_internal_meeting_sarah_asked_for(make_run) -> None:
     run = make_run(approval_mode="script")
     context(run, fill_mode="create")
     out = ask(run, "calendar_create", CREATE_INTERNAL)
@@ -322,7 +322,7 @@ def test_injected_key_stops_the_retry_duplicate(make_run) -> None:
     run.error("calendar_create", **approved)
     again = ask(run, "calendar_create", CREATE_INTERNAL, "toolu_02")["updatedInput"]
     run.call("calendar_create", **again)
-    assert [e["title"] for e in run.load("calendars")["maya"]].count("Q4 forecast review") == 1
+    assert [e["title"] for e in run.load("calendars")["sarah"]].count("Q4 forecast review") == 1
 
 
 # ================================================================ logging

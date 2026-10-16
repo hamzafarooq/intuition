@@ -3,6 +3,12 @@
 Claude Code runs with the overlay as its working directory, so the variant decides which skills,
 agents, hooks and permissions it sees. Hook commands are rewritten to absolute paths so they work
 from inside a run directory, and pointed at the trial's run directory.
+
+`real_sites=True` (the instructor-only real-site search demo, app only; see ea_harness/real_sites.py)
+keeps the `<!-- realsites -->` blocks, points the browser MCP server at the clean browser on its own
+port, writes exact allow rules for the browser tools the demo needs and denies the rest, and installs
+the browser guard in its real-site mode as both a PreToolUse and a PostToolUse hook. Without it the
+`<!-- realsites -->` blocks are stripped and nothing else changes.
 """
 
 import json
@@ -15,9 +21,13 @@ from typing import Any
 
 from ea_world import paths
 
+from . import real_sites as RS
+
 SELFCHECK_RX = re.compile(r"[ \t]*<!-- selfcheck:start -->.*?<!-- selfcheck:end -->[ \t]*\n?", re.S)
 BROWSER_RX = re.compile(r"[ \t]*<!-- browser:start -->.*?<!-- browser:end -->[ \t]*\n?", re.S)
-MARKER_LINE_RX = re.compile(r"^[ \t]*<!-- (?:selfcheck|browser):(?:start|end) -->[ \t]*\n", re.M)
+REALSITES_RX = re.compile(r"[ \t]*<!-- realsites:start -->.*?<!-- realsites:end -->[ \t]*\n?", re.S)
+MARKER_LINE_RX = re.compile(r"^[ \t]*<!-- (?:selfcheck|browser|realsites):(?:start|end) -->[ \t]*\n", re.M)
+BROWSER_MATCHER = "mcp__browser__.*"
 TEAM = ["planner", "challenger", "qa"]
 CHECK_TOOLS = ["check_event", "check_email", "check_brief", "check_deck", "check_booking"]
 
@@ -61,10 +71,25 @@ def hook_command(module: str, *args: str, run_dir: Path) -> str:
     return f"cd {kit} && {py} -m {module} {extra} --run-dir {shlex.quote(str(run_dir))}".strip()
 
 
+def _real_sites_settings(perms: dict[str, Any], hooks: dict[str, Any]) -> None:
+    """Exact allow rules for the demo's browser tools, deny rules for the rest, and the guard on both
+    sides of every browser call (added even when the source settings have no browser hook)."""
+    allow = [r for r in perms.get("allow", []) if not str(r).startswith("mcp__browser__")]
+    perms["allow"] = allow + RS.permission_allow()
+    deny = perms.setdefault("deny", [])
+    deny += [r for r in RS.permission_deny() if r not in deny]
+    for event in ("PreToolUse", "PostToolUse"):
+        entries = [e for e in hooks.get(event, []) or [] if e.get("matcher") != BROWSER_MATCHER]
+        entries.append({"matcher": BROWSER_MATCHER, "hooks": [{"type": "command", "command": "ea_harness.browser_guard"}]})
+        hooks[event] = entries
+
+
 def build_overlay(run_dir: Path, variants: dict[str, str] | None = None, browser: bool = False,
-                  source: Path | None = None) -> Path:
-    """Copy assistant/ to <run_dir>/assistant and apply the variants. Returns the copy's path."""
+                  source: Path | None = None, real_sites: bool = False) -> Path:
+    """Copy assistant/ to <run_dir>/assistant and apply the variants. Returns the copy's path.
+    `real_sites` (app only, never evals) turns on the real-site search demo and implies `browser`."""
     variants = dict(variants or {})
+    browser = browser or real_sites
     run_dir = Path(run_dir).resolve()
     src = Path(source or assistant_source())
     dst = run_dir / "assistant"
@@ -107,14 +132,20 @@ def build_overlay(run_dir: Path, variants: dict[str, str] | None = None, browser
             for f in agents.glob("*.md"):
                 _drop_agent_tools(f, lambda t: t.startswith("mcp__browser__"))
         hooks.pop("PreToolUse", None)
+    if real_sites:
+        _real_sites_settings(perms, hooks)
+    else:
+        _rewrite_text(dst, lambda t: _strip(t, REALSITES_RX))
     # Leftover marker lines (from blocks that were kept) are noise for the model.
     _rewrite_text(dst, lambda t: MARKER_LINE_RX.sub("", t))
 
     # Absolute hook commands that know the trial's run directory.
+    real_flag = ("--real-sites",) if real_sites else ()
     for event, module, args in (
         ("Stop", "ea_harness.stopcheck", ("--hook", "stop")),
         ("SubagentStop", "ea_harness.stopcheck", ("--hook", "subagent")),
-        ("PreToolUse", "ea_harness.browser_guard", ()),
+        ("PreToolUse", "ea_harness.browser_guard", real_flag),
+        ("PostToolUse", "ea_harness.browser_guard", ("--post", *real_flag)),
     ):
         for entry in hooks.get(event, []) or []:
             for h in entry.get("hooks", []):
@@ -127,9 +158,11 @@ def build_overlay(run_dir: Path, variants: dict[str, str] | None = None, browser
     return dst
 
 
-def allowed_tools(browser: bool) -> list[str]:
+def allowed_tools(browser: bool, real_sites: bool = False) -> list[str]:
     """CLI --allowedTools: untrusted folders ignore permissions.allow (decisions log, 2026-10-05)."""
     tools = ["mcp__ea-world__*", "Skill", "Agent"]
+    if real_sites:  # exact names, so no browser call is left for auto mode's classifier to judge
+        return tools + RS.permission_allow()
     if browser:
         tools += [f"mcp__browser__{t}" for t in (
             "new_page", "navigate_page", "select_page", "list_pages", "take_snapshot", "click", "fill",
@@ -137,7 +170,7 @@ def allowed_tools(browser: bool) -> list[str]:
     return tools
 
 
-def mcp_config(run_dir: Path, env: dict[str, str], browser: bool) -> dict[str, Any]:
+def mcp_config(run_dir: Path, env: dict[str, str], browser: bool, real_sites: bool = False) -> dict[str, Any]:
     servers: dict[str, Any] = {
         "ea-world": {
             "type": "stdio",
@@ -147,11 +180,12 @@ def mcp_config(run_dir: Path, env: dict[str, str], browser: bool) -> dict[str, A
             "timeout": 600000,
         }
     }
-    if browser:
+    if browser or real_sites:
+        port = RS.PORT if real_sites else 9222  # the demo drives only the clean, throwaway browser
         servers["browser"] = {
             "type": "stdio",
             "command": "npx",
-            "args": ["-y", CHROME_DEVTOOLS_MCP, "--browserUrl", "http://127.0.0.1:9222"],
+            "args": ["-y", CHROME_DEVTOOLS_MCP, "--browserUrl", f"http://127.0.0.1:{port}"],
             "env": {"PATH": env.get("PATH", ""), "HOME": env.get("HOME", "")},
         }
     return {"mcpServers": servers}

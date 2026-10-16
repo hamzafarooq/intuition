@@ -22,7 +22,7 @@ from .rules import (
 from .rules import EARLIEST, LATEST
 from .timeutil import fmt_local, hhmm, local_iso, parse_dt, parse_window_bound
 
-MAYA_TZ = timezone(timedelta(hours=-6))  # Denver
+SARAH_TZ = timezone(timedelta(hours=-6))  # Denver
 
 
 def _cal() -> dict[str, Any]:
@@ -30,7 +30,7 @@ def _cal() -> dict[str, Any]:
 
 
 def _find_event(cal: dict[str, Any], event_id: str) -> dict[str, Any]:
-    for ev in cal.get("maya", []):
+    for ev in cal.get("sarah", []):
         if ev["id"] == event_id:
             return ev
     raise ToolError(f"Unknown event id: {event_id}")
@@ -72,30 +72,30 @@ def event_view(ev: dict[str, Any]) -> dict[str, Any]:
 def calendar_list(
     start: Annotated[str, Field(description="Window start: ISO 8601 with offset, or a date YYYY-MM-DD")],
     end: Annotated[str, Field(description="Window end: ISO 8601 with offset, or a date YYYY-MM-DD (inclusive)")],
-    person: Annotated[str, Field(description="Contact id; 'maya' (default) gives full events")] = "maya",
+    person: Annotated[str, Field(description="Contact id; 'sarah' (default) gives full events")] = "sarah",
 ) -> dict[str, Any]:
-    """List calendar entries in a window. For Maya: her full events (title, times, attendees with RSVPs,
+    """List calendar entries in a window. For Sarah: her full events (title, times, attendees with RSVPs,
     description, private and tentative flags). For other internal people: busy blocks only. External
     people's calendars aren't visible."""
     tz = core.st().timezone()
     ws = parse_window_bound(start, "start", tz)
     we = parse_window_bound(end, "end", tz, end=True)
     cal = _cal()
-    pid = "maya" if person in ("", "me", "maya") else person
+    pid = "sarah" if person in ("", "me", "sarah") else person
     p = maybe_person(pid)
     if p is None:
         raise ToolError(f"Unknown contact id: {person}. Use contacts_lookup to find people.")
     core.ctx().object_id = p["id"]
-    if p["id"] == "maya":
+    if p["id"] == "sarah":
         events = []
-        for ev in cal.get("maya", []):
+        for ev in cal.get("sarah", []):
             if ev.get("status", "active") != "active":
                 continue
             s, e = parse_dt(ev["start"]), parse_dt(ev["end"])
             if overlaps(s, e, ws, we):
                 events.append(event_view(ev))
         events.sort(key=lambda v: v["start"])
-        return {"person": "maya", "timezone": p["timezone"], "events": events}
+        return {"person": "sarah", "timezone": p["timezone"], "events": events}
     if not p.get("internal"):
         return {"person": p["id"], "busy": [], "note": "External calendars aren't visible; availability is unknown."}
     blocks = []
@@ -111,7 +111,7 @@ def calendar_list(
 
 @tool("calendar")
 def calendar_get(event_id: Annotated[str, Field(description="Event id, e.g. ev-pipeline")]) -> dict[str, Any]:
-    """Get one of Maya's events in full."""
+    """Get one of Sarah's events in full."""
     ev = _find_event(_cal(), event_id)
     core.ctx().object_id = event_id
     return event_view(ev)
@@ -120,7 +120,7 @@ def calendar_get(event_id: Annotated[str, Field(description="Event id, e.g. ev-p
 def _hours_ok(person: dict[str, Any], start: datetime, end: datetime) -> bool:
     """Rule 1 for one attendee."""
     wh = person.get("working_hours") or {"start": "09:00", "end": "17:30"}
-    s, e = start.astimezone(MAYA_TZ), end.astimezone(MAYA_TZ)
+    s, e = start.astimezone(SARAH_TZ), end.astimezone(SARAH_TZ)
     if s.weekday() >= 5 or s.date() != e.date():
         return False
     return s.time() >= max(hhmm(wh["start"]), EARLIEST) and e.time() <= min(hhmm(wh["end"]), LATEST)
@@ -130,7 +130,7 @@ def _slot_ok(cal: dict[str, Any], people: list[dict[str, Any]], start: datetime,
     for p in people:
         if not _hours_ok(p, start, end):
             return False
-        if p["id"] == "maya" or p.get("internal"):
+        if p["id"] == "sarah" or p.get("internal"):
             if ooo_on(cal, p["id"], start, end) or conflicts(cal, p["id"], start, end):
                 return False
     return not buffer_problems(cal, start, end)
@@ -138,7 +138,7 @@ def _slot_ok(cal: dict[str, Any], people: list[dict[str, Any]], start: datetime,
 
 @tool("calendar")
 def calendar_find_free(
-    attendees: Annotated[list[str], Field(description="Contact ids (or emails) of the people to meet; Maya is always included")],
+    attendees: Annotated[list[str], Field(description="Contact ids (or emails) of the people to meet; Sarah is always included")],
     duration_minutes: Annotated[int, Field(description="Meeting length in minutes", ge=5, le=600)],
     window_start: Annotated[str, Field(description="Search from: ISO 8601 with offset, or a date YYYY-MM-DD")],
     window_end: Annotated[str, Field(description="Search until: ISO 8601 with offset, or a date YYYY-MM-DD (inclusive)")],
@@ -148,7 +148,7 @@ def calendar_find_free(
     s = core.st()
     tz = s.timezone()
     people_by_id = contacts_by_id(s.load("contacts"))
-    ids = ["maya"]
+    ids = ["sarah"]
     unknown = []
     for a in attendees or []:
         p = maybe_person(a)
@@ -186,14 +186,14 @@ def calendar_find_free(
             ranges[-1][1] = t
         else:
             ranges.append([t, t])
-    externals = [p for p in people if p["id"] != "maya" and not p.get("internal")]
+    externals = [p for p in people if p["id"] != "sarah" and not p.get("internal")]
     notes = []
     for p in externals:
         notes.append(f"{p['name']} is outside Larkspur: free/busy unknown; only their working hours were applied.")
     if len(found) > len(shown):
         notes.append(f"{len(found)} valid starts in all; `ranges` lists them by first and last start.")
     if not found:
-        notes.append("No slot satisfies every attendee's hours and Maya's rules in this window.")
+        notes.append("No slot satisfies every attendee's hours and Sarah's rules in this window.")
     core.ctx().object_id = None
     return {
         "slots": [
@@ -224,26 +224,26 @@ def calendar_create(
     title: Annotated[str, Field(description="Event title")],
     start: Annotated[str, Field(description="Start, ISO 8601 with offset")],
     end: Annotated[str, Field(description="End, ISO 8601 with offset")],
-    attendees: Annotated[list[str], Field(description="Contact ids (or emails) to invite; Maya is added automatically")],
+    attendees: Annotated[list[str], Field(description="Contact ids (or emails) to invite; Sarah is added automatically")],
     description: Annotated[str, Field(description="Description or agenda (external meetings need an agenda)")] = "",
     idempotency_key: Annotated[str | None, Field(description="Optional key; a repeat call with the same key does nothing new")] = None,
 ) -> dict[str, Any]:
-    """Create an event on Maya's calendar and invite the attendees. Internal attendees answer at once
+    """Create an event on Sarah's calendar and invite the attendees. Internal attendees answer at once
     (accept or decline); the RSVPs are in the result."""
     s_dt, e_dt = _normalize_times(start, end)
     s = core.st()
     tz = s.timezone()
     cal = _cal()
-    ids = ["maya"] + [a for a in _attendee_ids(attendees) if a != "maya"]
+    ids = ["sarah"] + [a for a in _attendee_ids(attendees) if a != "sarah"]
     people = contacts_by_id(s.load("contacts"))
     ev = {
-        "id": next_id("ev-n", [e["id"] for e in cal.get("maya", [])]),
+        "id": next_id("ev-n", [e["id"] for e in cal.get("sarah", [])]),
         "title": title.strip() or "Meeting",
         "start": local_iso(s_dt, tz),
         "end": local_iso(e_dt, tz),
         "attendees": ids,
-        "rsvps": {"maya": "accepted"},
-        "organizer": "maya",
+        "rsvps": {"sarah": "accepted"},
+        "organizer": "sarah",
         "description": description or "",
         "location": "",
         "private": False,
@@ -254,8 +254,8 @@ def calendar_create(
         "recurring": False,
         "created_in_run": True,
     }
-    cal.setdefault("maya", []).append(ev)
-    feedback.rsvps_for_event(cal, ev, [a for a in ids if a != "maya"])
+    cal.setdefault("sarah", []).append(ev)
+    feedback.rsvps_for_event(cal, ev, [a for a in ids if a != "sarah"])
     s.save("calendars", cal)
     c = core.ctx()
     c.object_id = ev["id"]
@@ -274,7 +274,7 @@ def calendar_update(
     remove_attendees: Annotated[list[str] | None, Field(description="Contact ids (or emails) to remove")] = None,
     idempotency_key: Annotated[str | None, Field(description="Optional key; a repeat call with the same key does nothing new")] = None,
 ) -> dict[str, Any]:
-    """Move or change one of Maya's events. Attendees affected by the change answer again."""
+    """Move or change one of Sarah's events. Attendees affected by the change answer again."""
     s = core.st()
     tz = s.timezone()
     cal = _cal()
@@ -311,7 +311,7 @@ def calendar_update(
         changed.append("attendees")
     removed = []
     for a in _attendee_ids(remove_attendees or []):
-        if a in ev["attendees"] and a != "maya":
+        if a in ev["attendees"] and a != "sarah":
             feedback.release_busy(cal, ev, only=[a])  # while they're still an attendee
             ev["attendees"].remove(a)
             ev.get("rsvps", {}).pop(a, None)
@@ -320,7 +320,7 @@ def calendar_update(
         changed.append("attendees")
     people = contacts_by_id(s.load("contacts"))
     ev["external"] = any(a in people and not people[a].get("internal") for a in ev["attendees"])
-    asked = [a for a in ev["attendees"] if a != "maya"] if "start" in changed else added
+    asked = [a for a in ev["attendees"] if a != "sarah"] if "start" in changed else added
     feedback.rsvps_for_event(cal, ev, asked)
     s.save("calendars", cal)
     c = core.ctx()
@@ -335,7 +335,7 @@ def calendar_cancel(
     event_id: Annotated[str, Field(description="The event to cancel")],
     idempotency_key: Annotated[str | None, Field(description="Optional key; a repeat call with the same key does nothing new")] = None,
 ) -> dict[str, Any]:
-    """Cancel one of Maya's events. Attendees are told."""
+    """Cancel one of Sarah's events. Attendees are told."""
     s = core.st()
     cal = _cal()
     ev = _find_event(cal, event_id)

@@ -7,7 +7,7 @@ import sys
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
         prog="ea-world",
-        description="Maya Chen's mock workspace as an MCP server on stdio (normally started by .mcp.json or the harness).",
+        description="Sarah Smith's mock workspace as an MCP server on stdio (normally started by .mcp.json or the harness).",
     )
     sub = parser.add_subparsers(dest="cmd")
     sub.add_parser("serve", help="Run the MCP server on stdio (the default)")

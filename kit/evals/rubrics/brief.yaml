@@ -2,7 +2,7 @@
 id: brief
 version: 1
 description: >
-  A saved, short brief whose facts and numbers come from Maya's sources; conflicting sources called
+  A saved, short brief whose facts and numbers come from Sarah's sources; conflicting sources called
   out; web facts cited; and when the meeting doesn't exist, an honest "couldn't find it" instead of a brief.
 applies_to: [brief, team]
 criteria:
@@ -67,7 +67,7 @@ criteria:
     when: "fill.mode != 'missing'"
     grader: judge
     artifact: brief
-    question: "Would Maya walk into the meeting knowing its purpose, the open issues and what to ask for?"
+    question: "Would Sarah walk into the meeting knowing its purpose, the open issues and what to ask for?"
     pass_example: "Purpose: Q3 review and 2027 renewal (contract ends 31 December 2026). Open: three late shipments, $12,500 credit due on the November invoice, Dan's unanswered 18-month pricing question. Ask: a renewal timeline and a decision on the pricing hold."
     fail_example: "A list of every Ridgeway email in date order, with no open issues or asks drawn out."
 
@@ -98,6 +98,6 @@ criteria:
     check: {fn: checked_before_done}
 
 signals:
-  - "Maya uses the brief without asking follow-up questions it should have answered"
+  - "Sarah uses the brief without asking follow-up questions it should have answered"
   - "No correction like 'that number is wrong' after the meeting"
 scoring: {scored_threshold: 0.75}

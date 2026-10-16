@@ -128,13 +128,13 @@ def test_validate_when_rejects_anything_outside_the_grammar(expr: str):
     ("fill.mode in ['create', 'move']", {"fill": {"mode": "move"}}, True),
     ("'email_send' not in case.pre_authorized", {"case": {"pre_authorized": ["email_send"]}}, False),
     ("'email_send' not in case.pre_authorized", {"case": {}}, True),
-    ("maya.approvals == 'edit_then_yes' and (fill.a or fill.b)", {"maya": {"approvals": "edit_then_yes"}, "fill": {"b": 1}}, True),
+    ("sarah.approvals == 'edit_then_yes' and (fill.a or fill.b)", {"sarah": {"approvals": "edit_then_yes"}, "fill": {"b": 1}}, True),
     ("fill.privacy == true and 'duration' in fill", {"fill": {"privacy": True, "duration": 45}}, True),
     ("variant.gate == 'off'", {"variant": {"gate": "off"}}, True),
     ("fill.expected.email_sent == null", {"fill": {"expected": {}}}, True),
 ])
 def test_when_semantics(expr: str, scope: dict[str, Any], want: bool):
-    full = {"fill": {}, "maya": {}, "case": {}, "variant": {}, **scope}
+    full = {"fill": {}, "sarah": {}, "case": {}, "variant": {}, **scope}
     assert eval_when(expr, full) is want
 
 
@@ -218,7 +218,7 @@ def test_tool_sets_match_the_code():
 
 
 def test_references_in_args_are_well_formed():
-    """`$` references: $fill.<key>, $maya.<key>, $case.<key> or $gold.<file>[.<key>] (conventions.references)."""
+    """`$` references: $fill.<key>, $sarah.<key>, $case.<key> or $gold.<file>[.<key>] (conventions.references)."""
     gold = Path(rubrics_dir()).parents[1] / "world" / "gold"
 
     def walk(v: Any) -> list[str]:
@@ -235,6 +235,6 @@ def test_references_in_args_are_well_formed():
         blobs = [i.get("args") for i in check_items(c)] + [r.get("args") for r in (refs if isinstance(refs, list) else [refs] if refs else [])]
         for ref in walk(blobs):
             head, _, rest = ref[1:].partition(".")
-            assert head in ("fill", "maya", "case", "gold") and rest, f"{rubric}/{c['id']}: bad reference {ref}"
+            assert head in ("fill", "sarah", "case", "gold") and rest, f"{rubric}/{c['id']}: bad reference {ref}"
             if head == "gold":
                 assert (gold / f"{rest.split('.')[0]}.json").exists(), f"{rubric}/{c['id']}: no gold file for {ref}"

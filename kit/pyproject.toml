@@ -18,6 +18,14 @@ dependencies = [
     "pydantic>=2.7",
 ]
 
+[project.optional-dependencies]
+# `ea-eval phoenix` (instructors): OpenTelemetry and OpenInference only; Phoenix itself runs separately
+phoenix = [
+    "opentelemetry-sdk>=1.45",
+    "opentelemetry-exporter-otlp-proto-http>=1.45",
+    "openinference-semantic-conventions>=0.1.41",
+]
+
 [project.scripts]
 ea-world = "ea_world.cli:main"
 ea-eval = "ea_evals.cli:main"
@@ -46,3 +54,7 @@ target-version = "py311"
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
 ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+# The Lesson 1 planted bug: find_free imports hours_problems but never calls it
+"starter_overrides/**" = ["F401", "I001"]

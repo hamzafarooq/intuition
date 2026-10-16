@@ -11,7 +11,7 @@ A static site that walks students through the workshop step by step. It isn't pu
 | `index.html` | What you'll build (the assistant, the evals, the app); what a personal assistant agent is; the Instinct story and its three reported first-week failures, framed as "reported"; the four-hour agenda; "Start with setup" |
 | `setup.html` and `lesson-1.html` … `lesson-5.html`, `wrap.html` | One page per block of [plan/01-lessons.md](../plan/01-lessons.md) |
 | `rubrics.html` | How to write a rubric: the rules from [08-rubrics.md](08-rubrics.md#rubric-file-schema), with a worked example and a bad-to-good rewrite |
-| `cheatsheet.html` | The eval layers (LLM, tools, skills, agent, multi-agent, harness, safety): what to test, what to collect, how to grade, an example failure from Maya's world |
+| `cheatsheet.html` | The eval layers (LLM, tools, skills, agent, multi-agent, harness, safety): what to test, what to collect, how to grade, an example failure from Sarah's world |
 | `glossary.html` | The PRD glossary |
 
 ### Lesson page anatomy

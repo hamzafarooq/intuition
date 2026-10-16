@@ -21,7 +21,7 @@ These documents specify the whole kit in enough detail to build it in one pass w
 | [06-trace.md](06-trace.md) | The trace event schema, the server call log, and the results file |
 | [07-golden-dataset.md](07-golden-dataset.md) | The case schema and all 63 cases, slices and the workshop subset |
 | [08-rubrics.md](08-rubrics.md) | Rubric schema, the check-function library, every rubric's criteria, the judge, scoring |
-| [09-runner-and-report.md](09-runner-and-report.md) | Runner CLI and flow, simulated Maya, approvals in evals, variants, metrics, spider charts, the report, CI |
+| [09-runner-and-report.md](09-runner-and-report.md) | Runner CLI and flow, simulated Sarah, approvals in evals, variants, metrics, spider charts, the report, CI |
 | [10-component-suites.md](10-component-suites.md) | Date reasoning, tool-use and skill-trigger suites |
 | [11-guide-site.md](11-guide-site.md) | Guide site structure, content format, components, lesson content, the starter repo |
 | [12-acceptance.md](12-acceptance.md) | Tests, fixture traces, acceptance checks mapped to PRD requirement IDs, the dry run |
@@ -42,7 +42,7 @@ These documents specify the whole kit in enough detail to build it in one pass w
 | 6 | Assistant files in `assistant/`: CLAUDE.md, skills, sub-agents, settings, hooks; the builder's CLAUDE.md at the kit root | 04 | Claude Code started in `assistant/` lists the skills and agents and can't use Read or Bash; the stop hook blocks a "done" without checks (manual check) |
 | 7 | Approval tool and stop-check hook | 03, 05 | `tests/test_approval_tool.py` and `test_stopcheck.py` pass |
 | 8 | Claude Code headless adapter | 05 | `tests/test_claude_adapter_offline.py` passes on recorded stream-json; one golden case runs end to end through `claude -p` and writes a valid trace |
-| 9 | Runner, judge, simulated Maya, metrics | 09 | `tests/test_runner_offline.py` passes; fixture traces grade as expected |
+| 9 | Runner, judge, simulated Sarah, metrics | 09 | `tests/test_runner_offline.py` passes; fixture traces grade as expected |
 | 10 | Report with spider charts | 09 | Report renders from fixture results; charts follow the rules |
 | 11 | Component suites | 10 | Each suite runs offline with fixtures and live with one item |
 | 12 | The Intuition app | 14 | `tests/test_app.py` passes; visual check at desktop and phone widths |

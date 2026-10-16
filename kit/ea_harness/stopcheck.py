@@ -81,7 +81,7 @@ def evaluate(run_dir: Path, since_seq: int = 0, final_text: str | None = None) -
         if m["tool"] == "email_send":
             return (
                 f"You sent draft {m['object_id']} with email_send without running check_email on it first. "
-                "Run check_email now, read the result, tell Maya about any problem, then reply."
+                "Run check_email now, read the result, tell Sarah about any problem, then reply."
             )
         return (
             f"You changed {m['object_id']} with {m['tool']} but haven't run {m['check']} on it. "

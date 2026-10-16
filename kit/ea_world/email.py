@@ -59,7 +59,7 @@ def email_search(
     unread_only: Annotated[bool, Field(description="Only unread emails (inbox only)")] = False,
     since: Annotated[str | None, Field(description="Only messages at or after this ISO 8601 time")] = None,
 ) -> dict[str, Any]:
-    """Search Maya's email. Returns id, time, sender, subject and the first 160 characters, newest first."""
+    """Search Sarah's email. Returns id, time, sender, subject and the first 160 characters, newest first."""
     if folder == "inbox":
         items, when = _inbox(), "received_at"
     elif folder == "sent":
@@ -99,7 +99,7 @@ def _find_any(email_id: str) -> tuple[str, dict[str, Any]]:
 
 @tool("email")
 def email_read(email_id: Annotated[str, Field(description="Email id from email_search, e.g. em-04")]) -> dict[str, Any]:
-    """Read one email in full, with the earlier messages in its thread and whether Maya has replied."""
+    """Read one email in full, with the earlier messages in its thread and whether Sarah has replied."""
     s = core.st()
     folder, m = _find_any(email_id)
     core.ctx().object_id = email_id
@@ -111,7 +111,7 @@ def email_read(email_id: Annotated[str, Field(description="Email id from email_s
         s.save("inbox", inbox)
     thread_id = m.get("thread_id")
     thread = []
-    maya_replied = False
+    sarah_replied = False
     if thread_id:
         received = m.get("received_at") or m.get("sent_at")
         for other in _inbox() + _sent_all():
@@ -121,7 +121,7 @@ def email_read(email_id: Annotated[str, Field(description="Email id from email_s
             thread.append({"id": other["id"], "from": other.get("from", ""), "at": when, "subject": other.get("subject", ""), "snippet": re.sub(r"\s+", " ", other.get("body", ""))[:160]})
         for sent in _sent_all():
             if sent.get("thread_id") == thread_id and received and sent.get("sent_at") and parse_dt(sent["sent_at"]) > parse_dt(received):
-                maya_replied = True
+                sarah_replied = True
         thread.sort(key=lambda t: t["at"] or "")
     return {
         "id": m["id"],
@@ -134,7 +134,7 @@ def email_read(email_id: Annotated[str, Field(description="Email id from email_s
         "subject": m.get("subject", ""),
         "body": m.get("body", ""),
         "thread": thread,
-        "maya_replied": maya_replied if folder == "inbox" else None,
+        "sarah_replied": sarah_replied if folder == "inbox" else None,
     }
 
 
@@ -164,7 +164,7 @@ def email_draft(
     cc: Annotated[list[str], Field(description="Cc recipients: addresses or contact ids")] = [],  # noqa: B006
     reply_to_id: Annotated[str | None, Field(description="The email this replies to, to keep the thread")] = None,
 ) -> dict[str, Any]:
-    """Save a draft email. Nothing is sent; use email_send with the draft id after Maya says yes."""
+    """Save a draft email. Nothing is sent; use email_send with the draft id after Sarah says yes."""
     s = core.st()
     to_addrs = _addresses(to, "to")
     if not to_addrs:
@@ -211,7 +211,7 @@ def email_update_draft(
     body: Annotated[str | None, Field(description="New body")] = None,
     cc: Annotated[list[str] | None, Field(description="New cc list")] = None,
 ) -> dict[str, Any]:
-    """Change a saved draft (for example after Maya edits it)."""
+    """Change a saved draft (for example after Sarah edits it)."""
     s = core.st()
     drafts = _drafts()
     d = _find_draft(drafts, draft_id)
@@ -238,7 +238,7 @@ def email_send(
     draft_id: Annotated[str, Field(description="The draft to send")],
     idempotency_key: Annotated[str | None, Field(description="Optional key; a repeat call with the same key does nothing new")] = None,
 ) -> dict[str, Any]:
-    """Send a saved draft. Only after Maya has explicitly said yes to this exact email."""
+    """Send a saved draft. Only after Sarah has explicitly said yes to this exact email."""
     s = core.st()
     drafts = _drafts()
     d = _find_draft(drafts, draft_id)
@@ -249,7 +249,7 @@ def email_send(
     msg = {
         "id": next_id("msg-", [m["id"] for m in outbox.get("sent", [])]),
         "draft_id": draft_id,
-        "from": s.load("persona").get("email", "maya.chen@larkspur.example"),
+        "from": s.load("persona").get("email", "sarah.smith@larkspur.example"),
         "to": d["to"],
         "cc": d.get("cc", []),
         "subject": d["subject"],

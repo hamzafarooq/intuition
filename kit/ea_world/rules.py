@@ -2,7 +2,7 @@
 
 Rule 1: inside every attendee's working hours in their own time zone, Monday to Friday, and never
 before 09:00 or after 17:30 local time for anyone.
-Rule 2: at least 15 minutes between any two of Maya's meetings.
+Rule 2: at least 15 minutes between any two of Sarah's meetings.
 """
 
 from dataclasses import dataclass
@@ -61,16 +61,16 @@ def event_blocks(ev: dict[str, Any]) -> list[tuple[datetime, datetime]]:
     return [(parse_dt(ev["start"]), parse_dt(ev["end"]))]
 
 
-def maya_events(cal: dict[str, Any], exclude: set[str] | None = None) -> list[dict[str, Any]]:
+def sarah_events(cal: dict[str, Any], exclude: set[str] | None = None) -> list[dict[str, Any]]:
     exclude = exclude or set()
-    return [e for e in cal.get("maya", []) if e.get("status", "active") == "active" and e["id"] not in exclude]
+    return [e for e in cal.get("sarah", []) if e.get("status", "active") == "active" and e["id"] not in exclude]
 
 
 def is_own_block(block: dict[str, Any], person: str, ev: dict[str, Any]) -> bool:
-    """Whether a busy block in `person`'s calendar is the entry for Maya's event `ev` itself.
+    """Whether a busy block in `person`'s calendar is the entry for Sarah's event `ev` itself.
 
     Blocks written during a run carry the event's id. Seed calendars list the meetings people share
-    with Maya as plain blocks, so a plain block counts only for an unmoved seed event that person
+    with Sarah as plain blocks, so a plain block counts only for an unmoved seed event that person
     attends, at exactly its time. A plain block at the same time as a new or moved event is a real
     conflict, not the event's own entry.
     """
@@ -86,14 +86,14 @@ def is_own_block(block: dict[str, Any], person: str, ev: dict[str, Any]) -> bool
 def busy_blocks(
     cal: dict[str, Any], person: str, exclude_event: dict[str, Any] | None = None
 ) -> list[dict[str, Any]]:
-    """Busy blocks for a person. Maya's come from her events; others' from the `busy` map.
+    """Busy blocks for a person. Sarah's come from her events; others' from the `busy` map.
 
     `exclude_event` drops the blocks that represent that event itself (so an event never conflicts
     with its own entry in an attendee's calendar).
     """
-    if person == "maya":
+    if person == "sarah":
         out = []
-        for ev in maya_events(cal, {exclude_event["id"]} if exclude_event else None):
+        for ev in sarah_events(cal, {exclude_event["id"]} if exclude_event else None):
             for s, e in event_blocks(ev):
                 out.append({"start": s, "end": e, "event_id": ev["id"], "ooo": False})
         return out
@@ -173,9 +173,9 @@ def conflicts(
 def buffer_problems(
     cal: dict[str, Any], start: datetime, end: datetime, exclude_event: dict[str, Any] | None = None
 ) -> list[Problem]:
-    """Rule 2: 15 minutes between Maya's meetings (overlaps are reported separately)."""
+    """Rule 2: 15 minutes between Sarah's meetings (overlaps are reported separately)."""
     probs = []
-    for b in busy_blocks(cal, "maya", exclude_event):
+    for b in busy_blocks(cal, "sarah", exclude_event):
         if overlaps(start, end, b["start"], b["end"]):
             continue
         if overlaps(start - BUFFER, end + BUFFER, b["start"], b["end"]):
@@ -187,8 +187,8 @@ def overlap_problems(
     cal: dict[str, Any], start: datetime, end: datetime, exclude_event: dict[str, Any] | None = None
 ) -> list[Problem]:
     return [
-        Problem("overlap", f"Overlaps Maya's event {b['event_id']}", event_id=b["event_id"])
-        for b in busy_blocks(cal, "maya", exclude_event)
+        Problem("overlap", f"Overlaps Sarah's event {b['event_id']}", event_id=b["event_id"])
+        for b in busy_blocks(cal, "sarah", exclude_event)
         if overlaps(start, end, b["start"], b["end"])
     ]
 
@@ -201,19 +201,19 @@ def slot_ok(
     end: datetime,
     exclude_event: dict[str, Any] | None = None,
 ) -> bool:
-    """True when the slot satisfies rules 1–2 for Maya and every attendee.
+    """True when the slot satisfies rules 1–2 for Sarah and every attendee.
 
     Internal attendees' calendars are checked; external attendees only by their working hours.
     """
     people = contacts_by_id(contacts)
-    ids = ["maya"] + [a for a in attendees if a != "maya"]
+    ids = ["sarah"] + [a for a in attendees if a != "sarah"]
     for pid in ids:
         p = people.get(pid)
         if p is None:
             return False
         if hours_problems(p, start, end):
             return False
-        if p.get("internal", False) or pid == "maya":
+        if p.get("internal", False) or pid == "sarah":
             if ooo_on(cal, pid, start, end) or conflicts(cal, pid, start, end, exclude_event):
                 return False
     return not buffer_problems(cal, start, end, exclude_event)

@@ -1,7 +1,7 @@
 # Intuition workshop kit. Run `make help` for the list.
 UV ?= uv
 
-.PHONY: help setup test lint doctor smoke start app browser sites report site starter clean-runs
+.PHONY: help setup test lint doctor smoke start app browser sites report site starter clean-runs demo-real
 
 help:
 	@echo "make setup    install dependencies; create .env from .env.example"
@@ -10,6 +10,7 @@ help:
 	@echo "make test     offline tests (no keys needed)"
 	@echo "make smoke    one golden case, one trial, through Claude Code"
 	@echo "make browser  open Brave/Chrome with remote debugging for browser bookings"
+	@echo "make demo-real  instructor only: the app with real-site search (quotes only, clean throwaway browser)"
 	@echo "make site     build the guide into site/dist/"
 	@echo "make starter  build ../starter/ from this kit"
 
@@ -33,6 +34,11 @@ start:
 	$(UV) run python -m ea_evals.doctor --quick
 	@[ "$$EA_BROWSER" = "off" ] || $(UV) run python tools/browser.py || true
 	$(UV) run ea-start
+
+# Instructor-only real-site search demo (ea_harness/real_sites.py). Off for students and in evals.
+demo-real:
+	$(UV) run python -m ea_evals.doctor --quick
+	EA_REAL_SITES=on $(UV) run ea-start --real-sites
 
 app:
 	$(UV) run ea-app --open

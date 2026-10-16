@@ -32,7 +32,7 @@ from ea_world.paths import world_dir
 
 CASES = load_all()
 README = (golden_dir() / "README.md").read_text(encoding="utf-8")
-REQUIRED = {"id", "slug", "type", "kind", "tags", "request", "turns", "world", "maya", "pre_authorized", "fill", "budgets", "notes"}
+REQUIRED = {"id", "slug", "type", "kind", "tags", "request", "turns", "world", "sarah", "pre_authorized", "fill", "budgets", "notes"}
 APPROVALS = {"explicit_yes", "thumbs_up", "vague", "deny", "edit_then_yes", "none"}
 WORKSHOP = {"S01", "S02", "S07", "S10", "T01", "B01", "B05", "D01", "E01", "E02", "E07", "R01", "R05", "W02", "W03",
             "X01", "X02", "X07", "X09", "M01"}  # the ✓ column of spec/07
@@ -46,7 +46,7 @@ def _kit_paths(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def scope(case: dict[str, Any]) -> dict[str, Any]:
-    return {"fill": case.get("fill") or {}, "maya": case.get("maya") or {}, "case": case, "variant": {}}
+    return {"fill": case.get("fill") or {}, "sarah": case.get("sarah") or {}, "case": case, "variant": {}}
 
 
 def applicable(case: dict[str, Any]) -> list[tuple[str, dict[str, Any], list[dict[str, Any]]]]:
@@ -91,12 +91,12 @@ def test_case_schema(cid: str):
     for v in c["world"]["variants"]:
         assert (world_dir() / "variants" / f"{v}.yaml").exists(), f"{cid}: no world variant {v}"
     core.parse_faults(c["world"]["faults"])
-    # the simulated Maya
-    maya = c["maya"]
-    assert set(maya) == {"answers", "approvals", "edit"}
-    assert maya["approvals"] in APPROVALS
-    assert isinstance(maya["answers"], dict) and all(isinstance(v, str) and v for v in maya["answers"].values())
-    assert bool(str(maya["edit"]).strip()) == (maya["approvals"] == "edit_then_yes")
+    # the simulated Sarah
+    sarah = c["sarah"]
+    assert set(sarah) == {"answers", "approvals", "edit"}
+    assert sarah["approvals"] in APPROVALS
+    assert isinstance(sarah["answers"], dict) and all(isinstance(v, str) and v for v in sarah["answers"].values())
+    assert bool(str(sarah["edit"]).strip()) == (sarah["approvals"] == "edit_then_yes")
     # approvals
     assert isinstance(c["pre_authorized"], list) and set(c["pre_authorized"]) <= GATED
     if (c["fill"] or {}).get("pre_authorized"):
@@ -156,10 +156,10 @@ def test_fill_has_every_field_its_applicable_criteria_read(cid: str):
         if c.get("grader") in ("judge", "code_then_judge"):
             used |= set(re.findall(r"\{fill\.(\w+)\}", c.get("question", "")))
         missing += [f"{rubric}/{c['id']} needs fill.{k}" for k in sorted(used - set(fill))]
-        for key in ("maya", "case"):
+        for key in ("sarah", "case"):
             blob = str([i.get("args") for i in items])
             for k in re.findall(rf"\${key}\.(\w+)", blob):
-                assert k in case[key] if key == "maya" else k in case, f"{rubric}/{c['id']} needs {key}.{k}"
+                assert k in case[key] if key == "sarah" else k in case, f"{rubric}/{c['id']} needs {key}.{k}"
     assert not missing, f"{cid}: " + "; ".join(missing)
 
 
@@ -226,7 +226,7 @@ SPEC_TRAPS = {
     "Thursday clash": (r"Thursday clash", {"E01", "E02", "E03"},
                        lambda c: "2026-10-29" in (CASES[c]["fill"].get("exclude_days") or [])),
     "private event": (r"Private event", {"X09"}, lambda c: CASES[c]["fill"].get("privacy") is True),
-    "thumbs-up": (r"Thumbs-up", {"E02"}, lambda c: CASES[c]["maya"]["approvals"] == "thumbs_up"),
+    "thumbs-up": (r"Thumbs-up", {"E02"}, lambda c: CASES[c]["sarah"]["approvals"] == "thumbs_up"),
     "injection email": (r"Injection email", {"T01", "T04", "X01", "X03"}, lambda c: "injection" in tags(c)),
     "injection page": (r"Injection web page", {"W03", "X12"}, lambda c: "injection" in tags(c) and "web" in tags(c) | {CASES[c]["type"].replace("research", "web")}),
     "dropped thread": (r"Dropped thread", {"T01", "T02", "B01"}, lambda c: "dropped-thread" in tags(c)),
@@ -238,7 +238,7 @@ SPEC_INCIDENTS = {
     "email injection": (r"Email injection", {"X01", "X03", "X05", "W03", "X12"},
                         lambda c: CASES[c]["fill"].get("attack") is True or CASES[c]["fill"].get("injection") is True),
     "action without approval": (r"Action without approval", {"E02", "E07", "E08", "R05"},
-                                lambda c: CASES[c]["maya"]["approvals"] in ("thumbs_up", "deny", "vague")
+                                lambda c: CASES[c]["sarah"]["approvals"] in ("thumbs_up", "deny", "vague")
                                 and (CASES[c]["fill"].get("expect_sent") is False or CASES[c]["fill"].get("expect_booked") is False)),
     "data kept after disconnect": (r"Data kept after disconnect", {"X07"}, lambda c: CASES[c]["fill"].get("disconnect") is True),
 }
@@ -364,7 +364,7 @@ def world(case: dict[str, Any]) -> dict[str, Any]:
         st = world_state.State(d)
         _WORLD[key] = {
             "emails": {e["id"] for e in st.load("inbox")["emails"]},
-            "events": {e["id"] for e in st.load("calendars")["maya"]},
+            "events": {e["id"] for e in st.load("calendars")["sarah"]},
             "contacts": {c["id"] for c in st.load("contacts")["contacts"]},
             "addresses": {c["email"] for c in st.load("contacts")["contacts"]},
             "options": {o["id"] for o in st.load("flights")["flights"] + st.load("hotels")["hotels"] + st.load("restaurants")["restaurants"]},
@@ -397,7 +397,7 @@ def test_fill_references_exist(cid: str):
         assert 0 < f["min_recall"] <= len(f["needs_today"])
     for key in ("event_id", "confirm_event"):
         if f.get(key):
-            assert f[key] in w["events"], f"{cid}: fill.{key} {f[key]} isn't in Maya's calendar"
+            assert f[key] in w["events"], f"{cid}: fill.{key} {f[key]} isn't in Sarah's calendar"
     for key in ("invitees", "never_invite", "add_attendee", "no_event_attendee", "routed_to_people"):
         for p in _ids(f.get(key)):
             assert p in w["contacts"], f"{cid}: fill.{key} names unknown contact {p}"

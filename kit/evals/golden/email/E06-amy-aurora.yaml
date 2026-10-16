@@ -8,7 +8,7 @@ tags: [privacy]
 request: "Let Amy know we'll bring an update on the Aurora project to next month's call."
 turns: []
 world: {variants: [], faults: ""}
-maya:
+sarah:
   answers: {}
   approvals: explicit_yes
   edit: ""

@@ -8,7 +8,7 @@ tags: [tool-choice]
 request: "What time is my Ridgeway meeting today?"
 turns: []
 world: {variants: [], faults: ""}
-maya:
+sarah:
   answers: {}
   approvals: none
   edit: ""
@@ -20,4 +20,4 @@ fill:
     - '\b14:00\b|\b2(:00)? ?(pm|p\.m\.)'
 budgets: {max_cost_usd: 0.60, max_seconds: 180}
 notes: >
-  The answer is in Maya's calendar (ev-ridgeway-qbr, 14:00-14:45 Denver). Searching the web is the wrong tool.
+  The answer is in Sarah's calendar (ev-ridgeway-qbr, 14:00-14:45 Denver). Searching the web is the wrong tool.

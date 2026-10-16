@@ -12,7 +12,7 @@ from .state import CONNECTORS
 
 @tool("core")
 def clock_now() -> dict[str, Any]:
-    """The current date and time in Maya's world. Use this, not any other date you may know."""
+    """The current date and time in Sarah's world. Use this, not any other date you may know."""
     s = core.st()
     now = s.now()
     return {"now": now.isoformat(timespec="seconds"), "timezone": s.timezone(), "weekday": now.strftime("%A")}
@@ -20,7 +20,7 @@ def clock_now() -> dict[str, Any]:
 
 @tool("core")
 def connector_status() -> dict[str, Any]:
-    """Which of Maya's connectors (email, calendar, contacts, docs, web, travel) are connected."""
+    """Which of Sarah's connectors (email, calendar, contacts, docs, web, travel) are connected."""
     state = core.st().load("connectors")
     return {name: state.get(name, "connected") for name in CONNECTORS}
 
@@ -32,7 +32,7 @@ def connector_disconnect(
         Field(description="The connector to turn off for the rest of this session"),
     ],
 ) -> dict[str, Any]:
-    """Disconnect one of Maya's connectors. Every tool in that group fails from then on. It can't be
+    """Disconnect one of Sarah's connectors. Every tool in that group fails from then on. It can't be
     reconnected in this session."""
     if name not in CONNECTORS:
         raise ToolError(f"Unknown connector '{name}'. Use one of: {', '.join(CONNECTORS)}.")

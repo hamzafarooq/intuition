@@ -82,8 +82,8 @@ def world_changes(tdir: Path) -> dict[str, Any]:
     if not (tdir / "initial_state").exists():
         return {}
     a, b = State(tdir, "initial_state"), State(tdir, "final_state" if (tdir / "final_state").exists() else "state")
-    ev_a = {e["id"]: e for e in a.load("calendars").get("maya", [])}
-    ev_b = {e["id"]: e for e in b.load("calendars").get("maya", [])}
+    ev_a = {e["id"]: e for e in a.load("calendars").get("sarah", [])}
+    ev_b = {e["id"]: e for e in b.load("calendars").get("sarah", [])}
     events = []
     for eid, e in ev_b.items():
         if eid not in ev_a:

@@ -13,7 +13,7 @@
   </script>
 </head>
 <body data-view="landing">
-  <svg class="tile-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs><linearGradient id="tg-email" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#62A8F8"/><stop offset="1" stop-color="#1E5FD8"/></linearGradient><linearGradient id="tg-contacts" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#46C389"/><stop offset="1" stop-color="#178257"/></linearGradient><linearGradient id="tg-docs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFC94A"/><stop offset="1" stop-color="#EC8E0C"/></linearGradient><linearGradient id="tg-web" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9D7CF6"/><stop offset="1" stop-color="#5636D2"/></linearGradient><linearGradient id="tg-travel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFA35C"/><stop offset="1" stop-color="#EE5F1A"/></linearGradient><linearGradient id="tg-check" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4DB79A"/><stop offset="1" stop-color="#1F6E5A"/></linearGradient><linearGradient id="tg-calhead" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF7466"/><stop offset="1" stop-color="#E2463B"/></linearGradient><linearGradient id="tg-calbody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#EFEBE5"/></linearGradient><linearGradient id="tg-gloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".34"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="tile-sq" clipPathUnits="userSpaceOnUse"><path d="M20 .6C31.5.6 35.6.6 37.5 2.5S39.4 8.5 39.4 20s0 15.6-1.9 17.5-6 1.9-17.5 1.9-15.6 0-17.5-1.9S.6 31.5.6 20s0-15.6 1.9-17.5S8.5.6 20 .6z"/></clipPath></defs></svg>
+  <svg class="tile-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs><linearGradient id="tg-email" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4DB8FF"/><stop offset="1" stop-color="#0A6CF0"/></linearGradient><linearGradient id="tg-contacts" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B6BCC6"/><stop offset="1" stop-color="#767D89"/></linearGradient><linearGradient id="tg-docs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFC544"/><stop offset="1" stop-color="#FF8A00"/></linearGradient><linearGradient id="tg-web" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8F86FF"/><stop offset="1" stop-color="#4F3BDB"/></linearGradient><linearGradient id="tg-travel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#45D3E6"/><stop offset="1" stop-color="#0A8DC2"/></linearGradient><linearGradient id="tg-check" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5FDB7C"/><stop offset="1" stop-color="#1F9D4A"/></linearGradient><linearGradient id="tg-calbody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#F2F2F4"/></linearGradient><linearGradient id="tg-rim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".7"/><stop offset=".32" stop-color="#fff" stop-opacity="0"/><stop offset=".78" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".22"/></linearGradient><filter id="tile-glyph" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy=".8" stdDeviation=".8" flood-color="#000" flood-opacity=".2"/></filter><clipPath id="tile-sq" clipPathUnits="userSpaceOnUse"><path d="M20 .6C31.5.6 35.6.6 37.5 2.5S39.4 8.5 39.4 20s0 15.6-1.9 17.5-6 1.9-17.5 1.9-15.6 0-17.5-1.9S.6 31.5.6 20s0-15.6 1.9-17.5S8.5.6 20 .6z"/></clipPath></defs></svg>
   <a class="skip" href="#main">Skip to content</a>
 
   <header class="nav" id="nav">
@@ -25,6 +25,7 @@
       <span class="run-pill" id="run-pill" title="This session's run directory"></span>
     </div>
     <div class="nav-right">
+      <span class="chip chip-partial real-badge" id="real-badge" role="status" hidden title="The browser may search real travel sites for live quotes, in a clean throwaway browser. Nothing is booked there; evals never use it.">Real-site search (instructor demo)</span>
       <button class="icon-btn" id="theme-btn" type="button" aria-label="Theme: match the system" title="Theme">
         <svg class="icon" aria-hidden="true"><use href="/static/icons.svg#i-auto"/></svg>
       </button>
@@ -45,7 +46,7 @@
             <a class="btn btn-primary btn-pill" href="#setup" id="hero-cta" data-action="get-started">Get started</a>
             <button class="btn btn-quiet btn-pill" type="button" id="hero-resume" hidden>Back to your messages</button>
           </div>
-          <p class="hero-note">Built for a workshop. Maya, her company and her week are fictional.</p>
+          <p class="hero-note">Built for a workshop. Sarah, her company and her week are fictional.</p>
         </div>
         <div class="hero-visual" aria-hidden="true" id="hero-visual">
           <div class="hero-glow"></div>
@@ -128,9 +129,9 @@
           <div class="card persona-card">
             <p class="card-kicker">You are</p>
             <div class="persona">
-              <span class="initials" id="persona-initials">MC</span>
+              <span class="initials"><span id="persona-initials">SS</span><img class="avatar-photo" src="/static/sarah.jpg" alt="" width="64" height="64"></span>
               <div>
-                <div class="persona-name" id="persona-name">Maya Chen</div>
+                <div class="persona-name" id="persona-name">Sarah Smith</div>
                 <div class="persona-role" id="persona-role">Regional Sales Director at Larkspur Supply</div>
                 <div class="persona-meta" id="persona-meta"></div>
               </div>
@@ -168,6 +169,7 @@
               <div class="opt-label"><span>Book through the browser</span><small id="browser-note">Opens Brave so you can watch it fill in the booking sites.</small></div>
               <label class="switch"><input type="checkbox" role="switch" id="opt-browser"><span class="track" aria-hidden="true"></span><span class="sr">Book through the browser</span></label>
             </div>
+            <div class="notice real-note" id="real-note" hidden></div>
             <div class="opt">
               <div class="opt-label"><span>Auto-approve after I say yes</span><small>When your latest message is a clear yes ("yes", "go ahead", "send it", "book it"), the actions you agreed to go through. Off: every action waits for a tap.</small></div>
               <label class="switch"><input type="checkbox" role="switch" id="opt-auto" checked><span class="track" aria-hidden="true"></span><span class="sr">Auto-approve after I say yes</span></label>
@@ -206,7 +208,7 @@
         </div>
         <div class="tabs" role="tablist" aria-label="Behind the scenes">
           <button role="tab" id="tab-trace" aria-controls="panel-trace" aria-selected="true" type="button">Live trace <span class="count" id="trace-count">0</span></button>
-          <button role="tab" id="tab-world" aria-controls="panel-world" aria-selected="false" type="button">Maya's world <span class="count dot" id="world-dot" hidden></span></button>
+          <button role="tab" id="tab-world" aria-controls="panel-world" aria-selected="false" type="button">Sarah's world <span class="count dot" id="world-dot" hidden></span></button>
         </div>
         <div class="panel" role="tabpanel" id="panel-trace" aria-labelledby="tab-trace">
           <div class="filters" id="filters" role="group" aria-label="Filter the trace"></div>
@@ -277,7 +279,7 @@
                 <div class="day-chip">Today</div>
                 <div class="chat-empty" id="chat-empty">
                   <div class="avatar xl" aria-hidden="true"><svg class="mark"><use href="/static/icons.svg#i-mark"/></svg></div>
-                  <p class="hello">Hi Maya. I can see <span id="hello-connected">your accounts</span>. What can I take off your plate?</p>
+                  <p class="hello">Hi Sarah. I can see <span id="hello-connected">your accounts</span>. What can I take off your plate?</p>
                 </div>
                 <div id="chat-log"></div>
                 <div id="chat-outbox"></div>

@@ -25,9 +25,9 @@
   ],
   "contacts": [
     {
-      "id": "maya",
-      "name": "Maya Chen",
-      "email": "maya.chen@larkspur.example",
+      "id": "sarah",
+      "name": "Sarah Smith",
+      "email": "sarah.smith@larkspur.example",
       "company": "Larkspur Supply",
       "role": "Regional Sales Director, West",
       "timezone": "America/Denver",

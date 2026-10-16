@@ -2,7 +2,7 @@
 
     GET  /phone/{id}                              the phone alone, for its own window (same session, same stream)
     GET  /api/config                              app name, harnesses, Claude Code status, search, browser, voice
-    POST /api/sessions                            {harness, search_mode, auto_approve, model, browser, connectors, variants?, world?}
+    POST /api/sessions                            {harness, search_mode, auto_approve, model, browser, connectors, variants?, world?, real_sites?}
     GET  /api/sessions/{id}                       session info
     DELETE /api/sessions/{id}                     close a session
     GET  /api/sessions/{id}/events                SSE: replay, then live events (?once=1, ?until_idle=1, ?after=<id>)
@@ -10,7 +10,7 @@
     POST /api/sessions/{id}/approvals/{call_id}   {decision: allow|deny} -> 204
     POST /api/sessions/{id}/connectors/{name}     {connected: false} -> {status}
     POST /api/sessions/{id}/options               {auto_approve} -> session info
-    GET  /api/sessions/{id}/world                 Maya's world
+    GET  /api/sessions/{id}/world                 Sarah's world
     GET  /api/sessions/{id}/outputs/{path}        briefs, decks and browser screenshots
     POST /api/sessions/{id}/reset                 new run directory and harness
 """
@@ -42,6 +42,7 @@ from starlette.responses import (
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
+from ea_harness import real_sites as RS
 from ea_world import paths, state
 from ea_world.state import CONNECTORS
 
@@ -76,9 +77,19 @@ def _error(status: int, message: str) -> JSONResponse:
     return JSONResponse({"error": message}, status_code=status)
 
 
+class _RevalidatedStatic(StaticFiles):
+    """Static files the browser must check before reusing. index.html is never cached, so without this a
+    browser can pair a fresh page with a stale app.js or icons.svg after an update."""
+
+    def file_response(self, *args: Any, **kwargs: Any) -> Response:
+        response = super().file_response(*args, **kwargs)
+        response.headers["Cache-Control"] = "no-cache"
+        return response
+
+
 def _persona() -> dict[str, Any]:
     p = state.read_json(paths.world_dir() / "persona.json", {}) or {}
-    name = p.get("name", "Maya Chen")
+    name = p.get("name", "Sarah Smith")
     return {
         "name": name,
         "initials": "".join(w[0] for w in name.split()[:2]).upper(),
@@ -98,11 +109,13 @@ def create_app(
     browser: dict[str, Any] | Callable[[], dict[str, Any]] | None = None,
     app_name: str | None = None,
     sites_port: int | None = None,
+    real_sites: bool = False,
 ) -> Starlette:
     """Build the app. Tests pass a `harness_factory` (and `claude=`/`browser=` dicts to skip the probes).
     With `sites_port`, the mock booking sites (`ea_sites`) also run on 127.0.0.1:<port> in a background
     thread, unless that port is already taken (another copy is running); they read runs/CURRENT, which
-    every app session writes."""
+    every app session writes. `real_sites` (the instructor's `--real-sites` / `EA_REAL_SITES=on`) turns on
+    the real-site search demo for Claude Code sessions with the browser on (ea_harness/real_sites.py)."""
     name = app_name or os.environ.get("APP_NAME", "").strip() or "Intuition"
     manager = SessionManager(harness_factory)
     fake_enabled = fake or harness_factory is not None
@@ -191,6 +204,8 @@ def create_app(
             "extra_suggestions": FAKE_EXTRA_SUGGESTIONS if fake_enabled else [],
             "fake": fake,
             "sites": dict(sites),
+            "real_sites": {"enabled": real_sites, **RS.summary(),
+                           "browser_ready": real_sites and checks.debug_port_answers(RS.PORT)},
         })
 
     # ------------------------------------------------------------ sessions
@@ -228,9 +243,15 @@ def create_app(
         for w in world:
             if not state.variant_path(w).exists():
                 return _error(400, f"Unknown world variant '{w}'.")
+        browser_on = bool(body.get("browser", False))
+        want_real = body.get("real_sites")
+        if want_real and not real_sites:
+            return _error(400, f"{RS.LABEL} is off. It's an instructor demo: start the app with `make demo-real` "
+                               "(or EA_REAL_SITES=on).")
+        real = bool(real_sites and harness == "claude_code" and browser_on and want_real is not False)
         opts = SessionOptions(harness=harness, search_mode=search, auto_approve=bool(body.get("auto_approve", True)),
-                              model=model, browser=bool(body.get("browser", False)), connectors=connectors_on,
-                              variants={str(k): str(v) for k, v in variants.items()}, world=world)
+                              model=model, browser=browser_on, connectors=connectors_on,
+                              variants={str(k): str(v) for k, v in variants.items()}, world=world, real_sites=real)
         try:
             s = await manager.create(opts)
         except SessionError as exc:
@@ -454,7 +475,7 @@ def create_app(
         Route("/api/sessions/{sid}/world", get_world),
         Route("/api/sessions/{sid}/outputs/{path:path}", get_output),
         Route("/api/sessions/{sid}/reset", reset_session, methods=["POST"]),
-        Mount("/static", app=StaticFiles(directory=STATIC_DIR), name="static"),
+        Mount("/static", app=_RevalidatedStatic(directory=STATIC_DIR), name="static"),
     ]
     guide = paths.kit_root() / "site" / "dist"
     if guide.is_dir():

@@ -28,7 +28,7 @@ def add_inbox_email(
         "received_at": s.load("clock")["now"],
         "from": sender,
         "from_name": sender_name,
-        "to": [persona.get("email", "maya.chen@larkspur.example")],
+        "to": [persona.get("email", "sarah.smith@larkspur.example")],
         "cc": [],
         "subject": subject,
         "body": body,
@@ -56,7 +56,7 @@ def rsvps_for_event(cal: dict[str, Any], ev: dict[str, Any], attendee_ids: list[
     s = core.st()
     people = contacts_by_id(s.load("contacts"))
     start, end = parse_dt(ev["start"]), parse_dt(ev["end"])
-    rsvps = ev.setdefault("rsvps", {"maya": "accepted"})
+    rsvps = ev.setdefault("rsvps", {"sarah": "accepted"})
     c = core.ctx()
     for pid in attendee_ids:
         p = people.get(pid)

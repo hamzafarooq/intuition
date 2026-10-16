@@ -224,7 +224,7 @@ def _bold(text: str) -> Markup:
     return Markup(safe)
 
 
-WHO = {"maya": "Maya", "sim_maya": "Simulated Maya", "harness": "Harness note", "builder": "You"}
+WHO = {"sarah": "Sarah", "sim_sarah": "Simulated Sarah", "harness": "Harness note", "builder": "You"}
 
 
 def replay_rows(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -250,7 +250,7 @@ def replay_rows(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
         if t == "user":
             row.update(
                 cat="messages",
-                label=WHO.get(e.get("source", "maya"), "Maya"),
+                label=WHO.get(e.get("source", "sarah"), "Sarah"),
                 html=_bold(e.get("text", "")),
                 bubble="me",
             )
@@ -324,7 +324,7 @@ def replay_rows(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
             )
         elif t == "approval_response":
             allow = e.get("decision") == "allow"
-            who = {"script": "the eval script", "human": "Maya", "app": "Maya in the app"}.get(
+            who = {"script": "the eval script", "human": "Sarah", "app": "Sarah in the app"}.get(
                 e.get("by", ""), e.get("by", "")
             )
             reason = f": {e['reason']}" if e.get("reason") else ""

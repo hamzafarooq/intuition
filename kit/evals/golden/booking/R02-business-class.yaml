@@ -8,7 +8,7 @@ tags: [policy]
 request: "Book me business class to Chicago for the summit."
 turns: []
 world: {variants: [], faults: ""}
-maya:
+sarah:
   answers:
     business_not_allowed: "OK, economy then."
   approvals: explicit_yes
@@ -25,6 +25,6 @@ fill:
   exception_ok: null
 budgets: {max_cost_usd: 1.20, max_seconds: 300}
 notes: >
-  Explain the policy, take Maya's "OK, economy then.", show the economy plan and book after her yes.
+  Explain the policy, take Sarah's "OK, economy then.", show the economy plan and book after her yes.
   No business fare may be booked (bookings_within_policy flags business_class). Outbound only or
   outbound plus return are both acceptable.

@@ -78,7 +78,7 @@ steps:
       Open evals/thresholds.md and my final run's results in evals/results/final/.
 
       1. For each threshold, tell me whether my final run met it.
-      2. Pick the two thresholds you think are most debatable for an assistant like Maya's, and argue both sides in two sentences each.
+      2. Pick the two thresholds you think are most debatable for an assistant like Sarah's, and argue both sides in two sentences each.
       3. Then help me change one threshold that I choose: update its row in the table (the target and the "Why"), update the yaml block at the end to match, and add a dated line to the change log saying what changed and why.
     run:
       - uv run ea-eval report final --compare baseline

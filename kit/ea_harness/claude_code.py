@@ -19,6 +19,7 @@ from typing import Any
 
 from ea_world import state as world_state
 
+from . import real_sites as RS
 from .base import RunConfig, TurnResult, Usage
 from .overlay import allowed_tools, mcp_config
 from .trace import TraceWriter, parse_status, truncate
@@ -287,7 +288,8 @@ class ClaudeCodeHarness:
         self.tool_env = env
         world_state.init_run_dir(self.run_dir, env.get("EA_WORLD_VARIANT"))
         self.mcp_path = self.run_dir / "mcp.json"
-        self.mcp_path.write_text(json.dumps(mcp_config(self.run_dir, env, config.browser), indent=2), encoding="utf-8")
+        self.mcp_path.write_text(json.dumps(mcp_config(self.run_dir, env, config.browser, real_sites=config.real_sites),
+                                            indent=2), encoding="utf-8")
         self.trace = TraceWriter(self.run_dir / "trace.jsonl", config.trace_fields, config.on_event)
         for name in ("approvals", "stopcheck", "site", "browser"):
             self.tails[name] = _Tail(self.run_dir / f"{name}.jsonl")
@@ -305,14 +307,19 @@ class ClaudeCodeHarness:
             "--permission-prompt-tool", f"{EA_PREFIX}approval_prompt",
             "--setting-sources", "project,local",
             "--include-hook-events",
-            "--allowedTools", *allowed_tools(self.config.browser),
+            "--allowedTools", *allowed_tools(self.config.browser, real_sites=self.config.real_sites),
         ]  # fmt: skip
         if self.config.effort:
             cmd += ["--effort", self.config.effort]
-        if self.config.browser:
-            cmd += ["--append-system-prompt",
-                    f"Browser mode is on. Save browser screenshots under {self.shots_dir()}/ "
-                    "(pass that folder to the travel specialist)."]
+        if self.config.browser or self.config.real_sites:
+            note = (f"Browser mode is on. Save browser screenshots under {self.shots_dir()}/ "
+                    "(pass that folder to the travel specialist).")
+            if self.config.real_sites:
+                note += (f" {RS.LABEL} is on: for live prices the travel specialist may also search "
+                         + " and ".join(s.start for s in RS.SITES)
+                         + ". Real sites give quotes only: never sign in, enter personal details or book there. "
+                         "Holds and bookings happen only on the workshop's booking sites, after Sarah's yes.")
+            cmd += ["--append-system-prompt", note]
         cmd += list(self.config.extra_args)
         if self.session_id:
             cmd += ["--resume", self.session_id]
@@ -364,8 +371,10 @@ class ClaudeCodeHarness:
         for rec in self.tails["browser"].read():
             if rec.get("decision") == "deny":
                 self.trace.emit("browser_step", action="blocked", url=rec.get("url", ""), detail=rec.get("reason", ""))
+            elif rec.get("decision") == "flag":  # real-site demo: a tab landed on a page that isn't allowed
+                self.trace.emit("browser_step", action="off_allowlist", url=rec.get("url") or "", detail=rec.get("reason", ""))
 
-    async def send(self, user_message: str, source: str = "maya") -> TurnResult:
+    async def send(self, user_message: str, source: str = "sarah") -> TurnResult:
         assert self.run_dir and self.config and self.trace
         trace = self.trace
         trace.turn += 1

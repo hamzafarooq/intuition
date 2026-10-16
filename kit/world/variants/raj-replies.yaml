@@ -3,7 +3,7 @@ description: When an email to Raj is sent, his reply arrives.
 clock: null
 add:
   inbox: []
-  maya_events: []
+  sarah_events: []
   busy: {}
   bookings: []
   contacts: []

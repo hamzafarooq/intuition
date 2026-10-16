@@ -63,7 +63,7 @@ DEFAULTS: dict[str, Any] = {
     "holds": {"holds": []},
     "connectors": {name: "connected" for name in CONNECTORS},
     "reactions": {"reactions": []},
-    "meta": {"variants": [], "travelers": ["maya"]},
+    "meta": {"variants": [], "travelers": ["sarah"]},
     "fetched": {"pages": []},
     "idempotency": {},
 }
@@ -155,7 +155,7 @@ def parse_variants(value: str | list[str] | None) -> list[str]:
 _ADD_TARGETS = {
     # variant key -> (state name, list key)
     "inbox": ("inbox", "emails"),
-    "maya_events": ("calendars", "maya"),
+    "sarah_events": ("calendars", "sarah"),
     "bookings": ("bookings", "bookings"),
     "contacts": ("contacts", "contacts"),
     "flights": ("flights", "flights"),
@@ -345,7 +345,7 @@ class State:
 
 
 def world_snapshot(run_dir: Path) -> dict[str, Any]:
-    """Everything the app's "Maya's world" tab shows."""
+    """Everything the app's "Sarah's world" tab shows."""
     st = State(run_dir)
     with st.session():
         cal = st.load("calendars")
@@ -356,7 +356,7 @@ def world_snapshot(run_dir: Path) -> dict[str, Any]:
             outputs[kind] = sorted(p.name for p in d.glob("*") if p.is_file()) if d.exists() else []
         return {
             "clock": st.load("clock"),
-            "calendar": sorted(cal.get("maya", []), key=lambda e: e.get("start", "")),
+            "calendar": sorted(cal.get("sarah", []), key=lambda e: e.get("start", "")),
             "inbox": sorted(inbox.get("emails", []), key=lambda e: e.get("received_at", ""), reverse=True),
             "drafts": st.load("drafts").get("drafts", []),
             "outbox": st.load("outbox").get("sent", []),

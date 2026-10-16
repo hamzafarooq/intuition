@@ -4,14 +4,14 @@
 
 | Component | Package / path | What it does |
 |---|---|---|
-| World data | `kit/world/` | Seed JSON and Markdown for Maya's week, variants, web cassettes, gold labels |
+| World data | `kit/world/` | Seed JSON and Markdown for Sarah's week, variants, web cassettes, gold labels |
 | Tool server | `kit/ea_world/` | MCP stdio server. Serves every tool over a per-run copy of the world; logs calls; injects faults; produces world feedback; runs verifiers |
 | Builder's brief | `kit/CLAUDE.md` | Tells Claude Code (used by students to build) what the repo is and where things go |
 | Assistant files | `kit/assistant/` | The assistant: `CLAUDE.md`, `.mcp.json`, `.claude/` (skills, sub-agents, settings, hooks). See [04-assistant.md](04-assistant.md) |
 | App | `kit/ea_app/` | Intuition: onboarding page, docked messaging simulator, behind-the-scenes view ([14-app.md](14-app.md)) |
 | Mock booking sites | `kit/ea_sites/` | Skyway, Stays and Tables on port 8766: the websites the assistant uses in the visible browser ([16-browser-bookings.md](16-browser-bookings.md)) |
 | Harness | `kit/ea_harness/` | Drives the Claude Code CLI headless (`claude -p`, stream-json, `--resume`, approvals through `ea-world`'s `approval_prompt` tool) and converts its events into the trace. Holds the shared stop-check logic. The independent harness is deferred |
-| Eval runner | `kit/ea_evals/` | Runs cases on either harness, simulates Maya, answers approvals, grades with rubrics, computes metrics, writes results and reports |
+| Eval runner | `kit/ea_evals/` | Runs cases on either harness, simulates Sarah, answers approvals, grades with rubrics, computes metrics, writes results and reports |
 | Golden dataset and rubrics | `kit/evals/golden/`, `kit/evals/rubrics/`, `kit/evals/components/` | YAML cases, rubrics, component suites, slices, thresholds |
 | Report | `kit/ea_evals/report/` | Static HTML report with spider charts and a trace viewer |
 | Guide site | `kit/site/` | Static guide built from Markdown into `site/dist/` |
@@ -59,7 +59,7 @@ kit/
   world/
     persona.json
     contacts.json
-    calendars.json             Maya's events and every internal person's events
+    calendars.json             Sarah's events and every internal person's events
     inbox.json
     docs/                      travel-policy.md, q4-forecast-summary.md, customers/*.md
     travel/flights.json, travel/hotels.json, restaurants.json
@@ -115,7 +115,7 @@ kit/
 | Web app | `starlette`, `uvicorn` | Server-sent events via a streaming response; vanilla JS front end, no build step |
 | MCP server and client | `mcp>=2.3,<3` (official Python SDK; FastMCP is `MCPServer` in v2) | See the notes in [03-mcp-server.md](03-mcp-server.md) and [05-harnesses.md](05-harnesses.md) |
 | Assistant runtime | Claude Code CLI (installed separately, logged in with the user's Claude account) | Driven headless; no Anthropic API key needed |
-| Judge and simulated Maya | `openai` (official Python SDK), Responses API with structured outputs | Verify model ids and the structured-output request shape at build time |
+| Judge and simulated Sarah | `openai` (official Python SDK), Responses API with structured outputs | Verify model ids and the structured-output request shape at build time |
 | HTTP (live search and fetch) | `httpx` | |
 | YAML | `pyyaml` | |
 | Templates | `jinja2` | Report, site, deck and brief rendering |
@@ -130,11 +130,11 @@ No Node, Bun or browser automation is required. Deck overflow is checked against
 
 | Variable | Default | Used by |
 |---|---|---|
-| `OPENAI_API_KEY` | none | Judge and simulated Maya. Provided during the workshop; students' own afterwards |
+| `OPENAI_API_KEY` | none | Judge and simulated Sarah. Provided during the workshop; students' own afterwards |
 | `SERPAPI_API_KEY` | none | Live and record modes only. Each student's own key |
 | `EA_CLAUDE_MODEL` | `opus` | Claude Code model for the assistant and sub-agents (alias or full id) |
 | `EA_JUDGE_MODEL` | `gpt-6.1-sol` | Judge (OpenAI). Verify the id at build time |
-| `EA_SIM_MODEL` | `gpt-6-luna` | Simulated Maya's classifier (OpenAI, cheapest tier). Verify the id at build time |
+| `EA_SIM_MODEL` | `gpt-6-luna` | Simulated Sarah's classifier (OpenAI, cheapest tier). Verify the id at build time |
 | `EA_BROWSER` | `on` in the app if a browser is available, `off` in evals | Browser booking mode ([16-browser-bookings.md](16-browser-bookings.md)) |
 | `EA_APPROVAL_MODE` | set by the runner or app | `script`, `app` or `allow_all` ([05-harnesses.md](05-harnesses.md#approvals---permission-prompt-tool)) |
 | `EA_MODE` | `mock` | `mock`, `record` (live search, saved to cassettes), `live` (live search, not saved) |
@@ -168,6 +168,6 @@ No Node, Bun or browser automation is required. Deck overflow is checked against
 ## Conventions
 
 - Tool names are bare in traces and graders (`calendar_create`). Claude Code exposes them as `mcp__ea-world__calendar_create`; adapters strip the prefix.
-- IDs: people `maya`, `dan.okafor`; events `ev-...`; emails `em-...`; drafts `dr-...`; bookings `bk-...`; options `fl-...`, `ht-...`, `rs-...`; documents `doc-...`; briefs `br-...`; decks `dk-...`.
+- IDs: people `sarah`, `dan.okafor`; events `ev-...`; emails `em-...`; drafts `dr-...`; bookings `bk-...`; options `fl-...`, `ht-...`, `rs-...`; documents `doc-...`; briefs `br-...`; decks `dk-...`.
 - Money is stored as integer US dollars.
 - Every run directory is self-contained: `state/`, `outputs/`, `calls.jsonl`, `trace.jsonl`, `final_state/`, `meta.json`.

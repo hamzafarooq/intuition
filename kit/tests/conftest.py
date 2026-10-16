@@ -52,7 +52,7 @@ class Run:
         state.write_json_atomic(self.path(name), data)
 
     def events(self) -> dict[str, dict[str, Any]]:
-        return {e["id"]: e for e in self.load("calendars")["maya"]}
+        return {e["id"]: e for e in self.load("calendars")["sarah"]}
 
     def inbox(self) -> list[dict[str, Any]]:
         return self.load("inbox")["emails"]

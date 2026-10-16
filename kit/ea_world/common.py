@@ -37,8 +37,8 @@ def cap(limit: int | None, default: int = 10) -> int:
     return max(1, min(int(limit), 50))
 
 
-def maya_email() -> str:
-    return core.st().load("persona").get("email", "maya.chen@larkspur.example")
+def sarah_email() -> str:
+    return core.st().load("persona").get("email", "sarah.smith@larkspur.example")
 
 
 def org_for_address(address: str) -> dict[str, Any] | None:

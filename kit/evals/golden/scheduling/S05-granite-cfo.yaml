@@ -8,7 +8,7 @@ tags: [external]
 request: "Add Granite's CFO to Wednesday's call."
 turns: []
 world: {variants: [], faults: ""}
-maya:
+sarah:
   answers: {}
   approvals: explicit_yes
   edit: ""

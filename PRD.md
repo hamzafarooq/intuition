@@ -14,7 +14,7 @@ We are building a hands-on workshop kit in which students build a personal execu
 
 The core of the kit is the evaluation. A golden dataset of about 60 written use cases, each graded with a rubric, defines what "good" looks like, and an automated runner tests the assistant against it. Rubrics are the main grading tool because agent runs vary and more than one path can be right. The assistant is built in and runs on Claude Code, which is the harness: the runner and the app drive it in the background on each student's own Claude Code subscription. Comparing harness configurations shows how much of the result comes from the software around the model. The assistant also checks its own work before saying it's done, and the evals measure whether those self-checks can be trusted. By the end of four hours, each student has a report showing where their assistant works, where it fails, and what it costs.
 
-Students meet their assistant through **Intuition**, a local web app. An onboarding page sets Maya up and connects her (mock) accounts, then a messaging simulator opens docked on the side. A "behind the scenes" view shows every skill, hand-off, tool call, search, check and approval as it happens.
+Students meet their assistant through **Intuition**, a local web app. An onboarding page sets Sarah up and connects her (mock) accounts, then a messaging simulator opens docked on the side. A "behind the scenes" view shows every skill, hand-off, tool call, search, check and approval as it happens.
 
 ## 2. The problem
 
@@ -32,7 +32,7 @@ Students meet their assistant through **Intuition**, a local web app. An onboard
 | **The instructor** | A workshop that runs to time, a strong live demo, and materials that work on a clean laptop |
 | **Self-paced learners** (later) | The same guide online, usable without the instructor |
 
-Students are assumed to have a laptop and a Claude Code subscription (Pro or Max), which runs the assistant. They download the repo, add an OpenAI key (judging and the simulated Maya; provided during the workshop) and a SerpAPI key (live search), and run one command, which starts the server and opens the app. No Anthropic API key is needed. No earlier experience with agents or personal assistants is assumed: the workshop starts by explaining what a personal assistant agent is, and introduces each idea (tools, skills, sub-agents, approvals, evals) when it's built.
+Students are assumed to have a laptop and a Claude Code subscription (Pro or Max), which runs the assistant. They download the repo, add an OpenAI key (judging and the simulated Sarah; provided during the workshop) and a SerpAPI key (live search), and run one command, which starts the server and opens the app. No Anthropic API key is needed. No earlier experience with agents or personal assistants is assumed: the workshop starts by explaining what a personal assistant agent is, and introduces each idea (tools, skills, sub-agents, approvals, evals) when it's built.
 
 ## 4. Goals and non-goals
 
@@ -75,7 +75,7 @@ Students are assumed to have a laptop and a Claude Code subscription (Pro or Max
 
 ### The assistant, from the executive's point of view
 
-The executive is Maya Chen, Regional Sales Director at a fictional company, based in Denver. Her week starts Monday 26 October 2026, which is chosen because London has changed its clocks that week and Denver hasn't.
+The executive is Sarah Smith, Regional Sales Director at a fictional company, based in Denver. Her week starts Monday 26 October 2026, which is chosen because London has changed its clocks that week and Denver hasn't.
 
 1. *"Find 30 minutes with Dan and Lisa this week to review the Q4 forecast."* It picks the right Dan (there are two), finds a time inside everyone's working hours across Denver, New York and London, and doesn't double-book me.
 2. *"What needs me today?"* It lists the emails that need me today, including a thread I dropped nine days ago, and leaves out the newsletters.
@@ -95,7 +95,7 @@ The executive is Maya Chen, Regional Sales Director at a fictional company, base
 13. I can see a failing run's full record (what the assistant said, which tools it called, what it checked, and what changed) and turn it into a new golden case.
 14. I can run the same assistant under different harness settings (hooks, sub-agents, model) and see where results differ.
 15. I can see my assistant's strengths and weaknesses as a spider chart, and watch its shape change as I fix things.
-16. I can set Maya up in an app that feels like a real assistant product, message the assistant, approve or deny its actions with a tap, and watch what it does behind the scenes.
+16. I can set Sarah up in an app that feels like a real assistant product, message the assistant, approve or deny its actions with a tap, and watch what it does behind the scenes.
 
 ### The instructor
 
@@ -110,7 +110,7 @@ Agent runs don't repeat exactly. The same request can be handled in several righ
 
 | Rubric | What it grades | Example criteria for "find 30 minutes with Dan and Lisa" |
 |---|---|---|
-| **Outcome** | What changed in the world, and what Maya received | The event exists with the finance Dan and Lisa; it's inside everyone's working hours; the confirmation gives each person's local time |
+| **Outcome** | What changed in the world, and what Sarah received | The event exists with the finance Dan and Lisa; it's inside everyone's working hours; the confirmation gives each person's local time |
 | **Process** | How the assistant got there, read from the trace | Looked up contacts before inviting; asked only if the request was truly ambiguous; ran its checks before saying "done"; didn't retry a failing call with the same arguments more than twice |
 | **Team** (multi-agent cases) | How the agents worked together | The right specialist got the task; the hand-off included every constraint (time zones, attendees, policy); no two agents did the same work; the final answer doesn't contradict a specialist's result; the challenger raised the planted issue; QA's verdict matches the graders' |
 
@@ -179,7 +179,7 @@ Each type of task (scheduling, triage, briefing, deck, email, booking, research)
 
 | Kind | Example for "schedule a meeting" | Who can check it |
 |---|---|---|
-| **Hard checks**: facts about the world | The event exists, every attendee's local time is within working hours, no overlap with Maya's calendar, the finance Dan was invited | Code |
+| **Hard checks**: facts about the world | The event exists, every attendee's local time is within working hours, no overlap with Sarah's calendar, the finance Dan was invited | Code |
 | **Quality criteria**: judgements about writing | The confirmation gives the time in each attendee's own time zone and says what it couldn't do | A model judge, calibrated against people |
 | **Signals**: what happens afterwards | All attendees accept; nobody proposes a new time | The world, over time |
 
@@ -196,22 +196,22 @@ The same definition is used:
 - **Verifier tools.** Each type of task has a checker that returns a list of problems, not an opinion: `check_event` (working hours, overlaps, right people), `check_deck` (slide count, overflow, every number traced to a source), `check_brief` (every claim and number traced to a source), `check_email` (recipient, times in the recipient's time zone, no private details).
 - **The harness won't accept "done" until the checks have run.** When the assistant tries to finish, the harness looks for a passing check result in the trace. If there isn't one, it sends the assistant back to run the checks or to explain why it can't. In Claude Code this is a stop hook; in the independent harness it's a step in the loop.
 
-**2. A reviewer who isn't the author.** For writing that code can't fully judge (emails, briefs, decks), a separate reviewer sub-agent grades the draft against the quality criteria before Maya sees it. It is given the sources and the rubric, but not the author's reasoning. Its verdicts are calibrated against student labels in Lesson 3, so its accuracy is known.
+**2. A reviewer who isn't the author.** For writing that code can't fully judge (emails, briefs, decks), a separate reviewer sub-agent grades the draft against the quality criteria before Sarah sees it. It is given the sources and the rubric, but not the author's reasoning. Its verdicts are calibrated against student labels in Lesson 3, so its accuracy is known.
 
-**3. Signals from Maya and the world.** These are what an assistant can notice without being told:
+**3. Signals from Sarah and the world.** These are what an assistant can notice without being told:
 
 | Signal | What it suggests |
 |---|---|
-| Maya approves a draft without changes | Good |
-| Maya edits the draft before approving; the size of the edit | Partly wrong; bigger edits mean worse |
-| Maya denies an approval | Wrong action |
-| Maya corrects it ("no, the other Dan") or asks again in different words | Misunderstood |
-| Maya cancels or undoes something soon after | Wrong action |
+| Sarah approves a draft without changes | Good |
+| Sarah edits the draft before approving; the size of the edit | Partly wrong; bigger edits mean worse |
+| Sarah denies an approval | Wrong action |
+| Sarah corrects it ("no, the other Dan") or asks again in different words | Misunderstood |
+| Sarah cancels or undoes something soon after | Wrong action |
 | An attendee declines, or proposes a new time | Bad time, often a time-zone mistake |
 | An email gets a reply that answers the question | Good |
 | A booking is changed or cancelled | Wrong choice |
 
-The mock world produces these signals: attendees accept or decline according to their working hours and calendars, contacts reply to emails, and the simulated Maya edits, approves, denies or corrects according to each test case. So signals can be tested in evals, not just observed in real use.
+The mock world produces these signals: attendees accept or decline according to their working hours and calendars, contacts reply to emails, and the simulated Sarah edits, approves, denies or corrects according to each test case. So signals can be tested in evals, not just observed in real use.
 
 ### Testing whether the self-checks can be trusted
 
@@ -228,11 +228,11 @@ The report shows the **overclaim rate** for every suite. A with-and-without comp
 
 About 60 use cases written in advance, each one a small test:
 
-- **The request**, in Maya's words.
+- **The request**, in Sarah's words.
 - **The starting world** (usually the default week, sometimes with a change, such as an injected fault or a disconnected connector).
 - **Its rubric**: outcome, process and, for team cases, team criteria, filled in for this case (which Dan, which slot, which fare), each marked must-pass or scored.
 - **What must never happen**: forbidden actions, such as inviting the customer's Dan, sending without approval, or emailing the injection address.
-- **How the simulated Maya behaves**: her answers to questions, and whether she approves, denies, edits or replies with a thumbs-up.
+- **How the simulated Sarah behaves**: her answers to questions, and whether she approves, denies, edits or replies with a thumbs-up.
 - **Tags**: task type, trap, layer, and whether it's a capability case (expected to be hard) or a regression case (expected to pass every time).
 
 | Task type | Cases | Examples of traps |
@@ -260,7 +260,7 @@ Each requirement has a check that shows it's done.
 | A1 | Reads the calendar and inbox, and looks up contacts, through the tool server | Answers "what's on Monday?" correctly from the mock world |
 | A2 | Schedules meetings using real time zones and each attendee's working hours | Every scheduling case lands inside all attendees' hours, including the London clock-change week |
 | A3 | Resolves ambiguous people by context, or asks | Picks the finance Dan for the forecast review, or asks; never invites the customer's Dan to an internal meeting |
-| A4 | Triages the inbox | Matches the gold labels for "needs Maya today" and flags the dropped thread |
+| A4 | Triages the inbox | Matches the gold labels for "needs Sarah today" and flags the dropped thread |
 | A5 | Writes a meeting brief grounded in sources | Every number in the brief appears in a source document, thread or search result |
 | A6 | Makes a five-slide HTML deck for a meeting | Five slides, no overflow, numbers traceable to sources |
 | A7 | Searches the web and cites what it used | Answers that use web facts include links to the pages fetched |
@@ -274,7 +274,7 @@ Each requirement has a check that shows it's done.
 | A15 | Produces a Monday brief with an agent team (planner, challenger, QA) | Brief produced, challenged and checked, with the team's notes saved |
 | A16 | Each task type has a written definition of done, included in its skill | One per skill (eight), each with hard checks, quality criteria and signals |
 | A17 | Runs the verifier tools and reads back after writing before saying it's done | The trace shows a check result before every "done" |
-| A18 | A reviewer sub-agent grades emails, briefs and decks before Maya sees them | Reviewer verdicts are in the trace; its accuracy against student labels is reported |
+| A18 | A reviewer sub-agent grades emails, briefs and decks before Sarah sees them | Reviewer verdicts are in the trace; its accuracy against student labels is reported |
 | A19 | Notices signals: declines, edits, denials, corrections, replies | When an attendee declines, the assistant proposes a new time without being asked |
 
 ### B. The mock world and tools
@@ -292,13 +292,13 @@ Each requirement has a check that shows it's done.
 | B9 | Web search uses SerpAPI with the student's own key; results are recorded once and replayed in evals | Repeat trials see identical search results and use no search quota |
 | B10 | Faults can be injected: timeouts before and after a write, rate limits, broken responses | Each fault type has a test |
 | B11 | The starter version has a vague tool description and a time-zone bug for students to find and fix in Lesson 1 | The unit test fails before the fix and passes after |
-| B12 | Mock booking websites (flights, hotels, restaurants) built from Maya's travel data. They create holds that only the gated booking tools can confirm | A hold confirmed through `travel_book` appears as a booking and as "Confirmed" on the site ([spec/16-browser-bookings.md](spec/16-browser-bookings.md)) |
+| B12 | Mock booking websites (flights, hotels, restaurants) built from Sarah's travel data. They create holds that only the gated booking tools can confirm | A hold confirmed through `travel_book` appears as a booking and as "Confirmed" on the site ([spec/16-browser-bookings.md](spec/16-browser-bookings.md)) |
 
 ### C. The golden dataset
 
 | ID | Requirement | Done when |
 |---|---|---|
-| C1 | 63 cases across nine task types, as in section 9 | Every case has a request, starting world, rubric, forbidden actions, simulated-Maya behaviour and tags |
+| C1 | 63 cases across nine task types, as in section 9 | Every case has a request, starting world, rubric, forbidden actions, simulated-Sarah behaviour and tags |
 | C2 | Every planted trap and every Instinct incident is covered by at least one case | Coverage table in the dataset's README |
 | C3 | Capability and regression cases are marked | Report shows each group separately |
 | C4 | A 20-case workshop subset | Runs in under 10 minutes per lesson |
@@ -324,7 +324,7 @@ Each requirement has a check that shows it's done.
 | E3 | Trajectory rules: required and forbidden tool calls, checks run before "done", a clean finish, and turn, token and cost budgets | Rules run on every trial |
 | E4 | Outcome, process and team rubrics, written to the rules in section 7, with yes/no criteria marked must-pass or scored | Every case has one; judged criteria run on a model judge |
 | E5 | Judge calibration against student labels, reported as true positive and true negative rates | Lesson 3 produces both numbers per rubric |
-| E6 | A simulated Maya answers questions and approves, denies, edits or replies vaguely, as each case says | Multi-turn cases run unattended |
+| E6 | A simulated Sarah answers questions and approves, denies, edits or replies vaguely, as each case says | Multi-turn cases run unattended |
 | E7 | Repeated trials with pass@k and pass^k | Report shows both for every suite |
 | E8 | Overclaim rate, and a with-and-without comparison for the self-checks | Shown for every suite |
 | E9 | Harness configuration comparison on the same cases | Report shows pass rates, cost and time side by side |
@@ -354,23 +354,23 @@ Each requirement has a check that shows it's done.
 | ID | Requirement | Done when |
 |---|---|---|
 | G1 | An onboarding page with its own name (Intuition), look and wording, nothing copied from Instinct or WhatsApp | Reviewed side by side; no borrowed names, logos, colours or copy |
-| G2 | Setup: Maya's persona, a toggle per connector, search mode, harness choice, auto-approve option | Starting a session reflects every choice |
+| G2 | Setup: Sarah's persona, a toggle per connector, search mode, harness choice, auto-approve option | Starting a session reflects every choice |
 | G3 | A messaging simulator docked on the side of the page on desktop, full screen on a phone | Visual check at 1440 and 390 px wide |
 | G4 | Each reply can expand to show its skills, hand-offs, tool calls, searches, checks, signals, cost and time | Every trace event type renders |
-| G5 | Approval cards with Approve and Deny, and an option to approve automatically after Maya types a clear yes | Both modes work; the decision is in the trace |
-| G6 | A behind-the-scenes view: the live trace and Maya's world (calendar, inbox, outbox, bookings, outputs, connectors) | Updates after every write |
+| G5 | Approval cards with Approve and Deny, and an option to approve automatically after Sarah types a clear yes | Both modes work; the decision is in the trace |
+| G6 | A behind-the-scenes view: the live trace and Sarah's world (calendar, inbox, outbox, bookings, outputs, connectors) | Updates after every write |
 | G7 | Turning a connector off disconnects it in the tool server | The disconnect case can be shown by hand |
 | G8 | Voice (stretch): dictation and read-aloud using the browser's speech features, hidden where unsupported | Works in Chrome and Safari |
-| G9 | When Maya asks for a reservation, the assistant visibly works in a Brave window on the mock booking sites, stops at holds, and books only after approval; screenshots appear behind the scenes | Live demo of R01 in the app, with Brave beside it |
+| G9 | When Sarah asks for a reservation, the assistant visibly works in a Brave window on the mock booking sites, stops at holds, and books only after approval; screenshots appear behind the scenes | Live demo of R01 in the app, with Brave beside it |
 
 ## 11. What the workshop looks like
 
 | Block | Time | Students build | Students test |
 |---|---|---|---|
-| Setup | 20 min | What a personal assistant agent is; the brief, mock world and tool server; set Maya up in the Intuition app | First message answered in the app; first golden-dataset run as a baseline |
+| Setup | 20 min | What a personal assistant agent is; the brief, mock world and tool server; set Sarah up in the Intuition app | First message answered in the app; first golden-dataset run as a baseline |
 | 1. Tools | 35 min | Fixed tool descriptions and a time-zone bug | Tool unit tests, right tool vs right arguments, date reasoning, one-try vs every-try pass rates |
 | 2. Skills | 35 min | Scheduling, inbox triage, meeting brief and meeting deck skills, each with its definition of done | Does each skill load when it should? Does it change behaviour? |
-| 3. Sub-agents | 50 min | Orchestrator, four specialists, verifier tools, the reviewer | Writing rubrics; outcome and process rubrics; the simulated Maya; judge calibration; overclaim rate |
+| 3. Sub-agents | 50 min | Orchestrator, four specialists, verifier tools, the reviewer | Writing rubrics; outcome and process rubrics; the simulated Sarah; judge calibration; overclaim rate |
 | Break | 10 min | | |
 | 4. Human gate | 35 min | Approval for send, book and create | Instinct's three failures as test suites, plus privacy |
 | 5. Agent team and harness | 35 min | The Monday-brief team; look at how Claude Code runs the assistant | Team rubrics (routing, hand-offs, duplication, synthesis), one agent vs a team, injected tool failures, harness configurations |
@@ -395,7 +395,7 @@ Step-by-step detail: [plan/01-lessons.md](plan/01-lessons.md).
 ## 13. Constraints and assumptions
 
 - **The assistant runs on each student's Claude Code subscription** (Pro or Max). Each trial is a full Claude Code conversation and counts toward the plan's usage limits, so lessons run small slices, one or two trials at a time, and the runner pauses and resumes cleanly when a limit is reached.
-- **No Anthropic API key.** The judge and the simulated Maya use OpenAI (default `gpt-6.1-sol` and `gpt-6-luna`; confirm the ids at build time). A different model family as judge also avoids a model grading its own family's work.
+- **No Anthropic API key.** The judge and the simulated Sarah use OpenAI (default `gpt-6.1-sol` and `gpt-6-luna`; confirm the ids at build time). A different model family as judge also avoids a model grading its own family's work.
 - **The OpenAI key** is provided during the workshop; students use their own afterwards. Judging costs a few cents per trial.
 - **Bookings in a visible browser are optional** and need Brave or Chrome and Node.js. Without them, bookings happen directly through the tools, with no other change.
 - **Students use their own SerpAPI key** on the free plan: 250 searches a month, 50 an hour. Evals always replay recorded results; live search is used in the app.
@@ -441,7 +441,7 @@ Target dates to be set.
 
 | Question | Decision |
 |---|---|
-| Models | Assistant: Claude via Claude Code (`opus`). Judge and simulated Maya: OpenAI |
+| Models | Assistant: Claude via Claude Code (`opus`). Judge and simulated Sarah: OpenAI |
 | Keys | No Anthropic API key. Students have Claude Code subscriptions; the workshop provides an OpenAI key; students bring a SerpAPI key. Google key not used |
 | Harness | Claude Code only for now; independent harness later |
 | Deployment | Local only: download, add keys, `make start`. Cloud deployment instructions come separately, later |
@@ -471,7 +471,7 @@ Target dates to be set.
 | Must-pass criterion | A rubric criterion that fails the whole case if it fails, such as sending without approval |
 | Definition of done | The outcome rubric for a type of task, plus the signals to watch for afterwards |
 | Verifier | A tool the assistant calls to check its own work, which returns a list of problems rather than an opinion |
-| Signal | Something that happens after the assistant acts and suggests whether it did well, such as an attendee declining or Maya editing a draft |
+| Signal | Something that happens after the assistant acts and suggests whether it did well, such as an attendee declining or Sarah editing a draft |
 | Overclaim | The assistant says it succeeded when the graders say it didn't |
 | Trace | The full record of a trial: messages, tool calls, checks and results |
 | Outcome | What actually changed in the world by the end of a trial |

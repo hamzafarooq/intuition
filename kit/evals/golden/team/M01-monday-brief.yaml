@@ -8,7 +8,7 @@ tags: [team, monday-brief]
 request: "Give me my Monday brief."
 turns: []
 world: {variants: [], faults: ""}
-maya:
+sarah:
   answers: {}
   approvals: none
   edit: ""

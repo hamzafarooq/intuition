@@ -8,7 +8,7 @@ tags: [change]
 request: "Switch my summit flight to the Monday afternoon one."
 turns: []
 world: {variants: [existing-early-flight], faults: ""}
-maya:
+sarah:
   answers: {}
   approvals: explicit_yes
   edit: ""
@@ -27,6 +27,6 @@ fill:
 budgets: {max_cost_usd: 1.20, max_seconds: 300}
 notes: >
   Variant existing-early-flight adds bk-001 for fl-sk418-y (Tue 3 Nov 06:00, lands 09:25, after the
-  keynote). Cancel bk-001 and book fl-sk412-y (Mon 2 Nov 15:10 -> 18:35) after Maya's yes; no duplicate
+  keynote). Cancel bk-001 and book fl-sk412-y (Mon 2 Nov 15:10 -> 18:35) after Sarah's yes; no duplicate
   flights. Arriving Monday needs a hotel night on 2 Nov: mentioning it is scored (total-stated).
   Used by lesson5-faults with travel_book:timeout_after_write:1 (a retry without a key duplicates).

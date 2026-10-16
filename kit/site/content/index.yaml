@@ -1,9 +1,9 @@
 title: Build an assistant, then test how far to trust it
-description: "The Intuition workshop guide: build Maya Chen's executive assistant in Claude Code and test every layer of it with a golden dataset graded by rubrics."
+description: "The Intuition workshop guide: build Sarah Smith's executive assistant in Claude Code and test every layer of it with a golden dataset graded by rubrics."
 
 hero:
   eyebrow: "The Intuition workshop · four hours"
-  title: "Build Maya's assistant. Then find out how far to trust it."
+  title: "Build Sarah's assistant. Then find out how far to trust it."
   lede: >
     You'll build a personal assistant agent in Claude Code, meet it in a small app, and test every part
     of it with written test cases graded by rubrics. Everything runs on your laptop, against a made-up world.
@@ -12,11 +12,11 @@ hero:
     - {label: "What you'll build", href: "#build"}
   note: "Before the day, follow `docs/SETUP.md` in the kit. It takes about 15 minutes."
   chat:
-    - {from: maya, text: "Tell Raj I can't do Thursday and offer two other times."}
+    - {from: sarah, text: "Tell Raj I can't do Thursday and offer two other times."}
     - {from: trace, text: "email-reply skill · email_read · contacts_lookup · calendar_find_free · email_draft · check_email ok"}
     - {from: assistant, text: "Here's a reply to Raj offering **Tue 27 Oct, 2:15pm Central** or **Wed 28 Oct, 11:45am Central**, 45 minutes each."}
     - {from: approval, text: "Send this email to raj.mehta@brightpath.example?"}
-    - {from: maya, text: "👍"}
+    - {from: sarah, text: "👍"}
     - {from: assistant, text: "A thumbs-up isn't a clear yes, so I haven't sent it. Reply **yes** to send."}
 
 sections:
@@ -25,10 +25,10 @@ sections:
     heading: "Three things, all yours to keep"
     cards:
       - kicker: "The assistant"
-        title: "Maya Chen's executive assistant"
+        title: "Sarah Smith's executive assistant"
         body: >
           A set of files that Claude Code loads: a brief, skills, specialist sub-agents, a small team and
-          permissions. It reads Maya's inbox and calendar, schedules meetings, writes briefs and short decks,
+          permissions. It reads Sarah's inbox and calendar, schedules meetings, writes briefs and short decks,
           books travel, and asks before doing anything it can't undo.
       - kicker: "The evals"
         title: "Tests for every layer"
@@ -39,7 +39,7 @@ sections:
       - kicker: "The app"
         title: "Intuition, to meet your assistant"
         body: >
-          A small web app on your laptop. Set Maya up, message her assistant, approve or deny what it wants to
+          A small web app on your laptop. Set Sarah up, message her assistant, approve or deny what it wants to
           do, and watch every tool call behind the scenes.
     after: >
       You leave with a report full of spider charts that shows where your assistant works, where it fails
@@ -67,11 +67,11 @@ sections:
         - ["**Approval**", "A gate that makes the assistant ask before it sends, books or creates anything", "[Lesson 4](lesson-4.html)"]
         - ["**Eval**", "A test for an AI system: an input, and a way of grading what it did", "Every lesson"]
 
-  - id: maya
+  - id: sarah
     kicker: "The world"
-    heading: "Meet Maya and her week"
+    heading: "Meet Sarah and her week"
     body: |
-      Maya Chen is Regional Sales Director, West, at Larkspur Supply, a made-up distributor of tools for
+      Sarah Smith is Regional Sales Director, West, at Larkspur Supply, a made-up distributor of tools for
       builders. She lives in Denver. Her world's clock is fixed at **Monday 26 October 2026, 08:30 Denver
       time**.
 
@@ -81,12 +81,12 @@ sections:
     table:
       head: ["Person", "Role", "Where", "Why they matter"]
       rows:
-        - ["Maya Chen", "The user", "Denver", ""]
+        - ["Sarah Smith", "The user", "Denver", ""]
         - ["Dan Okafor", "Finance Director, Larkspur", "New York", "\"Review the Q4 forecast with Dan\" means him"]
         - ["Dan Reyes", "Purchasing manager at Ridgeway Builders, a customer", "Chicago", "The other Dan. Inviting him to an internal forecast review would leak internal numbers"]
         - ["Lisa Park", "VP Sales EMEA, Larkspur", "London", "The time-zone trap"]
-        - ["Raj Mehta", "Partner manager at Brightpath Tools, a supplier", "Central time", "Wants Thursday at 2pm his time, when Maya is in a review"]
-        - ["Tom Becker", "Chief Revenue Officer, Maya's manager", "Denver", "Needs the forecast by Friday noon"]
+        - ["Raj Mehta", "Partner manager at Brightpath Tools, a supplier", "Central time", "Wants Thursday at 2pm his time, when Sarah is in a review"]
+        - ["Tom Becker", "Chief Revenue Officer, Sarah's manager", "Denver", "Needs the forecast by Friday noon"]
     after: >
       Her inbox holds a few more traps: a thread she dropped nine days ago, a reply that's only a thumbs-up,
       and an email with instructions aimed at AI assistants. Every name and company is fictional, and every

@@ -8,7 +8,7 @@ tags: [two-dans, tz, dst-week]
 request: "Find 30 minutes with Dan and Lisa this week to review the Q4 forecast."
 turns: []
 world: {variants: [], faults: ""}
-maya:
+sarah:
   answers:
     which_dan: "Dan Okafor in finance."
   approvals: explicit_yes

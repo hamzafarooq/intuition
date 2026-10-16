@@ -49,7 +49,7 @@ Known facts:
 Run the CLI as a subprocess with `cwd=<assistant_dir>`:
 
 ```
-claude -p "<maya's message>"
+claude -p "<sarah's message>"
   --output-format stream-json --verbose
   --model <model>
   --max-turns <max_turns>
@@ -79,7 +79,7 @@ It decides by `EA_APPROVAL_MODE`:
 
 | Mode | Used by | Decision |
 |---|---|---|
-| `script` | the runner | Applies the approval policy ([04-assistant.md](04-assistant.md#approval-policy)) using `<run_dir>/approval_context.json`, which the runner rewrites before every turn (case data and Maya's latest message) |
+| `script` | the runner | Applies the approval policy ([04-assistant.md](04-assistant.md#approval-policy)) using `<run_dir>/approval_context.json`, which the runner rewrites before every turn (case data and Sarah's latest message) |
 | `app` | the app | Writes the request to `<run_dir>/approvals/pending/<id>.json` and waits (polling every 0.5 seconds, up to 10 minutes) for `<run_dir>/approvals/decided/<id>.json`, written when the user clicks Approve or Deny. Timeout means deny |
 | `allow_all` | the `gate=off` variant | Allows |
 

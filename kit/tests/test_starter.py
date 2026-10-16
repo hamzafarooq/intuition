@@ -47,7 +47,7 @@ def test_starter_calendar_differs_only_in_the_planted_spots() -> None:
     def strip(src: str) -> str:
         src = re.sub(r"def _hours_ok\(.*?\n\n\n", "", src, flags=re.S)
         src = re.sub(r'(def calendar_find_free\(.*?-> dict\[str, Any\]:\n)    """.*?"""', r"\1", src, flags=re.S)
-        src = re.sub(r"^(from|import) .*\n|^MAYA_TZ = .*\n", "", src, flags=re.M)
+        src = re.sub(r"^(from|import) .*\n|^SARAH_TZ = .*\n", "", src, flags=re.M)
         return re.sub(r"\n\s*\n+", "\n\n", src).strip()
 
     assert strip(kit) == strip(over)

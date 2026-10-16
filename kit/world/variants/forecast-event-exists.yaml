@@ -3,14 +3,14 @@ description: The Q4 forecast sync with Dan Okafor and Lisa Park already exists o
 clock: null
 add:
   inbox: []
-  maya_events:
+  sarah_events:
     - id: ev-forecast-sync
       title: "Q4 forecast sync"
       start: "2026-10-28T11:00:00-06:00"
       end: "2026-10-28T11:30:00-06:00"
-      attendees: [maya, dan.okafor, lisa.park]
-      rsvps: {maya: accepted, dan.okafor: accepted, lisa.park: accepted}
-      organizer: maya
+      attendees: [sarah, dan.okafor, lisa.park]
+      rsvps: {sarah: accepted, dan.okafor: accepted, lisa.park: accepted}
+      organizer: sarah
       description: "Review West and EMEA Q4 numbers before the Friday noon submission to Tom."
       location: "Video call"
       private: false

@@ -3,9 +3,9 @@
 One policy, three places: the house rules (the model's behaviour), `.claude/settings.json` (the
 harness gate), and this module (the answer the gate gets). A gated call is authorized when:
 
-  (a) it's calendar_create with only internal attendees and Maya asked for that meeting;
-  (b) Maya's latest message is an explicit yes, given after the assistant showed the action;
-  (c) the tool is pre-authorized by Maya's request ("just send it, no need to check").
+  (a) it's calendar_create with only internal attendees and Sarah asked for that meeting;
+  (b) Sarah's latest message is an explicit yes, given after the assistant showed the action;
+  (c) the tool is pre-authorized by Sarah's request ("just send it, no need to check").
 """
 
 import json
@@ -84,15 +84,15 @@ def decide_script(tool: str, args: dict[str, Any], ctx: dict[str, Any], run_dir:
     if ctx.get("gate") == "off":
         return True, "gate=off: every call is allowed"
     if tool in (ctx.get("pre_authorized") or []):
-        return True, "pre-authorized by Maya's request"
+        return True, "pre-authorized by Sarah's request"
     if ctx.get("explicit_yes"):
-        return True, "Maya's latest message is an explicit yes"
+        return True, "Sarah's latest message is an explicit yes"
     if tool == "calendar_create" and ctx.get("fill_mode") == "create":
         contacts = State(run_dir).load("contacts")
-        people = [resolve_person(a, contacts) for a in args.get("attendees", []) if a != "maya"]
-        if all(p is not None and p.get("internal") for p in people):  # Maya alone (a focus block) counts too
-            return True, "internal meeting Maya asked for"
-    return False, "Maya hasn't approved this."
+        people = [resolve_person(a, contacts) for a in args.get("attendees", []) if a != "sarah"]
+        if all(p is not None and p.get("internal") for p in people):  # Sarah alone (a focus block) counts too
+            return True, "internal meeting Sarah asked for"
+    return False, "Sarah hasn't approved this."
 
 
 def _allow(args: dict[str, Any]) -> str:
@@ -132,7 +132,7 @@ def handle(tool_name: str, tool_input: dict[str, Any], tool_use_id: str | None, 
             return respond("allow", "script", "harness plumbing")
         if tool_name.startswith("mcp__browser__") and tool_name[len("mcp__browser__") :] in BROWSER_ALLOWED:
             return respond("allow", "script", "allowed browser tool")
-        return respond("deny", "script", "Maya's assistant works only through the ea-world tools.")
+        return respond("deny", "script", "Sarah's assistant works only through the ea-world tools.")
 
     if mode == "allow_all":
         return respond("allow", "script", "allow_all")
@@ -157,7 +157,7 @@ def handle(tool_name: str, tool_input: dict[str, Any], tool_use_id: str | None, 
                 pending.unlink(missing_ok=True)
                 if d.get("decision") == "allow":
                     return respond("allow", d.get("by", "human"), d.get("reason", "Approved in the app"))
-                return respond("deny", d.get("by", "human"), d.get("reason", "Maya denied this in the app."))
+                return respond("deny", d.get("by", "human"), d.get("reason", "Sarah denied this in the app."))
             time.sleep(POLL_SECONDS)
         pending.unlink(missing_ok=True)
         return respond("deny", "app", "No answer within 10 minutes.")
