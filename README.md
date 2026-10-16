@@ -286,6 +286,18 @@ The evals answer those questions with three parts:
 
 During the workshop you change the assistant (add skills, add specialists, turn the approval gate on and off) and re-run the evals to see what each change actually did.
 
+### See a trace in Phoenix (optional)
+
+Every session and every eval trial is recorded as a trace. The kit can send those to [Arize Phoenix](https://phoenix.arize.com), a free open-source observability tool that runs on your laptop, so you can walk through the assistant's model steps, tool calls and sub-agents on a timeline.
+
+```bash
+make phoenix          # second terminal: starts Phoenix at http://localhost:6006
+make trace            # sends your latest mock-phone session
+make trace RUN=<id>   # sends an eval run, grades included
+```
+
+Then open http://localhost:6006 and pick the `intuition` project.
+
 ---
 
 ## 🌍 Sarah's World

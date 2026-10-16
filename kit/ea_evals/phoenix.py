@@ -275,10 +275,22 @@ def emit(nodes: list[Node], tracer: otel_trace.Tracer) -> otel_trace.Span | None
     return spans[id(nodes[0])] if nodes else None
 
 
+def latest_session() -> Path | None:
+    """The newest mock-phone session under runs/ that has a trace."""
+    from ea_world import paths
+
+    sessions = sorted(paths.runs_dir().glob("app-*/trace.jsonl"))
+    return sessions[-1].parent if sessions else None
+
+
 def trial_dirs(run: str, case: str | None = None) -> list[Path]:
-    """Trial folders with a trace: a run id under evals/results/, or one trial folder (such as a fixture)."""
+    """Trial folders with a trace: a run id under evals/results/, one trial folder (such as a fixture),
+    or `latest` for the newest mock-phone session under runs/."""
     from .runner import results_dir
 
+    if run == "latest":
+        session = latest_session()
+        return [session] if session else []
     if (Path(run) / "trace.jsonl").exists():
         return [Path(run)]
     return [p.parent for p in sorted((results_dir() / run).glob("*/*/*/t*/trace.jsonl")) if not case or p.parts[-5] == case]

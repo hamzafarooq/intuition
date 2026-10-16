@@ -20,7 +20,8 @@ USAGE_EXAMPLES = """examples:
   ea-eval component llm_dates --trials 5
   ea-eval list cases
   ea-eval estimate --cases workshop --trials 3
-  ea-eval phoenix <run-id> --dry-run        (instructors: uv run --extra phoenix ...)
+  ea-eval phoenix latest                    (needs: uv run --extra phoenix ...)
+  ea-eval phoenix <run-id> --dry-run
 """
 
 # Per-trial figures from the October 2026 setup-baseline run (10 cases × 1 trial, Claude Opus): $7.07 in all,
@@ -340,8 +341,8 @@ def build_parser() -> argparse.ArgumentParser:
     ca.add_argument("run_id")
     ca.add_argument("--rubric", required=True)
     ca.set_defaults(fn=cmd_calibrate)
-    ph = sub.add_parser("phoenix", help="Send a run's traces to a local Arize Phoenix (instructors; needs the phoenix extra)")
-    ph.add_argument("run_id", help="a run id, or one trial folder")
+    ph = sub.add_parser("phoenix", help="Send traces to a local Arize Phoenix (needs the phoenix extra; see make phoenix)")
+    ph.add_argument("run_id", help="a run id, one trial folder, or `latest` for the newest mock-phone session")
     ph.add_argument("--endpoint", default=None, help="OTLP traces URL (default $PHOENIX_COLLECTOR_ENDPOINT or http://localhost:6006/v1/traces)")
     ph.add_argument("--project", default="intuition", help="Phoenix project name")
     ph.add_argument("--case", default=None, help="only this case id's trials")

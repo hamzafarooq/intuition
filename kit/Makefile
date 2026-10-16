@@ -1,7 +1,7 @@
 # Intuition workshop kit. Run `make help` for the list.
 UV ?= uv
 
-.PHONY: help setup test lint doctor smoke start app browser sites report site starter clean-runs demo-real
+.PHONY: help setup test lint doctor smoke start app browser sites report site starter clean-runs demo-real phoenix trace
 
 help:
 	@echo "make setup    install dependencies; create .env from .env.example"
@@ -11,6 +11,8 @@ help:
 	@echo "make smoke    one golden case, one trial, through Claude Code"
 	@echo "make browser  open Brave/Chrome with remote debugging for browser bookings"
 	@echo "make demo-real  instructor only: the mock phone with real-site search (quotes only, clean throwaway browser)"
+	@echo "make phoenix  start Arize Phoenix at http://localhost:6006 (second terminal)"
+	@echo "make trace    send the latest mock-phone session to Phoenix (RUN=<run-id> for an eval run)"
 	@echo "make site     build the guide into site/dist/"
 	@echo "make starter  build ../starter/ from this kit"
 
@@ -51,6 +53,13 @@ sites:
 
 report:
 	$(UV) run ea-eval report $(RUN)
+
+# Observability: Phoenix runs on its own (uvx keeps it out of the kit's venv); `trace` exports a session or run to it.
+phoenix:
+	uvx arize-phoenix serve
+
+trace:
+	$(UV) run --extra phoenix ea-eval phoenix $(or $(RUN),latest) $(ARGS)
 
 site:
 	$(UV) run python site/build.py
