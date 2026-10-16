@@ -8,7 +8,7 @@ tags: [team]
 request: "Get me fully ready for Ridgeway: a brief, three slides, and a draft reply to Dan's pricing question."
 turns: []
 world: {variants: [], faults: ""}
-maya:
+sarah:
   answers: {}
   approvals: none
   edit: ""

@@ -20,12 +20,18 @@ USAGE_EXAMPLES = """examples:
   ea-eval component llm_dates --trials 5
   ea-eval list cases
   ea-eval estimate --cases workshop --trials 3
+  ea-eval phoenix <run-id> --dry-run        (instructors: uv run --extra phoenix ...)
 """
 
-# Rough per-trial figures until the reference run measures them (PRD section 13)
-EST_CLAUDE_USD = 0.35
-EST_OPENAI_USD = 0.02
-EST_SECONDS = 75
+# Per-trial figures from the October 2026 setup-baseline run (10 cases × 1 trial, Claude Opus): $7.07 in all,
+# $0.71 a trial on average, from $0.28 (W03, X07) to $1.61 (M01, the agent team). A browser booking (R01) cost $2.09.
+# Team cases vary most: $1.43–$3.06 in the October lesson5-team run, so "team" is the mean of all five team trials.
+EST_CLAUDE_USD = {"team": 2.14, "browser": 2.09, "baseline": 0.60}
+EST_CLAUDE_AVG_USD = 0.71  # case types the baseline didn't include
+BASELINE_TYPES = {"scheduling", "triage", "brief", "email", "booking", "research", "safety"}
+EST_OPENAI_USD = 0.15  # judge (gpt-5.6-sol) and simulated Sarah: $0.10–$0.20 a trial
+# Wall-clock seconds a trial, grading included, from the runs in evals/results/ (S01, T01, M01, M03, R01 browser)
+EST_SECONDS = {"team": 200, "browser": 285, "baseline": 95}
 
 
 def _run_id(prefix: str) -> str:
@@ -140,7 +146,7 @@ def cmd_regrade(args: argparse.Namespace) -> int:
         g = runner.grade(spec, p.parent, usage, u.get("seconds", 0), old.get("stopped_by", "end_turn"), old.get("error", ""), old.get("sim_classifier", ""))
         p.write_text(json.dumps(g, indent=2, ensure_ascii=False))
         n += 1
-        changed = sum(1 for a, b in zip(old.get("criteria", []), g["criteria"]) if a.get("verdict") != b.get("verdict"))
+        changed = sum(1 for a, b in zip(old.get("criteria", []), g["criteria"], strict=False) if a.get("verdict") != b.get("verdict"))
         print(f"  {spec.key}: {'PASS' if g['passed'] else 'FAIL'}" + (f" ({changed} verdicts changed)" if changed else ""))
     print(f"Re-graded {n} trials · OpenAI ${meter.openai_usd:.2f} (unchanged judgements come from the cache)")
     print(f"Report: {build(args.run_id)}")
@@ -181,17 +187,38 @@ def cmd_list(args: argparse.Namespace) -> int:
     return 0
 
 
+def trial_estimate(case: dict, variant: dict[str, str]) -> tuple[float, int]:
+    """(Claude USD, seconds) for one trial of a case, from the measured figures above."""
+    from . import variants as V
+
+    if V.browser_on(variant) and case.get("type") == "booking":
+        return EST_CLAUDE_USD["browser"], EST_SECONDS["browser"]
+    if case.get("type") == "team":
+        return EST_CLAUDE_USD["team"], EST_SECONDS["team"]
+    usd = EST_CLAUDE_USD["baseline"] if case.get("type") in BASELINE_TYPES else EST_CLAUDE_AVG_USD
+    return usd, EST_SECONDS["baseline"]
+
+
 def cmd_estimate(args: argparse.Namespace) -> int:
+    from . import variants as V
     from .cases import load_all, select, slice_plan
 
     if args.slice:
         plan, trials, _ = slice_plan(args.slice)
-        n = len(plan) * (args.trials or trials)
+        trials = args.trials or trials
     else:
-        n = len(select(args.cases or "workshop", load_all())) * (args.trials or 1)
-    par = max(1, args.parallel)
-    print(f"{n} trials ≈ ${n * EST_CLAUDE_USD:.2f} of Claude plan usage (API-equivalent) + ${n * EST_OPENAI_USD:.2f} OpenAI, "
-          f"about {n * EST_SECONDS / par / 60:.0f} min at --parallel {par}. Figures are rough until the reference run measures them.")
+        plan, trials = [(c, {}) for c in select(args.cases or "workshop", load_all())], args.trials or 1
+    each = [trial_estimate(c, v) for c, v in plan]
+    n = len(plan) * trials
+    claude = sum(usd for usd, _ in each) * trials
+    seconds = sum(s for _, s in each) * trials
+    browser = any(V.browser_on(v) for _, v in plan)
+    par = 1 if browser else max(1, args.parallel)  # the runner takes browser trials one at a time
+    print(f"{n} trials ≈ ${claude:.2f} of Claude plan usage (API-equivalent) + ${n * EST_OPENAI_USD:.2f} OpenAI judging, "
+          f"about {seconds / par / 60:.0f} min at --parallel {par}{' (browser runs go one at a time)' if browser else ''}.")
+    print(f"From the October 2026 runs (Claude Opus): ${EST_CLAUDE_AVG_USD:.2f} a trial on average in the setup baseline, "
+          f"agent-team cases about ${EST_CLAUDE_USD['team']:.2f}, browser bookings about ${EST_CLAUDE_USD['browser']:.2f}, "
+          f"others about ${EST_CLAUDE_USD['baseline']:.2f}; OpenAI about ${EST_OPENAI_USD:.2f} a trial.")
     return 0
 
 
@@ -230,6 +257,17 @@ def cmd_calibrate(args: argparse.Namespace) -> int:
         tnr = "—" if r["tnr"] is None else f"{r['tnr']:.0%}"
         print(f"{crit}: TPR {tpr} · TNR {tnr} · {r['labelled']} labels")
     return 0
+
+
+def cmd_phoenix(args: argparse.Namespace) -> int:
+    try:
+        from . import phoenix
+    except ImportError:
+        print(f"This needs the optional Phoenix packages: uv run --extra phoenix ea-eval phoenix {args.run_id}", file=sys.stderr)
+        return 2
+    if args.dry_run:
+        return phoenix.dry_run(args.run_id, args.project, args.case)
+    return phoenix.export(args.run_id, args.endpoint, args.project, args.case)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -302,6 +340,13 @@ def build_parser() -> argparse.ArgumentParser:
     ca.add_argument("run_id")
     ca.add_argument("--rubric", required=True)
     ca.set_defaults(fn=cmd_calibrate)
+    ph = sub.add_parser("phoenix", help="Send a run's traces to a local Arize Phoenix (instructors; needs the phoenix extra)")
+    ph.add_argument("run_id", help="a run id, or one trial folder")
+    ph.add_argument("--endpoint", default=None, help="OTLP traces URL (default $PHOENIX_COLLECTOR_ENDPOINT or http://localhost:6006/v1/traces)")
+    ph.add_argument("--project", default="intuition", help="Phoenix project name")
+    ph.add_argument("--case", default=None, help="only this case id's trials")
+    ph.add_argument("--dry-run", action="store_true", help="print the span tree for one trial; send nothing")
+    ph.set_defaults(fn=cmd_phoenix)
     return p
 
 
@@ -309,4 +354,10 @@ def main(argv: list[str] | None = None) -> None:
     load_dotenv()
     os.environ["PATH"] = os.pathsep.join([str(Path.home() / ".local" / "bin"), os.environ.get("PATH", "")])
     args = build_parser().parse_args(argv)
-    sys.exit(args.fn(args))
+    from .variants import VariantError
+
+    try:
+        sys.exit(args.fn(args))
+    except VariantError as e:
+        print(e, file=sys.stderr)
+        sys.exit(2)

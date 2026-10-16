@@ -1,12 +1,12 @@
 # Set up Intuition on your laptop
 
-This guide gets you from a clean laptop to your first message with Maya Chen's assistant, in about 15 minutes. Everything runs on your machine against a made-up world: no real email, calendar or bookings are involved.
+This guide gets you from a clean laptop to your first message with Sarah Smith's assistant, in about 15 minutes. Everything runs on your machine against a made-up world: no real email, calendar or bookings are involved.
 
 ## 1. What you need
 
 - A Mac, Windows (WSL2 recommended) or Linux machine with about 2 GB free.
 - A Claude Pro or Max account. Claude Code runs the assistant on your own plan; no Anthropic API key is needed.
-- An OpenAI API key. It runs the grader (the "judge") and the simulated Maya in evals. The workshop provides one; afterwards, use your own.
+- An OpenAI API key. It runs the grader (the "judge") and the simulated Sarah in evals. The workshop provides one; afterwards, use your own.
 - Optionally, a free [SerpAPI](https://serpapi.com) key for live web search in the app. Evals always replay recorded search results, so they never need it.
 - Optionally, Brave (recommended) or Chrome, plus Node.js 20 or later, to watch bookings happen in a browser window.
 - About 15 minutes.
@@ -76,7 +76,7 @@ It prints one line per check, green or red, with the fix for anything red. Fix t
 make start
 ```
 
-This runs the quick checks, starts the app, and opens Intuition in your browser: the onboarding page, with the phone and chat beside it. Claude Code runs the assistant in the background. Go through the onboarding, connect Maya's (mock) accounts, then send "What needs me today?". Stop with Ctrl+C.
+This runs the quick checks, starts the app, and opens Intuition in your browser: the onboarding page, with the phone and chat beside it. Claude Code runs the assistant in the background. Go through the onboarding, connect Sarah's (mock) accounts, then send "What needs me today?". Stop with Ctrl+C.
 
 To watch bookings happen in a browser, run `make browser` first (it opens Brave or Chrome with a separate profile that never touches your own logins), and leave "Book through the browser" on during onboarding.
 
@@ -95,7 +95,7 @@ Ask the same question. This is the same assistant: the same brief, skills, speci
 uv run ea-eval run --slice setup-baseline
 ```
 
-It runs ten golden cases, one trial each, and prints the path of an HTML report. Open it in your browser.
+It runs ten golden cases, one trial each, and prints the path of an HTML report. Open it in your browser. Expect about $7 of Claude plan usage (API-equivalent) and $1–2 of OpenAI judging.
 
 ## 11. Open the guide
 
@@ -108,10 +108,10 @@ Each trial is a full Claude Code conversation and counts toward your plan's usag
 - Start with one trial and the lesson slices (`uv run ea-eval list slices`).
 - Use `--parallel 1` or `2` (the default is 2).
 - Raise `--trials` only for the pass^k steps.
-- `uv run ea-eval estimate --slice <name>` shows a rough cost and time before you run.
+- `uv run ea-eval estimate --slice <name>` shows the cost and time before you run, from our October 2026 baseline run.
 - If you hit a usage limit, the run pauses and tells you how to resume: `uv run ea-eval resume <run-id>`.
 
-OpenAI judging costs a few cents per trial; `--max-cost` caps OpenAI spend per run (default $5).
+OpenAI judging costs about $0.10–$0.20 a trial; `--max-cost` caps OpenAI spend per run (default $5).
 
 ## 13. Troubleshooting
 
@@ -132,7 +132,7 @@ OpenAI judging costs a few cents per trial; `--max-cost` caps OpenAI spend per r
 ## 14. Updating and resetting
 
 - `git pull`, then `make setup`, to update.
-- `uv run ea-world reset`, or "Reset world" in the app, to start Maya's world fresh.
+- `uv run ea-world reset`, or "Reset world" in the app, to start Sarah's world fresh.
 - Delete `evals/results/` and `reports/` (or `make clean-runs`) to clear old runs.
 
 ### Browser commands for Linux and Windows
@@ -142,3 +142,14 @@ OpenAI judging costs a few cents per trial; `--max-cost` caps OpenAI spend per r
 - **macOS:** `"/Applications/Brave Browser.app/Contents/MacOS/Brave Browser" --remote-debugging-port=9222 --user-data-dir="$HOME/.intuition/browser-profile" --no-first-run`
 - **Linux:** `brave-browser --remote-debugging-port=9222 --user-data-dir="$HOME/.intuition/browser-profile" --no-first-run` (or `google-chrome …`)
 - **Windows:** `"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe" --remote-debugging-port=9222 --user-data-dir="%USERPROFILE%\.intuition\browser-profile" --no-first-run`
+
+## Instructor demo: real-site search
+
+This is for instructors, and it's off unless you turn it on. Students' setup, the app's default behaviour and every eval are unchanged.
+
+- **Turn it on:** `make demo-real` (or `EA_REAL_SITES=on uv run ea-start --real-sites`). It starts a separate, clean Brave or Chrome on port 9223 with a fresh profile in a temporary folder, so it never sees your own cookies, logins or history, and it never uses the port 9222 browser. The app shows a **Real-site search (instructor demo)** badge. Stop the app with Ctrl+C and the browser closes and its profile is deleted; if anything is left over, run `uv run python tools/browser.py --real --close`.
+- **What it can do:** with "Book through the browser" on, the travel specialist may open expedia.com and google.com/travel (flights and hotels), type places, dates and the number of travellers, and read results and prices. It reports them as live quotes.
+- **What it can't do:** sign in, open account, cart, checkout, payment or booking pages, type personal details (names, emails, phone, card or loyalty numbers), or click Book, Reserve, Sign in, Checkout and similar. The browser guard blocks these and the trace shows each block. Bookings still happen only on the workshop's mock sites, after Sarah approves.
+- **Expect surprises:** real sites change their layout and may show bot checks, captchas or consent pages. The assistant stops on that site and tries the other one; it never tries to get around them.
+- **Evals:** `ea-eval` refuses `browser=real`; use `browser=on` for the mock booking sites.
+- **Change the allowlist:** everything is in `ea_harness/real_sites.py` (Kayak is there, commented out).

@@ -61,7 +61,7 @@ def source_texts(st: State, run_dir: Path | None = None) -> list[str]:
         p = st.state_dir / "docs" / d["file"]
         if p.exists():
             texts.append(p.read_text(encoding="utf-8"))
-    for ev in st.load("calendars").get("maya", []):
+    for ev in st.load("calendars").get("sarah", []):
         texts += [ev.get("title", ""), ev.get("description", "")]
     for f in st.load("flights").get("flights", []):
         texts.append(f"${f['price_usd']} " + " ".join(f.get("tags", [])))
@@ -106,10 +106,10 @@ def event_problems(st: State, ev: dict[str, Any]) -> list[Problem]:
     for a in ev.get("attendees", []):
         p = people.get(a) or resolve_person(a, contacts)
         if p is None:
-            probs.append(Problem("unknown_attendee", f"'{a}' isn't in Maya's contacts", person=a))
+            probs.append(Problem("unknown_attendee", f"'{a}' isn't in Sarah's contacts", person=a))
             continue
         probs += hours_problems(p, start, end)
-        if p.get("internal") and p["id"] != "maya" and ooo_on(cal, p["id"], start, end):
+        if p.get("internal") and p["id"] != "sarah" and ooo_on(cal, p["id"], start, end):
             probs.append(Problem("attendee_out_of_office", f"{p['name']} is out of office then", person=p["id"]))
     if not ev.get("all_day"):
         probs += overlap_problems(cal, start, end, ev)
@@ -140,7 +140,7 @@ def check_event(event_id: Annotated[str, Field(description="The event to check")
     09:00–17:30 limits, overlaps, 15-minute buffers, out-of-office days, declines, agendas for external
     meetings. Returns a list of problems, not an opinion."""
     st = core.st()
-    for ev in st.load("calendars").get("maya", []):
+    for ev in st.load("calendars").get("sarah", []):
         if ev["id"] == event_id:
             core.ctx().object_id = event_id
             if ev.get("status") == "cancelled":
@@ -214,7 +214,7 @@ def _known_starts(st: State, run_dir: Path | None, draft: dict[str, Any]) -> lis
     """Start times in the draft's context: related events, events written this run, and free slots found."""
     text = (draft.get("subject", "") + " " + draft.get("body", "")).lower()
     starts: list[datetime] = []
-    for ev in st.load("calendars").get("maya", []):
+    for ev in st.load("calendars").get("sarah", []):
         if ev.get("status") != "active":
             continue
         title_tokens = [t for t in re.findall(r"[a-z0-9]+", ev.get("title", "").lower()) if len(t) > 3 and t not in TITLE_STOPWORDS]
@@ -243,7 +243,7 @@ def _known_starts(st: State, run_dir: Path | None, draft: dict[str, Any]) -> lis
 def email_problems(st: State, draft: dict[str, Any], run_dir: Path | None = None) -> list[Problem]:
     contacts = st.load("contacts")
     persona = st.load("persona")
-    maya_tz = persona.get("timezone", "America/Denver")
+    sarah_tz = persona.get("timezone", "America/Denver")
     probs: list[Problem] = []
     recipients = list(draft.get("to", [])) + list(draft.get("cc", []))
     body = draft.get("body", "")
@@ -256,7 +256,7 @@ def email_problems(st: State, draft: dict[str, Any], run_dir: Path | None = None
         p = resolve_person(addr, contacts)
         org = _org(addr, contacts)
         if p is None:
-            probs.append(Problem("recipient_not_in_contacts", f"{addr} isn't in Maya's contacts", person=addr))
+            probs.append(Problem("recipient_not_in_contacts", f"{addr} isn't in Sarah's contacts", person=addr))
             if org is None:
                 probs.append(Problem("suspicious_recipient", f"{addr} isn't a contact and its domain isn't Larkspur, a customer or a supplier", person=addr))
         else:
@@ -266,23 +266,23 @@ def email_problems(st: State, draft: dict[str, Any], run_dir: Path | None = None
         if org and org.get("relationship") == "customer":
             external_orgs.append(org)
     # Times
-    other_zones = [p for p in recipient_people if p["timezone"] != maya_tz]
+    other_zones = [p for p in recipient_people if p["timezone"] != sarah_tz]
     mentions = find_times(body)
     if other_zones and any(m.zone is None for m in mentions):
         raw = ", ".join(m.raw for m in mentions if m.zone is None)
         probs.append(Problem("time_without_zone", f"Times without a zone or city ({raw}); {other_zones[0]['name']} is in {other_zones[0]['timezone']}"))
-    rec_tz = (other_zones[0] if other_zones else (recipient_people[0] if recipient_people else {"timezone": maya_tz}))["timezone"]
+    rec_tz = (other_zones[0] if other_zones else (recipient_people[0] if recipient_people else {"timezone": sarah_tz}))["timezone"]
     now = st.now()
     known = _known_starts(st, run_dir, draft)
     for m in mentions:
         if m.zone is None:
             continue
-        stated = m.resolve(now, rec_tz, maya_tz)
+        stated = m.resolve(now, rec_tz, sarah_tz)
         if not known:
             continue
         if stated is None and m.day is None and m.weekday is None and m.rel is None:
             # An undated time ("confirmed for 18:00 London") refers to the event in context: try each known day.
-            ztz = m.zone_name(rec_tz, maya_tz)
+            ztz = m.zone_name(rec_tz, sarah_tz)
             if ztz is None:
                 continue
             days = sorted({k.astimezone(ZoneInfo(ztz)).date() for k in known})
@@ -293,7 +293,7 @@ def email_problems(st: State, draft: dict[str, Any], run_dir: Path | None = None
             continue
         if any(abs((stated - k).total_seconds()) < 60 for k in known):
             continue
-        tz = m.zone_name(rec_tz, maya_tz) or rec_tz
+        tz = m.zone_name(rec_tz, sarah_tz) or rec_tz
         for k in known:
             diff = (stated - k).total_seconds() / 3600
             if diff != 0 and abs(diff) <= 2 and float(diff).is_integer() and k.astimezone(ZoneInfo(tz)).date() == stated.date():
@@ -302,13 +302,13 @@ def email_problems(st: State, draft: dict[str, Any], run_dir: Path | None = None
                 break
     # Privacy
     if any(a.lower() != persona.get("email", "").lower() for a in recipients):
-        for ev in st.load("calendars").get("maya", []):
+        for ev in st.load("calendars").get("sarah", []):
             if not ev.get("private"):
                 continue
             title = ev.get("title", "")
             words = [w for w in re.findall(r"[a-z]+", title.lower()) if len(w) >= 5 and w not in TITLE_STOPWORDS]
             if title.lower() in lower or any(re.search(rf"\b{re.escape(w)}", lower) for w in words):
-                probs.append(Problem("private_detail", f"Mentions Maya's private event '{title}'"))
+                probs.append(Problem("private_detail", f"Mentions Sarah's private event '{title}'"))
     if any_external:
         internal_keys = internal_value_keys(st)
         for n in numbers.extract(text):

@@ -109,15 +109,18 @@ def test_config_reports_capabilities_without_secrets(client, monkeypatch):
     assert cfg["claude"]["installed"] is True
     assert cfg["browser"]["available"] is False
     assert [c["id"] for c in cfg["connectors"]] == ["email", "calendar", "contacts", "docs", "web", "travel"]
-    assert cfg["persona"]["initials"] == "MC"
+    assert cfg["persona"]["initials"] == "SS"
     assert "sk-secret-do-not-leak" not in r.text
 
 
 def test_index_and_static_are_served(client):
     r = client.get("/")
     assert r.status_code == 200 and "<html" in r.text.lower()
-    for name in ("app.js", "app.css", "tokens.css", "icons.svg"):
-        assert client.get(f"/static/{name}").status_code == 200, name
+    for name in ("app.js", "app.css", "tokens.css", "icons.svg", "sarah.jpg"):
+        s = client.get(f"/static/{name}")
+        assert s.status_code == 200, name
+        # Revalidated on every load, so a fresh index.html never runs a stale app.js or icon set.
+        assert s.headers["cache-control"] == "no-cache", name
 
 
 def test_session_creation(client, tmp_path):
@@ -128,7 +131,7 @@ def test_session_creation(client, tmp_path):
     assert (rd / "state" / "persona.json").exists()
     assert (tmp_path / "runs" / "CURRENT").read_text().strip() == str(rd)
     ctx = json.loads((rd / "approval_context.json").read_text())
-    assert ctx == {"auto_approve": True, "explicit_yes": False, "last_maya_message": ""}
+    assert ctx == {"auto_approve": True, "explicit_yes": False, "last_sarah_message": ""}
     assert info["options"]["harness"] == "fake" and info["options"]["connectors"]["travel"] is False
     # A connector left off at setup is disconnected right away.
     assert json.loads((rd / "state" / "connectors.json").read_text())["travel"] == "disconnected"

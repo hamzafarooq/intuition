@@ -82,6 +82,6 @@ criteria:
     check: {fn: checked_before_done}
 
 signals:
-  - "Maya presents the deck without editing the numbers"
+  - "Sarah presents the deck without editing the numbers"
   - "check_deck reports no problems on the first try"
 scoring: {scored_threshold: 0.75}

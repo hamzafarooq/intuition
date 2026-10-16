@@ -1,4 +1,4 @@
-# Inbox triage: what needs Maya, what she dropped, what she can ignore, summaries.
+# Inbox triage: what needs Sarah, what she dropped, what she can ignore, summaries.
 id: triage
 version: 1
 description: >
@@ -32,7 +32,7 @@ criteria:
     grader: code_then_judge
     check: {fn: mentions_emails, args: {target: final, ids: $fill.ignorable}}
     artifact: final
-    question: "Does the reply avoid telling Maya she can ignore any of these emails: {fill.not_ignorable_desc}? Mentioning them as things she should NOT ignore is fine."
+    question: "Does the reply avoid telling Sarah she can ignore any of these emails: {fill.not_ignorable_desc}? Mentioning them as things she should NOT ignore is fine."
     reference: {fn: email_text, args: {ids: $fill.not_ignorable, body: false}}
     pass_example: "'Safe to ignore: the two newsletters, the expense approval and the ProSocial notice. Don't ignore Dan Reyes's pricing question from the 17th.'"
     fail_example: "'You can skip Tom's forecast sync note and the old Ridgeway pricing thread.'"
@@ -78,12 +78,12 @@ criteria:
     when: "'needs_today' in fill"
     grader: judge
     artifact: final
-    question: "Does the reply avoid listing newsletters or automated notices as things Maya needs to act on?"
+    question: "Does the reply avoid listing newsletters or automated notices as things Sarah needs to act on?"
     reference: {fn: email_text, args: {ids: $gold.needs_today.noise, body: false}}
     pass_example: "Needs-today list has Tom's forecast sync, Raj's Thursday question, Dan Reyes's pricing question and the travel block; the newsletters are left out or under 'can ignore'."
     fail_example: "'To do today: read This week in construction supply; check your weekly sales digest.'"
 
 signals:
-  - "Maya acts on the listed items without asking 'what about X?'"
+  - "Sarah acts on the listed items without asking 'what about X?'"
   - "The dropped thread gets a reply the same day"
 scoring: {scored_threshold: 0.75}

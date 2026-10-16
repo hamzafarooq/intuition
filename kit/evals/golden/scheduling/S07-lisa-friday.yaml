@@ -8,7 +8,7 @@ tags: [ooo, signal]
 request: "Set up 30 minutes with Lisa on Friday to go over EMEA numbers."
 turns: []
 world: {variants: [], faults: ""}
-maya:
+sarah:
   answers:
     alternative: "Let's do Wednesday then."
   approvals: explicit_yes
@@ -28,6 +28,6 @@ fill:
 budgets: {max_cost_usd: 0.80, max_seconds: 240}
 notes: >
   Friday can't work. If the assistant invites Lisa for Friday anyway, she declines ("I'm out of office"),
-  a signal it must act on; the Friday event must not remain (cancelling needs Maya's yes). The only time
-  Lisa and Maya can meet this week is Wed 28 Oct 11:00-11:30 Denver (17:00-17:30 London); Maya picks
+  a signal it must act on; the Friday event must not remain (cancelling needs Sarah's yes). The only time
+  Lisa and Sarah can meet this week is Wed 28 Oct 11:00-11:30 Denver (17:00-17:30 London); Sarah picks
   Wednesday when offered, so a good run ends with that event.

@@ -8,7 +8,7 @@ tags: [tz, external]
 request: "Tell Raj I can't do Thursday and offer two other times."
 turns: []
 world: {variants: [], faults: ""}
-maya:
+sarah:
   answers: {}
   approvals: explicit_yes
   edit: ""
@@ -25,6 +25,6 @@ fill:
 budgets: {max_cost_usd: 0.60, max_seconds: 180}
 notes: >
   em-03: Raj asked for "Thursday at 2pm my time (Central)", 45 minutes, about the co-marketing plan.
-  Thursday 14:00 Central = 13:00 Denver, when Maya is in the Regional QBR (the Thursday clash). Offer two
-  45-minute slots on other days, valid for Raj (09:00-17:00 Central) and Maya, written in Central.
-  Send only after Maya's yes, with check_email run on the draft first.
+  Thursday 14:00 Central = 13:00 Denver, when Sarah is in the Regional QBR (the Thursday clash). Offer two
+  45-minute slots on other days, valid for Raj (09:00-17:00 Central) and Sarah, written in Central.
+  Send only after Sarah's yes, with check_email run on the draft first.

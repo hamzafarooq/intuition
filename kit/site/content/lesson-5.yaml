@@ -3,7 +3,7 @@ number: 5
 duration: 35 min
 goal: "Know whether the team is worth its cost, whether the harness survives failures, and how much of the result comes from the harness."
 intro: |
-  An **agent team** is several agents working on one deliverable and checking each other. Maya's Monday
+  An **agent team** is several agents working on one deliverable and checking each other. Sarah's Monday
   brief uses three: a planner drafts the week, a challenger looks for what's missing or wrong, and QA
   checks the result against its definition of done. Teams cost more, so you'll measure whether this one
   earns it. Then you'll break things on purpose, and look at the harness itself: the software around the
@@ -27,11 +27,11 @@ steps:
     prompt: |
       Build the Monday-brief team, following the "Writing assistant files" and "Markers" sections of CLAUDE.md.
 
-      1. assistant/.claude/skills/monday-brief/SKILL.md. Description, word for word: "Use when Maya asks for her Monday brief, a plan for the week, or everything she needs to know this week."
+      1. assistant/.claude/skills/monday-brief/SKILL.md. Description, word for word: "Use when Sarah asks for her Monday brief, a plan for the week, or everything she needs to know this week."
          Steps: delegate to planner (draft the week: priorities, deadlines, conflicts, travel, dropped threads) → challenger (find what's missing or wrong, with evidence) → planner again (revise using the challenger's issues) → qa (check against the definition of done) → present the brief. Each hand-off carries everything the next agent needs, because agents can't see each other's work otherwise.
          Definition of done: covers today's deadlines, dropped threads, the forecast deadline, who is out this week, and upcoming travel; flags suspicious emails; qa passes; the team's notes are in the trace. Don't write facts from world/ into the skill: the agents must find them.
       2. Three agents in assistant/.claude/agents/, each with model: inherit and mcp__ea-world__ tool names:
-         - planner.md: "Drafts Maya's plan for the week. Used by the monday-brief skill." Tools: clock_now, calendar_list, email_search, email_read, docs_search, contacts_lookup. Returns a structured weekly brief.
+         - planner.md: "Drafts Sarah's plan for the week. Used by the monday-brief skill." Tools: clock_now, calendar_list, email_search, email_read, docs_search, contacts_lookup. Returns a structured weekly brief.
          - challenger.md: "Finds what a weekly plan missed or got wrong. Used by the monday-brief skill." The same tools as planner. Returns a list of issues, each with evidence (an email or event id).
          - qa.md: "Checks the final weekly brief against its definition of done. Used by the monday-brief skill." Tools: clock_now, calendar_list, email_search, email_read. Returns pass or fail per criterion.
          None of them gets a write tool.
@@ -95,7 +95,7 @@ steps:
     prompt: |
       I've run `uv run ea-eval run --slice lesson5-faults --run-id faults`. It runs S01 and R08 with a timeout after the first write, once with idempotency keys off and once with the harness adding them (idempotency=auto).
 
-      1. Read evals/results/faults/: for each trial, how many events or bookings exist at the end, whether there's a duplicate, and what the assistant told Maya.
+      1. Read evals/results/faults/: for each trial, how many events or bookings exist at the end, whether there's a duplicate, and what the assistant told Sarah.
       2. Then update the scheduling and travel-booking skills in assistant/.claude/skills/ so the assistant is safe on its own, without the harness's help:
          - pass an idempotency_key on every calendar_create, calendar_update, travel_book and restaurant_book: a stable string built from what's being created
          - after a timeout or any error on a write, read back first (calendar_list, or bookings_list) and retry only if nothing was written

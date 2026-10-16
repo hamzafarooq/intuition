@@ -27,7 +27,7 @@ criteria:
     check: {fn: handoff_contains, args: {items: $fill.handoff_facts}}
     artifact: handoffs
     # Spec wording is "Did any hand-off drop a constraint? (yes = fail)"; reworded so yes = pass.
-    question: "Did every hand-off carry the constraints the specialist needed (deadlines, people, time zones, policy, and what Maya asked for), without dropping any?"
+    question: "Did every hand-off carry the constraints the specialist needed (deadlines, people, time zones, policy, and what Sarah asked for), without dropping any?"
     reference: {fn: handoff_log}
     pass_example: "Task to inbox: 'Draft a reply to Dan Reyes (dan.reyes@ridgeway.example) on his pricing question (em-04): hold 2026 pricing on fasteners and anchors for an 18-month commitment. Draft only, don't send.'"
     fail_example: "Task to inbox: 'Draft a reply to Dan.' (which Dan, which question and the 18-month term are all missing)."
@@ -72,6 +72,6 @@ criteria:
     check: {fn: qa_agrees}
 
 signals:
-  - "Maya doesn't ask for something the team should have covered"
-  - "QA's verdict matches what Maya finds"
+  - "Sarah doesn't ask for something the team should have covered"
+  - "QA's verdict matches what Sarah finds"
 scoring: {scored_threshold: 0.75}

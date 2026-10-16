@@ -12,8 +12,8 @@ A fixture holds what a real trial leaves behind, minus the world copies:
 
 `final_patch.json` is a list of edits applied to the run's `state/`:
 
-    {"file": "calendars.json", "op": "append", "path": ["maya"], "value": {...}}
-    {"file": "calendars.json", "op": "set",    "path": ["maya", {"id": "ev-n1"}, "status"], "value": "cancelled"}
+    {"file": "calendars.json", "op": "append", "path": ["sarah"], "value": {...}}
+    {"file": "calendars.json", "op": "set",    "path": ["sarah", {"id": "ev-n1"}, "status"], "value": "cancelled"}
     {"file": "drafts.json",    "op": "update", "path": ["drafts", {"id": "dr-1"}], "value": {"status": "sent"}}
 
 `path` is a list of segments: a string is a dict key; a one-key dict such as {"id": "ev-n1"} selects the

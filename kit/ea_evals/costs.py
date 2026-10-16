@@ -1,4 +1,4 @@
-"""Cost and usage meters: real OpenAI spend (judge, simulated Maya) and Claude Code's API-equivalent cost.
+"""Cost and usage meters: real OpenAI spend (judge, simulated Sarah) and Claude Code's API-equivalent cost.
 
 OpenAI prices are per million tokens. Override with EA_OPENAI_PRICES='{"model": [input, output], ...}'
 when OpenAI's price list changes.

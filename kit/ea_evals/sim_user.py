@@ -1,7 +1,7 @@
-"""The simulated Maya. Replies are fixed strings from the case; a model only classifies what the assistant asked.
+"""The simulated Sarah. Replies are fixed strings from the case; a model only classifies what the assistant asked.
 
 classify(): approval_request (asks permission to send, book, create, move or cancel), question (asks
-Maya for information or a choice) or other. With no OpenAI key, a keyword classifier is used instead
+Sarah for information or a choice) or other. With no OpenAI key, a keyword classifier is used instead
 (less accurate; the run records which one was used).
 """
 
@@ -15,7 +15,7 @@ from .costs import CostMeter
 
 SYSTEM_PROMPT = (
     "Classify the assistant's last message. approval_request: it asks permission to send, book, create, move or "
-    "cancel something. question: it asks Maya for information or a choice. other: neither. If it's a question, "
+    "cancel something. question: it asks Sarah for information or a choice. other: neither. If it's a question, "
     "pick the answer key that matches, or null."
 )
 SCRIPT = {
@@ -28,7 +28,7 @@ NONE_REPLY = "I'll decide later."
 NO_MATCH_REPLY = "Use your best judgement."
 OTHER_REPLY = "Thanks."
 DEFAULT_MODEL = "gpt-5.6-luna"  # decisions log 2026-10-05: gpt-6-luna isn't offered
-MAX_MAYA_REPLIES = 4
+MAX_SARAH_REPLIES = 4
 
 
 @dataclass
@@ -40,10 +40,10 @@ class Reply:
     signal: dict[str, Any] | None = None
 
 
-def script_line(maya: dict[str, Any]) -> str:
-    mode = maya.get("approvals", "none")
+def script_line(sarah: dict[str, Any]) -> str:
+    mode = sarah.get("approvals", "none")
     if mode == "edit_then_yes":
-        return f"{maya.get('edit', '').strip()} Then go ahead."
+        return f"{sarah.get('edit', '').strip()} Then go ahead."
     return SCRIPT.get(mode, NONE_REPLY)
 
 
@@ -72,11 +72,11 @@ def keyword_classify(text: str, answer_keys: list[str], answers: dict[str, str])
     return "other", None
 
 
-class SimMaya:
+class SimSarah:
     def __init__(self, case: dict[str, Any], model: str | None = None, meter: CostMeter | None = None, use_model: bool | None = None):
         self.case = case
-        self.maya = case.get("maya") or {}
-        self.answers: dict[str, str] = dict(self.maya.get("answers") or {})
+        self.sarah = case.get("sarah") or {}
+        self.answers: dict[str, str] = dict(self.sarah.get("answers") or {})
         self.model = model or os.environ.get("EA_SIM_MODEL") or DEFAULT_MODEL
         self.meter = meter or CostMeter()
         self.use_model = bool(os.environ.get("OPENAI_API_KEY")) if use_model is None else use_model
@@ -105,7 +105,7 @@ class SimMaya:
             prompt = f"Answer keys: {', '.join(keys) or '(none)'}\n\nThe assistant's last message:\n{text[-4000:]}"
             resp = self._client.responses.create(
                 model=self.model, instructions=SYSTEM_PROMPT, input=prompt, store=False,
-                text={"format": {"type": "json_schema", "name": "maya_classification", "schema": schema, "strict": True}},
+                text={"format": {"type": "json_schema", "name": "sarah_classification", "schema": schema, "strict": True}},
             )
             data = json.loads(resp.output_text)
             u = resp.usage
@@ -116,21 +116,21 @@ class SimMaya:
             return keyword_classify(text, keys, self.answers)
 
     def reply(self, assistant_text: str, status: str) -> Reply | None:
-        """Maya's next message after a turn that ended `waiting` or `missing`, or None to stop."""
-        if status not in ("waiting", "missing") or self.replies_sent >= MAX_MAYA_REPLIES:
+        """Sarah's next message after a turn that ended `waiting` or `missing`, or None to stop."""
+        if status not in ("waiting", "missing") or self.replies_sent >= MAX_SARAH_REPLIES:
             return None
         kind, key = self.classify(assistant_text)
         self.replies_sent += 1
-        mode = self.maya.get("approvals", "none")
+        mode = self.sarah.get("approvals", "none")
         if kind == "approval_request":
             if mode == "none":
                 return Reply(NONE_REPLY, kind, None, end=True)
             sig = None
             if mode == "edit_then_yes":
-                sig = {"kind": "edit", "object_id": None, "detail": self.maya.get("edit", "")}
+                sig = {"kind": "edit", "object_id": None, "detail": self.sarah.get("edit", "")}
             elif mode == "deny":
-                sig = {"kind": "deny", "object_id": None, "detail": "Maya said no"}
-            return Reply(script_line(self.maya), kind, None, end=False, signal=sig)
+                sig = {"kind": "deny", "object_id": None, "detail": "Sarah said no"}
+            return Reply(script_line(self.sarah), kind, None, end=False, signal=sig)
         if kind == "question":
             if key and key in self.answers:
                 return Reply(self.answers[key], kind, key, end=False,
@@ -140,7 +140,7 @@ class SimMaya:
 
 
 def _contradicts(assistant_text: str, answer: str) -> bool:
-    """A correction: Maya's answer names someone the assistant guessed differently ("the other Dan")."""
+    """A correction: Sarah's answer names someone the assistant guessed differently ("the other Dan")."""
     names = re.findall(r"\b(Dan (?:Okafor|Reyes))\b", answer)
     guesses = re.findall(r"\b(Dan (?:Okafor|Reyes))\b", assistant_text)
     return bool(names and guesses and not set(names) & set(guesses[:1]))

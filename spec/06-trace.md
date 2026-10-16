@@ -14,14 +14,14 @@ Common fields on every event:
 | `seq` | int | Order within the trial, from 1 |
 | `ts` | string | Wall-clock ISO time |
 | `run_id`, `case_id`, `trial`, `harness`, `variant` | string / int | Empty for interactive use |
-| `turn` | int | Maya's message number, from 1 |
+| `turn` | int | Sarah's message number, from 1 |
 | `agent` | string | `main` or the sub-agent name |
 | `parent_call_id` | string or null | For sub-agent events, the `delegate` call that started them |
 | `type` | string | One of the types below |
 
 | `type` | Extra fields |
 |---|---|
-| `user` | `text`, `source`: `maya` (a person), `sim_maya`, or `harness` (a stop-check note) |
+| `user` | `text`, `source`: `sarah` (a person), `sim_sarah`, or `harness` (a stop-check note) |
 | `assistant` | `text` |
 | `thinking_summary` | `text` |
 | `tool_call` | `call_id`, `tool` (bare name), `input` |
@@ -42,7 +42,7 @@ Common fields on every event:
 
 Rules:
 - Every `tool_call` has exactly one `tool_result` with the same `call_id`.
-- `signal` events for world reactions come from the call log's `signals` field and are emitted right after the `tool_result` that caused them. `edit`, `deny` and `correction` signals come from the simulated Maya or the app.
+- `signal` events for world reactions come from the call log's `signals` field and are emitted right after the `tool_result` that caused them. `edit`, `deny` and `correction` signals come from the simulated Sarah or the app.
 - The `status` event is parsed from the last line of the final assistant text that matches `^STATUS:\s*(done|partial|failed|waiting)\b\s*(?:[—-]\s*(.*))?$`. No match gives `missing`.
 
 ## Server call log (`calls.jsonl`)

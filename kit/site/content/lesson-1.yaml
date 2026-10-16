@@ -37,7 +37,7 @@ steps:
     why: |
       Unit tests check the code with no model involved: the same input always gives the same answer.
       Several `find_free` tests fail in your kit. The free-slot finder reads everyone's working hours on a
-      fixed "Maya clock" (UTC−6), so it offers slots that are late evening in London. A fixed offset is
+      fixed "Sarah clock" (UTC−6), so it offers slots that are late evening in London. A fixed offset is
       wrong twice this fortnight: London changed its clocks on 25 October, and Denver changes on 1 November.
     prompt: |
       Run `uv run pytest tests/test_tools.py -k find_free`. Some tests fail.
@@ -92,7 +92,7 @@ steps:
       The new description must say:
       - what it finds: slots where every internal attendee is free
       - that each attendee's working hours apply in that attendee's own time zone, and no slot starts before 09:00 or ends after 17:30 local time for anyone
-      - that it keeps 15 minutes between Maya's meetings
+      - that it keeps 15 minutes between Sarah's meetings
       - that times in and out are ISO 8601 with offsets, and that local_times gives each attendee's local time
       - that attendees are contact ids from contacts_lookup, and that people outside Larkspur have no visible calendar
       Keep it under 80 words. Run `uv run pytest tests/test_tools.py -k find_free` to make sure nothing broke.
@@ -112,7 +112,7 @@ steps:
     why: |
       This is the model layer, with no tools at all. Twenty questions like "What date is the Tuesday of
       next week?" each have one exact answer, and each is asked 5 times. **pass@k** is the chance that at
-      least one of k tries is right. **pass^k** ("pass hat k") is the chance that all k are. Maya asks once
+      least one of k tries is right. **pass^k** ("pass hat k") is the chance that all k are. Sarah asks once
       and relies on the answer, so she feels pass^k.
     prompt: |
       I've run `uv run ea-eval component llm_dates --trials 5 --run-id dates`. Read evals/results/dates/component.json and evals/components/llm_dates.yaml. Don't change anything.
@@ -121,7 +121,7 @@ steps:
       1. The overall pass@1 and pass^5.
       2. The items it got right at least once but not all five times (pass@5 yes, pass^5 no): the question, the right answer, and the wrong answers it gave.
       3. Whether the misses cluster on the clock-change week (London vs Denver on 28 October and 4 November).
-      4. In two sentences: for an assistant that schedules Maya's meetings, which number should we report, and why?
+      4. In two sentences: for an assistant that schedules Sarah's meetings, which number should we report, and why?
     run:
       - uv run ea-eval component llm_dates --trials 5 --run-id dates
     expect:
@@ -142,10 +142,10 @@ check:
       - "Whether the tool handles London's clock change"
     answer: 1
     why: "Unit tests run the code directly. Only an eval with the model in the loop shows whether the model uses the tool well."
-  - q: "pass@5 is 98% and pass^5 is 70%. Which matters more for Maya, who relies on the answer every day?"
+  - q: "pass@5 is 98% and pass^5 is 70%. Which matters more for Sarah, who relies on the answer every day?"
     options:
       - "pass@5: it shows the model can do it"
       - "pass^5: it shows how often every try is right"
       - "Neither: only pass@1 counts"
     answer: 1
-    why: "Maya doesn't get five tries and pick the best one. pass^k measures reliability, which is what she feels."
+    why: "Sarah doesn't get five tries and pick the best one. pass^k measures reliability, which is what she feels."

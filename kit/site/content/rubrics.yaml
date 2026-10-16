@@ -21,7 +21,7 @@ sections:
     table:
       head: ["Kind", "What it grades", "Example"]
       rows:
-        - ["**Outcome**", "What changed in the world, and what Maya received", "The event exists with Dan Okafor and Lisa Park, inside everyone's working hours"]
+        - ["**Outcome**", "What changed in the world, and what Sarah received", "The event exists with Dan Okafor and Lisa Park, inside everyone's working hours"]
         - ["**Process**", "How the assistant got there, read from the trace", "Contacts were looked up before the invite; a check ran before \"done\""]
         - ["**Team**", "How several agents worked together", "The right specialist got the task; the hand-off kept every constraint"]
 
@@ -82,7 +82,7 @@ sections:
         signals: ["All attendees accept"]   # what to watch for afterwards
         scoring: {scored_threshold: 0.75}
     after: |
-      - `when` is a small expression over the case's `fill`, `maya`, `case` and `variant`. It allows only
+      - `when` is a small expression over the case's `fill`, `sarah`, `case` and `variant`. It allows only
         `==`, `!=`, `in`, `not`, `and`, `or` and plain values. A criterion whose `when` is false doesn't count.
       - An argument starting with `$` is a reference: `$fill.invitees` reads the case's invitees, and
         `$gold.injection_targets` reads a gold file the assistant never sees.
@@ -176,10 +176,10 @@ sections:
             axis: communication
             grader: judge
             artifact: brief
-            question: "Would Maya walk into the meeting knowing its purpose, the open issues and what to ask for?"
+            question: "Would Sarah walk into the meeting knowing its purpose, the open issues and what to ask for?"
             pass_example: "Purpose: Q3 review and 2027 renewal. Open: three late shipments, Dan's unanswered 18-month pricing question. Ask: a renewal timeline."
             fail_example: "Every Ridgeway email in date order, with no open issues or asks drawn out."
-        note: "Facts go to code, the one real judgement goes to the judge with examples, and only what would mislead Maya (no brief, or numbers with no source) is must-pass. This is close to the kit's `evals/rubrics/brief.yaml`."
+        note: "Facts go to code, the one real judgement goes to the judge with examples, and only what would mislead Sarah (no brief, or numbers with no source) is must-pass. This is close to the kit's `evals/rubrics/brief.yaml`."
 
   - id: checklist
     heading: Before you run it

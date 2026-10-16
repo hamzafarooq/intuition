@@ -67,7 +67,7 @@ Workshop items (30):
 | tu-12 | Find 30 minutes with Dan Okafor and Lisa this week. | calendar_find_free, contacts_lookup | duration 30 (if find_free) | calendar_create |
 | tu-13 | Is the Ridgeway meeting at 2pm today? | calendar_list, calendar_get | start on 2026-10-26 | web_search |
 | tu-14 | Draft a reply to Kevin saying lunch is on. | email_draft, email_search | to kevin.osei (if draft) | email_send |
-| tu-15 | Show me Maya's Granite call details. | calendar_get, calendar_list | | |
+| tu-15 | Show me Sarah's Granite call details. | calendar_get, calendar_list | | |
 | tu-16 | Check the event you just made. | check_event | | |
 | tu-17 | Check this draft before I send it: dr-1. | check_email | draft_id dr-1 | email_send |
 | tu-18 | Save this brief. (with text) | brief_save | | |
@@ -93,7 +93,7 @@ One `claude -p` call per prompt in the assistant folder, with every `ea-world` t
 For each of the four Lesson 2 skills (scheduling, inbox-triage, meeting-brief, meeting-deck): 20 prompts that should load it and 20 that shouldn't. The "shouldn't" prompts are near misses that belong to another skill or need no skill. Precision and recall per skill.
 
 Writing rules for the builder (write all 160 prompts):
-- Use Maya's world (real names, real meetings) and vary the phrasing: direct, indirect, short, long, with typos.
+- Use Sarah's world (real names, real meetings) and vary the phrasing: direct, indirect, short, long, with typos.
 - Should-trigger sets: about 60% plain requests, 40% indirect ("Dan and Lisa need to see the forecast before Friday").
 - Shouldn't-trigger sets: half from neighbouring skills (scheduling vs email-reply about a meeting; brief vs deck), half needing no skill ("What time is it?", "Who is Amy?").
 

@@ -29,9 +29,9 @@ from . import (  # noqa: F401  (register tools)
 log = logging.getLogger("ea_world")
 
 INSTRUCTIONS = (
-    "Tools for Maya Chen's mock workspace: calendar, email, contacts, documents, web, travel, outputs and "
+    "Tools for Sarah Smith's mock workspace: calendar, email, contacts, documents, web, travel, outputs and "
     "verifiers. Use clock_now for the current time. Write tools change the world; after any write, run the "
-    "matching check_* tool and read the result before telling Maya it's done."
+    "matching check_* tool and read the result before telling Sarah it's done."
 )
 
 

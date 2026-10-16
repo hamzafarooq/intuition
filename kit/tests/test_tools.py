@@ -2,7 +2,7 @@
 
 Written from spec/03-mcp-server.md and spec/02-world.md (not from the code). Expected slots come
 from the spec's worked-slot table; `-k find_free` selects the slot tests, and the S01 test fails
-if working hours are applied in Maya's time zone instead of each attendee's own (the Lesson 1 bug).
+if working hours are applied in Sarah's time zone instead of each attendee's own (the Lesson 1 bug).
 """
 
 from __future__ import annotations
@@ -131,7 +131,7 @@ def run_tools() -> list[str]:
 # ================================================================ calendar: list and get
 
 
-def test_calendar_list_maya_full_events(run: Run) -> None:
+def test_calendar_list_sarah_full_events(run: Run) -> None:
     r = run.call("calendar_list", start="2026-10-27T00:00:00-06:00", end="2026-10-28T00:00:00-06:00")
     ev = {e["id"]: e for e in r["events"]}
     assert set(ev) == {"ev-standup-27", "ev-hold-forecast", "ev-lunch-kevin", "ev-doctor"}
@@ -174,7 +174,7 @@ def test_calendar_list_external_calendar_not_visible(run: Run) -> None:
 def test_calendar_get(run: Run) -> None:
     r = run.call("calendar_get", event_id="ev-ridgeway-qbr")
     assert r["title"] == "Ridgeway Builders: quarterly review"
-    assert {a["id"] for a in r["attendees"]} == {"maya", "kevin.osei", "dan.reyes", "amy.lin"}
+    assert {a["id"] for a in r["attendees"]} == {"sarah", "kevin.osei", "dan.reyes", "amy.lin"}
     assert r["description"].strip()
     assert run.last_call()["object_id"] == "ev-ridgeway-qbr"
 
@@ -199,7 +199,7 @@ def test_find_free_s01_each_attendee_in_own_zone(run: Run) -> None:
     assert lt["dan.okafor"].startswith("13:00")
     assert "New York" in lt["dan.okafor"] or "New_York" in lt["dan.okafor"]
     assert lt["lisa.park"].startswith("17:00") and "London" in lt["lisa.park"]
-    assert lt["maya"].startswith("11:00")
+    assert lt["sarah"].startswith("11:00")
 
 
 def test_find_free_s01_with_bare_date_window(run: Run) -> None:
@@ -207,12 +207,12 @@ def test_find_free_s01_with_bare_date_window(run: Run) -> None:
     assert reported_starts(r) == {dt("2026-10-28T11:00:00-06:00")}
 
 
-def test_find_free_accepts_emails_and_ignores_maya(run: Run) -> None:
-    r = find_free(run, ["maya", "dan.okafor@larkspur.example", "lisa.park"], 30, "2026-10-26", "2026-10-30")
+def test_find_free_accepts_emails_and_ignores_sarah(run: Run) -> None:
+    r = find_free(run, ["sarah", "dan.okafor@larkspur.example", "lisa.park"], 30, "2026-10-26", "2026-10-30")
     assert reported_starts(r) == {dt("2026-10-28T11:00:00-06:00")}
 
 
-def test_find_free_s02_buffers_around_maya_meetings(run: Run) -> None:
+def test_find_free_s02_buffers_around_sarah_meetings(run: Run) -> None:
     """S02: 30 min with Kevin before 14:00 Monday: any start 12:15-13:15 (15-minute buffers)."""
     r = find_free(run, ["kevin.osei"], 30, "2026-10-26T08:30:00-06:00", "2026-10-26T14:00:00-06:00")
     assert reported_starts(r) == every("2026-10-26T12:15:00-06:00", "2026-10-26T13:15:00-06:00")
@@ -221,7 +221,7 @@ def test_find_free_s02_buffers_around_maya_meetings(run: Run) -> None:
 
 
 def test_find_free_never_before_9_or_after_1730(make_run) -> None:
-    """A day with no meetings: Maya and Tom both work from 08:00, Tom until 18:00; slots stay 09:00-17:30."""
+    """A day with no meetings: Sarah and Tom both work from 08:00, Tom until 18:00; slots stay 09:00-17:30."""
     run = make_run(clock="2026-10-19T07:00:00-06:00")  # Mon 19 Oct, an empty calendar day
     r = find_free(run, ["tom.becker"], 30, "2026-10-19", "2026-10-19")
     starts = reported_starts(r)
@@ -297,7 +297,7 @@ def test_find_free_s09_two_hours_of_focus(run: Run) -> None:
 def test_find_free_ignores_cancelled_events(run: Run) -> None:
     run.call("calendar_cancel", event_id="ev-pipeline")  # Mon 11:00-12:00
     r = find_free(run, ["kevin.osei"], 30, "2026-10-26T08:30:00-06:00", "2026-10-26T14:00:00-06:00")
-    # Kevin is busy until 10:30; the buffer rule is about Maya's own meetings (standup ends 09:30)
+    # Kevin is busy until 10:30; the buffer rule is about Sarah's own meetings (standup ends 09:30)
     assert reported_starts(r) == every("2026-10-26T10:30:00-06:00", "2026-10-26T13:15:00-06:00")
 
 
@@ -326,10 +326,10 @@ def test_calendar_create_internal_meeting(run: Run) -> None:
     r = run.call("calendar_create", title="Q4 forecast review", start="2026-10-28T11:00:00-06:00",
                  end="2026-10-28T11:30:00-06:00", attendees=["dan.okafor", "lisa.park"], description="Q4 numbers")
     eid = r["event_id"]
-    assert r["rsvps"] == {"maya": "accepted", "dan.okafor": "accepted", "lisa.park": "accepted"}
+    assert r["rsvps"] == {"sarah": "accepted", "dan.okafor": "accepted", "lisa.park": "accepted"}
     ev = run.events()[eid]
     assert ev["title"] == "Q4 forecast review"
-    assert set(ev["attendees"]) == {"maya", "dan.okafor", "lisa.park"}
+    assert set(ev["attendees"]) == {"sarah", "dan.okafor", "lisa.park"}
     assert dt(ev["start"]) == dt("2026-10-28T11:00:00-06:00")
     assert ev["status"] == "active"
     assert run.call("calendar_get", event_id=eid)["title"] == "Q4 forecast review"
@@ -347,7 +347,7 @@ def test_calendar_create_accepts_zone_name(run: Run) -> None:
     assert dt(ev["start"]) == dt("2026-10-26T12:15:00-06:00")
 
 
-def test_calendar_create_stores_times_in_maya_zone(run: Run) -> None:
+def test_calendar_create_stores_times_in_sarah_zone(run: Run) -> None:
     r = run.call("calendar_create", title="Sync", start="2026-10-28T17:00:00+00:00",
                  end="2026-10-28T17:30:00+00:00", attendees=["lisa.park"])
     ev = run.events()[r["event_id"]]
@@ -491,9 +491,9 @@ def test_email_read_thread_and_dropped_thread(run: Run) -> None:
     r = run.call("email_read", email_id="em-04")
     assert r["from"] == "dan.reyes@ridgeway.example"
     assert "hold 2026 pricing" in r["body"]
-    assert r["maya_replied"] is False  # the dropped thread
+    assert r["sarah_replied"] is False  # the dropped thread
     assert "em-24" in [t["id"] for t in r["thread"]]
-    assert run.call("email_read", email_id="em-20")["maya_replied"] is True  # sm-02 answered it
+    assert run.call("email_read", email_id="em-20")["sarah_replied"] is True  # sm-02 answered it
     assert run.last_call()["object_id"] == "em-20"
 
 
@@ -680,7 +680,7 @@ def test_travel_book_reference_trip(run: Run) -> None:
     assert len({a["booking_id"], h["booking_id"], b["booking_id"]}) == 3
     bookings = {x["id"]: x for x in run.load("bookings")["bookings"]}
     assert bookings[h["booking_id"]]["nights"] == 2
-    assert bookings[a["booking_id"]]["travelers"] == ["maya"]
+    assert bookings[a["booking_id"]]["travelers"] == ["sarah"]
     assert sum(x["total_usd"] for x in bookings.values()) == 1028
     rec = [c for c in run.calls() if c["tool"] == "travel_book"][0]
     assert rec["side_effects"] == [{"kind": "booking_created", "id": a["booking_id"]}]
@@ -694,7 +694,7 @@ def make_fresh_inbox(run: Run) -> list[dict[str, Any]]:
 
 def test_travel_book_two_travellers(make_run) -> None:
     run = make_run(variants=["kevin-travels-too"])
-    r = run.call("travel_book", option_id="fl-sk412-y", travelers=["maya", "kevin.osei"])
+    r = run.call("travel_book", option_id="fl-sk412-y", travelers=["sarah", "kevin.osei"])
     assert r["total_usd"] == 2 * 286
 
 
@@ -783,7 +783,7 @@ def write_hold(run: Run, **hold: Any) -> None:
 
 def test_flight_hold_confirmed_by_travel_book(run: Run) -> None:
     write_hold(run, hold_id="HOLD-7K2P", kind="flight", option_id="fl-sk412-y",
-               details={"travelers": ["maya"], "date": "2026-11-02"}, total_usd=286)
+               details={"travelers": ["sarah"], "date": "2026-11-02"}, total_usd=286)
     assert [h["hold_id"] for h in run.call("holds_list")["holds"]] == ["HOLD-7K2P"]
     r = run.call("travel_book", hold_id="HOLD-7K2P")
     assert r["total_usd"] == 286
@@ -798,7 +798,7 @@ def test_flight_hold_confirmed_by_travel_book(run: Run) -> None:
 
 def test_hotel_hold_keeps_its_own_details(run: Run) -> None:
     write_hold(run, hold_id="HOLD-H1", kind="hotel", option_id="ht-harbor-block",
-               details={"travelers": ["maya"], "check_in": "2026-11-02", "check_out": "2026-11-04"}, total_usd=478)
+               details={"travelers": ["sarah"], "check_in": "2026-11-02", "check_out": "2026-11-04"}, total_usd=478)
     r = run.call("travel_book", hold_id="HOLD-H1", check_in="2026-11-01", check_out="2026-11-05")
     b = next(x for x in run.load("bookings")["bookings"] if x["id"] == r["booking_id"])
     assert (b["check_in"], b["check_out"], b["nights"], b["total_usd"]) == ("2026-11-02", "2026-11-04", 2, 478)
@@ -1001,9 +1001,9 @@ async def test_mcp_stdio_server(tmp_path: Path) -> None:
         init = await session.initialize()
         assert init.server_info.name == "ea-world"
         assert init.instructions == (
-            "Tools for Maya Chen's mock workspace: calendar, email, contacts, documents, web, travel, outputs and "
+            "Tools for Sarah Smith's mock workspace: calendar, email, contacts, documents, web, travel, outputs and "
             "verifiers. Use clock_now for the current time. Write tools change the world; after any write, run the "
-            "matching check_* tool and read the result before telling Maya it's done.")
+            "matching check_* tool and read the result before telling Sarah it's done.")
         tools = await session.list_tools()
         names = {t.name for t in tools.tools}
         assert SPEC_TOOLS <= names, f"missing: {sorted(SPEC_TOOLS - names)}"
@@ -1011,7 +1011,7 @@ async def test_mcp_stdio_server(tmp_path: Path) -> None:
         assert find_free.description == (
             "Find meeting slots where every internal attendee is free. Each attendee's working hours are applied in "
             "that attendee's own time zone, and no slot starts before 09:00 or ends after 17:30 local time for anyone. "
-            "Keeps 15 minutes between Maya's meetings. Times in and out are ISO 8601 with offsets; `local_times` shows "
+            "Keeps 15 minutes between Sarah's meetings. Times in and out are ISO 8601 with offsets; `local_times` shows "
             "each attendee's local time. External attendees' calendars aren't visible; their availability is reported "
             "as unknown.")
         assert {"attendees", "duration_minutes", "window_start", "window_end"} <= set(find_free.input_schema["properties"])

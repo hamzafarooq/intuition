@@ -54,6 +54,7 @@ class RunConfig:
     idempotency: Literal["auto", "off"] = "off"
     env: dict[str, str] = field(default_factory=dict)
     browser: bool = False
+    real_sites: bool = False  # instructor-only real-site search demo (app only; ea_harness/real_sites.py)
     turn_timeout_s: float = 600.0
     trace_fields: dict[str, Any] = field(default_factory=dict)  # run_id, case_id, trial, harness, variant
     extra_args: list[str] = field(default_factory=list)
@@ -62,6 +63,6 @@ class RunConfig:
 class Harness(Protocol):
     async def start(self, run_dir: Path, config: RunConfig) -> None: ...
 
-    async def send(self, user_message: str, source: str = "maya") -> TurnResult: ...
+    async def send(self, user_message: str, source: str = "sarah") -> TurnResult: ...
 
     async def close(self) -> None: ...

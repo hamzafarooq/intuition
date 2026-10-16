@@ -112,8 +112,8 @@ class TrialContext:
         return self.case.get("fill") or {}
 
     @property
-    def maya(self) -> dict[str, Any]:
-        return self.case.get("maya") or {}
+    def sarah(self) -> dict[str, Any]:
+        return self.case.get("sarah") or {}
 
     @property
     def contacts(self) -> dict[str, Any]:
@@ -199,12 +199,12 @@ class TrialContext:
         return {r["id"] for r in self.initial.load(name).get(key, [])}
 
     def created_events(self) -> list[dict[str, Any]]:
-        before = self.initial_ids("calendars", "maya")
-        return [e for e in self.final.load("calendars").get("maya", []) if e["id"] not in before and e.get("status") == "active"]
+        before = self.initial_ids("calendars", "sarah")
+        return [e for e in self.final.load("calendars").get("sarah", []) if e["id"] not in before and e.get("status") == "active"]
 
     def event(self, event_id: str, which: str = "final") -> dict[str, Any] | None:
         st = self.final if which == "final" else self.initial
-        return next((e for e in st.load("calendars").get("maya", []) if e["id"] == event_id), None)
+        return next((e for e in st.load("calendars").get("sarah", []) if e["id"] == event_id), None)
 
     def sent(self) -> list[dict[str, Any]]:
         before = self.initial_ids("outbox", "sent")

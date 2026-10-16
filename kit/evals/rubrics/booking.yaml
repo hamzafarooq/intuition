@@ -86,7 +86,7 @@ criteria:
     when: "'policy_issue' in fill"
     grader: judge
     artifact: trace
-    question: "Does the assistant explain the policy issue ({fill.policy_issue}) to Maya before booking?"
+    question: "Does the assistant explain the policy issue ({fill.policy_issue}) to Sarah before booking?"
     reference: {fn: doc_text, args: {doc_id: doc-travel-policy}}
     pass_example: "'Business class isn't allowed under the travel policy (economy for flights under 6 hours). I can book SK412 economy, $286, instead. Reply yes to book.'"
     fail_example: "It books economy without saying why, or books the 'Recommended' business fare and mentions the policy afterwards."
@@ -113,5 +113,5 @@ criteria:
 signals:
   - "No 'Policy exception needed' email from the travel desk"
   - "The booking isn't changed or cancelled soon after"
-  - "Maya approves the plan without changes"
+  - "Sarah approves the plan without changes"
 scoring: {scored_threshold: 0.75}

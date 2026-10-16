@@ -25,7 +25,7 @@ from . import variants as V
 from .context import TrialContext
 from .costs import CostMeter
 from .rubrics import case_rubrics, grade_trial, load_rubric
-from .sim_user import SimMaya, script_line
+from .sim_user import SimSarah, script_line
 
 HARNESS_NAME = "claude-code"
 
@@ -120,7 +120,7 @@ class Runner:
             "pre_authorized": spec.case.get("pre_authorized") or [],
             "gate": "off" if V.gate_off(spec.variant) else "on",
             "explicit_yes": explicit_yes,
-            "last_maya_message": message,
+            "last_sarah_message": message,
         }
         world_state.write_json_atomic(tdir / "approval_context.json", ctx)
 
@@ -139,6 +139,7 @@ class Runner:
             shutil.rmtree(tdir)
         tdir.mkdir(parents=True)
         case, variant = spec.case, spec.variant
+        V.refuse_real_sites(variant)  # evals never run the real-site demo
         browser = V.browser_on(variant)
         if browser and not port_open(9222):
             g = {"case_id": case["id"], "trial": spec.trial, "harness": spec.harness, "variant": spec.label,
@@ -171,21 +172,21 @@ class Runner:
             trace_fields={"run_id": self.o.run_id, "case_id": case["id"], "trial": spec.trial, "harness": spec.harness, "variant": spec.label},
         )
         h = self._harness()
-        sim = SimMaya(case, meter=self.meter, use_model=self.sim_use_model)
+        sim = SimSarah(case, meter=self.meter, use_model=self.sim_use_model)
         yes_lines = {script_line({"approvals": "explicit_yes"})}
-        if (case.get("maya") or {}).get("approvals") == "edit_then_yes":
-            yes_lines.add(script_line(case["maya"]))
+        if (case.get("sarah") or {}).get("approvals") == "edit_then_yes":
+            yes_lines.add(script_line(case["sarah"]))
         usage = Usage()
         started = time.monotonic()
         stopped = "end_turn"
         error = ""
         await h.start(tdir, config)
         turns = list(case.get("turns") or [])
-        message, source = case["request"], "maya"
-        end_after = False  # the simulated Maya's reply was her last word ("I'll decide later.", "Thanks.")
+        message, source = case["request"], "sarah"
+        end_after = False  # the simulated Sarah's reply was her last word ("I'll decide later.", "Thanks.")
         try:
             while True:
-                self._approval_context(tdir, spec, message, explicit_yes=(source == "sim_maya" and message in yes_lines))
+                self._approval_context(tdir, spec, message, explicit_yes=(source == "sim_sarah" and message in yes_lines))
                 r = await h.send(message, source)
                 usage.add(r.usage)
                 self.meter.add_claude(r.usage.api_equivalent_cost_usd, r.usage.num_turns)
@@ -198,7 +199,7 @@ class Runner:
                     break
                 if r.status in ("done", "partial", "failed"):
                     if turns:
-                        message, source = turns.pop(0), "maya"
+                        message, source = turns.pop(0), "sarah"
                         continue
                     break
                 reply = sim.reply(r.final_text, r.status)
@@ -207,7 +208,7 @@ class Runner:
                 trace = getattr(h, "trace", None)
                 if reply.signal and trace is not None:
                     trace.emit("signal", **reply.signal)
-                message, source = reply.text, "sim_maya"
+                message, source = reply.text, "sim_sarah"
                 end_after = reply.end
         finally:
             await h.close()
@@ -301,6 +302,8 @@ class Runner:
             time.sleep(0.25)
 
     async def run(self, specs: list[TrialSpec]) -> list[dict[str, Any]]:
+        for s in specs:
+            V.refuse_real_sites(s.variant)  # before anything starts: evals never run the real-site demo
         started = datetime.now().astimezone().isoformat(timespec="seconds")
         existing = self.run_dir / "run.json"
         if existing.exists():

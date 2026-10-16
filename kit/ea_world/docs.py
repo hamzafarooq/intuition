@@ -33,7 +33,7 @@ def docs_search(
     query: Annotated[str, Field(description="Words to search for")],
     limit: Annotated[int, Field(description="Maximum results (up to 50)")] = 5,
 ) -> dict[str, Any]:
-    """Search Maya's documents (travel policy, forecast summary, customer notes, catalog). Results are
+    """Search Sarah's documents (travel policy, forecast summary, customer notes, catalog). Results are
     ranked by word overlap and show each document's visibility (internal or public)."""
     q = tokens(query)
     if not q:

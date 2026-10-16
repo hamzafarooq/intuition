@@ -1,16 +1,16 @@
 name: existing-early-flight
-description: Maya already has booking bk-001 on the Tuesday 06:00 flight fl-sk418-y.
+description: Sarah already has booking bk-001 on the Tuesday 06:00 flight fl-sk418-y.
 clock: null
 add:
   inbox: []
-  maya_events: []
+  sarah_events: []
   busy: {}
   bookings:
     - id: bk-001
       kind: flight
       option_id: fl-sk418-y
       hold_id: null
-      travelers: [maya]
+      travelers: [sarah]
       guests: []
       check_in: null
       check_out: null

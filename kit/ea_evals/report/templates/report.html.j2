@@ -91,7 +91,7 @@ code.cmd { display: block; padding: 8px 10px; background: var(--chip); border-ra
     <span>{{ meta.started or "" }}{% if meta.ended %} → {{ meta.ended }}{% endif %}</span>
     <span>harness {{ (meta.harnesses or ["claude-code"])|join(", ") }}</span>
     <span>variants {{ (meta.variants or ["default"])|join(", ") }}</span>
-    <span>models: Claude {{ meta.models.claude if meta.models else "" }} · judge {{ (meta.models.judge if meta.models else None) or "off" }} · simulated Maya {{ meta.models.sim if meta.models else "" }}</span>
+    <span>models: Claude {{ meta.models.claude if meta.models else "" }} · judge {{ (meta.models.judge if meta.models else None) or "off" }} · simulated Sarah {{ meta.models.sim if meta.models else "" }}</span>
     {% if meta.effort %}<span>effort {{ meta.effort }}</span>{% endif %}
     <span>rubrics {% for k, v in (meta.rubric_versions or {}).items() %}{{ k }} v{{ v }}{% if not loop.last %}, {% endif %}{% endfor %}</span>
     <span>{{ summary.trials }} trials · ${{ "%.2f"|format(summary.total_cost_usd) }} API-equivalent Claude · ${{ "%.2f"|format((meta.costs or {}).get("openai_usd", 0)) }} OpenAI · {{ "%.0f"|format(summary.total_seconds / 60) }} min</span>
@@ -233,7 +233,7 @@ code.cmd { display: block; padding: 8px 10px; background: var(--chip); border-ra
   function line(e) {
     var who = e.agent && e.agent !== "main" ? " [" + esc(e.agent) + "]" : "";
     var t = e.type, body = "";
-    if (t === "user") body = "<span class=k>Maya" + (e.source === "sim_maya" ? " (simulated)" : "") + "</span>" + esc(e.text);
+    if (t === "user") body = "<span class=k>Sarah" + (e.source === "sim_sarah" ? " (simulated)" : "") + "</span>" + esc(e.text);
     else if (t === "assistant") body = "<span class=k>Assistant" + who + "</span><pre>" + esc(e.text) + "</pre>";
     else if (t === "thinking_summary") body = "<span class=k>Thinking" + who + "</span>" + esc(e.text);
     else if (t === "tool_call") body = "<details><summary><span class=k>→ " + esc(e.tool) + who + "</span></summary><pre>" + esc(j(e.input)) + "</pre></details>";

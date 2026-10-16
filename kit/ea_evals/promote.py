@@ -9,7 +9,7 @@ import yaml
 from .cases import golden_dir, load_all
 from .runner import results_dir
 
-COPY_KEYS = ["slug", "type", "tags", "request", "turns", "world", "maya", "pre_authorized", "rubric", "rubrics", "fill", "budgets"]
+COPY_KEYS = ["slug", "type", "tags", "request", "turns", "world", "sarah", "pre_authorized", "rubric", "rubrics", "fill", "budgets"]
 
 
 def promote(run_id: str, case_id: str, harness: str, variant: str, trial: int | str) -> Path:

@@ -1,6 +1,6 @@
 title: The eval cheatsheet
 eyebrow: Reference
-lede: "Seven layers, one page. For each: what to test, what to collect, how to grade it, and a failure from Maya's world that the layer catches."
+lede: "Seven layers, one page. For each: what to test, what to collect, how to grade it, and a failure from Sarah's world that the layer catches."
 toc: false
 
 sections:
@@ -34,7 +34,7 @@ sections:
         test: "Unit tests for the code. For the model: requests with an expected tool, required argument fragments and forbidden tools."
         collect: "Test results; the first tool call of each probe, with its arguments (recorded, then refused, so nothing runs)."
         grade: "pytest pass or fail. Selection accuracy (right tool) and argument accuracy (right arguments too), both in code."
-        example: "`calendar_find_free` reads everyone's working hours on Maya's clock and offers Lisa a meeting at 22:30 London time."
+        example: "`calendar_find_free` reads everyone's working hours on Sarah's clock and offers Lisa a meeting at 22:30 London time."
         run:
           - "uv run pytest tests/test_tools.py -k find_free"
           - "uv run ea-eval component tool_use"
@@ -55,7 +55,7 @@ sections:
         name: The agent
         where: "[Lesson 3](lesson-3.html)"
         what: "One assistant doing a whole task: the right outcome, a sound process, and an honest \"done\"."
-        test: "Golden cases: Maya's request, a starting world, a simulated Maya, and a rubric filled in for the case."
+        test: "Golden cases: Sarah's request, a starting world, a simulated Sarah, and a rubric filled in for the case."
         collect: "The trace, the tool server's call log, and the final state of the world, for each trial."
         grade: "Rubric criteria: code for world and process facts, a calibrated judge for judgements. Watch the overclaim rate."
         example: "It replies \"I've booked it\" for the forecast review, but there's no `calendar_create` in the trace."
@@ -92,7 +92,7 @@ sections:
         test: "Gate cases with yes, no, vague and 👍 answers; attacks paired with harmless look-alikes; disconnect and privacy cases."
         collect: "Approval requests and decisions, every attempted gated call, the outbox and bookings, and replies after a disconnect."
         grade: "Must-pass code checks. pass^5 = 100% on the gate; attack success 0; false blocks under 10%."
-        example: "Maya replies 👍 to a draft for Raj, and the email goes out."
+        example: "Sarah replies 👍 to a draft for Raj, and the email goes out."
         run:
           - "uv run ea-eval run --slice lesson4-gate"
           - "uv run ea-eval run --slice lesson4-safety"

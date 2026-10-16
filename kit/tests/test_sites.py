@@ -20,7 +20,7 @@ from ea_world import core, state, travel  # noqa: F401  (travel registers the bo
 
 WORLD = Path(__file__).resolve().parents[1] / "world"
 VARIANTS = sorted(p.stem for p in (WORLD / "variants").glob("*.yaml"))
-MAYA = ("Maya Chen", "maya.chen@larkspur.example")
+SARAH = ("Sarah Smith", "sarah.smith@larkspur.example")
 KEVIN = ("Kevin Osei", "kevin.osei@larkspur.example")
 HOLD_RE = re.compile(r"^HOLD-[A-Z0-9]{4}$")
 MODES = ["host", "path"]
@@ -95,13 +95,13 @@ def people(prefix: str, *who: tuple[str, str]) -> dict[str, str]:
     return out
 
 
-def flight_hold(site: Site, flight: str = "fl-sk412-y", who=(MAYA,)) -> str:
+def flight_hold(site: Site, flight: str = "fl-sk412-y", who=(SARAH,)) -> str:
     n = len(who)
     assert site.get(f"/passengers?flight={flight}&passengers={n}").status_code == 200
     return hold_from(site.post("/review", {"flight": flight, "passengers": str(n), **people("p", *who)}))
 
 
-def hotel_hold(site: Site, hotel: str = "ht-harbor-block", ci="2026-11-02", co="2026-11-04", who=(MAYA,)) -> str:
+def hotel_hold(site: Site, hotel: str = "ht-harbor-block", ci="2026-11-02", co="2026-11-04", who=(SARAH,)) -> str:
     n = len(who)
     assert site.get(f"/guests?hotel={hotel}&check_in={ci}&check_out={co}&rooms={n}").status_code == 200
     return hold_from(site.post("/review", {"hotel": hotel, "check_in": ci, "check_out": co, "rooms": str(n),
@@ -109,7 +109,7 @@ def hotel_hold(site: Site, hotel: str = "ht-harbor-block", ci="2026-11-02", co="
 
 
 def table_hold(site: Site, restaurant="rs-ember-oak", day="2026-11-03", time="19:00", party=2,
-               name="Maya Chen", phone="") -> str:
+               name="Sarah Smith", phone="") -> str:
     q = f"restaurant={restaurant}&date={day}&time={time}&party_size={party}"
     assert site.get(f"/details?{q}").status_code == 200
     return hold_from(site.post("/review", {"restaurant": restaurant, "date": day, "time": time,
@@ -221,7 +221,7 @@ def test_harbor_sold_out_hides_the_block(tmp_path):
     r = sold.get("/guests?hotel=ht-harbor-block&check_in=2026-11-02&check_out=2026-11-04&rooms=1")
     assert r.status_code == 404
     r = sold.post("/review", {"hotel": "ht-harbor-block", "check_in": "2026-11-02", "check_out": "2026-11-04",
-                              "rooms": "1", **people("g", MAYA)})
+                              "rooms": "1", **people("g", SARAH)})
     assert r.status_code == 404 and holds(sold_run) == []
 
 
@@ -298,7 +298,7 @@ def test_flight_hold_has_the_fare_and_total(run_dir, mode):
     (h,) = holds(run_dir)
     assert h["hold_id"] == hid and h["kind"] == "flight" and h["option_id"] == "fl-sk412-y"
     assert h["status"] == "held" and h["booking_id"] is None and h["total_usd"] == 286
-    assert h["details"]["travelers"] == ["maya"]
+    assert h["details"]["travelers"] == ["sarah"]
     clock = json.loads((run_dir / "state" / "clock.json").read_text())["now"]
     assert h["created_at"] == clock and h["expires_at"] > clock
 
@@ -307,34 +307,34 @@ def test_two_passengers_hold_both_travellers(tmp_path):
     run = make_run(tmp_path, "kevin-travels-too")
     sky = sites(run)["skyway"]
     page = sky.get("/passengers?flight=fl-sk412-y&passengers=1")
-    assert soup(page).find(id="p1-name")["value"] == "Maya Chen"  # signed-in traveller prefilled
+    assert soup(page).find(id="p1-name")["value"] == "Sarah Smith"  # signed-in traveller prefilled
     add = soup(page).find("a", string="Add another passenger")["href"]
     two = soup(sky.client.get(add))
     assert "passengers=2" in add and two.find(id="p2-name")
     # repeated fields get distinct accessible names for the browser tools
     names = {lab["for"]: " ".join(lab.get_text(" ").split()) for lab in two.find_all("label")}
     assert names["p1-name"] == "Passenger 1 Full name" and names["p2-email"] == "Passenger 2 Email (optional)"
-    r = sky.post("/review", {"flight": "fl-sk412-y", "passengers": "2", **people("p", MAYA), "p2-name": "kevin.osei",
+    r = sky.post("/review", {"flight": "fl-sk412-y", "passengers": "2", **people("p", SARAH), "p2-name": "kevin.osei",
                              "p2-email": ""})  # a contact id works too; a second passenger's email is optional
     hid = hold_from(r)
     (h,) = holds(run)
-    assert h["details"]["travelers"] == ["maya", "kevin.osei"] and h["total_usd"] == 572
+    assert h["details"]["travelers"] == ["sarah", "kevin.osei"] and h["total_usd"] == 572
     assert h["details"]["people"][1] == {"name": "Kevin Osei", "email": KEVIN[1], "contact_id": "kevin.osei"}
     t = text(sky.get(f"/review/{hid}"))
-    assert "Passengers Maya Chen, Kevin Osei" in t and "Fare: $286 × 2 passengers" in t and "Total $572" in t
+    assert "Passengers Sarah Smith, Kevin Osei" in t and "Fare: $286 × 2 passengers" in t and "Total $572" in t
 
 
 def test_unknown_or_repeated_travellers_are_refused(run_dir):
     sky = sites(run_dir)["skyway"]
     base = {"flight": "fl-sk412-y", "passengers": "2"}
-    r = sky.post("/review", {**base, **people("p", MAYA, ("Pat Nobody", "pat@nowhere.example"))})
+    r = sky.post("/review", {**base, **people("p", SARAH, ("Pat Nobody", "pat@nowhere.example"))})
     assert r.status_code == 400 and "isn't a traveller on the Larkspur Supply account" in text(r)
     assert soup(r).find(id="p2-name")["value"] == "Pat Nobody"  # values kept
-    r = sky.post("/review", {**base, **people("p", MAYA, MAYA)})
+    r = sky.post("/review", {**base, **people("p", SARAH, SARAH)})
     assert r.status_code == 400 and "already listed" in text(r)
-    r = sky.post("/review", {**base, **people("p", ("Kevin Osei", MAYA[1]))})
+    r = sky.post("/review", {**base, **people("p", ("Kevin Osei", SARAH[1]))})
     assert r.status_code == 400 and "different people" in text(r)
-    r = sky.post("/review", {"flight": "fl-sk412-y", "passengers": "1", "p1-name": "Maya Chen", "p1-email": ""})
+    r = sky.post("/review", {"flight": "fl-sk412-y", "passengers": "1", "p1-name": "Sarah Smith", "p1-email": ""})
     assert r.status_code == 400 and "email" in text(r).lower()
     assert holds(run_dir) == []
 
@@ -350,13 +350,13 @@ def test_resubmitting_the_same_form_reuses_the_hold(run_dir):
 @pytest.mark.parametrize("rooms,total", [(1, 478), (2, 956)])
 def test_hotel_hold_total_is_nightly_times_nights_times_rooms(run_dir, rooms, total):
     st = sites(run_dir)["stays"]
-    who = (MAYA, KEVIN)[:rooms]
+    who = (SARAH, KEVIN)[:rooms]
     hid = hotel_hold(st, who=who)
     (h,) = holds(run_dir)
     assert h["total_usd"] == total and h["kind"] == "hotel" and h["option_id"] == "ht-harbor-block"
     d = h["details"]
     assert (d["check_in"], d["check_out"], d["nights"], d["rooms"]) == ("2026-11-02", "2026-11-04", 2, rooms)
-    assert d["travelers"] == ["maya", "kevin.osei"][:rooms]
+    assert d["travelers"] == ["sarah", "kevin.osei"][:rooms]
     t = text(st.get(f"/review/{hid}"))
     assert f"$239 a night × 2 nights × {rooms} room" in t and f"Total ${total:,}" in t and "MBS26" in t
 
@@ -368,7 +368,7 @@ def test_restaurant_hold_total_is_cost_per_person_times_party(run_dir, restauran
     hid = table_hold(tb, restaurant, time=time, party=party, phone="+1 303 555 0142")
     (h,) = holds(run_dir)
     assert h["total_usd"] == total and h["kind"] == "restaurant"
-    assert h["details"] == {"date": "2026-11-03", "time": time, "party_size": party, "guests": [], "name": "Maya Chen",
+    assert h["details"] == {"date": "2026-11-03", "time": time, "party_size": party, "guests": [], "name": "Sarah Smith",
                             "phone": "+1 303 555 0142", "unit_price_usd": total // party}
     assert f"Estimated total ${total:,}" in text(tb.get(f"/review/{hid}"))
 
@@ -468,7 +468,7 @@ def test_site_jsonl_records_views_submissions_and_holds(run_dir):
     (created,) = [e for e in ev if e["type"] == "hold_created"]
     assert created["data"]["hold_id"] == hid and created["data"]["total_usd"] == 286
     submit = next(e for e in ev if e["type"] == "form_submit" and e["path"] == "/review")
-    assert submit["data"]["flight"] == "fl-sk412-y" and submit["data"]["p1-name"] == "Maya Chen"
+    assert submit["data"]["flight"] == "fl-sk412-y" and submit["data"]["p1-name"] == "Sarah Smith"
     assert kinds.index(("form_submit", "/review")) < kinds.index(("hold_created", "/review")) < kinds.index(("page_view", f"/review/{hid}"))
 
 

@@ -7,6 +7,18 @@ KNOWN = OVERLAY_KEYS | {"model", "effort", "idempotency", "faults", "browser"}
 DEFAULTS = {"skills": "on", "selfcheck": "on", "gate": "on", "team": "on", "hooks": "on", "subagents": "on",
             "model": "opus", "idempotency": "off", "browser": "off"}  # fmt: skip
 
+# The real-site search demo is instructor-only and app-only (ea_harness/real_sites.py): evals refuse it, so
+# they stay deterministic and never touch a real website.
+REAL_SITES_REFUSED = ("browser=real is the instructor-only real-site search demo, and evals refuse it: real sites "
+                      "change from minute to minute, so results couldn't be compared or graded. Use browser=on "
+                      "(the mock booking sites), or run the demo in the app with `make demo-real`.")
+
+
+
+class VariantError(ValueError):
+    """A variant the user typed that can't run; `ea-eval` prints it without a traceback."""
+
+
 # faults=timeout_after_write: the write each case makes first (spec/09)
 FAULT_TARGETS = {"S01": "calendar_create", "R08": "travel_book"}
 FAULT_BY_TYPE = {"scheduling": "calendar_create", "booking": "travel_book", "email": "email_send",
@@ -22,12 +34,22 @@ def parse(items: list[str] | None) -> dict[str, str]:
             if not part:
                 continue
             if "=" not in part:
-                raise ValueError(f"Variant '{part}' should look like key=value")
+                raise VariantError(f"Variant '{part}' should look like key=value")
             k, v = part.split("=", 1)
             if k not in KNOWN:
-                raise ValueError(f"Unknown variant '{k}'. Known: {', '.join(sorted(KNOWN))}")
+                raise VariantError(f"Unknown variant '{k}'. Known: {', '.join(sorted(KNOWN))}")
             out[k.strip()] = v.strip()
+    refuse_real_sites(out)
     return out
+
+
+def refuse_real_sites(v: dict[str, Any]) -> None:
+    """Raise if a variant asks for the real-site demo; browser takes only on or off in evals."""
+    value = str(v.get("browser", "off")).strip().lower()
+    if value in ("real", "real-sites", "real_sites", "live"):
+        raise VariantError(REAL_SITES_REFUSED)
+    if value not in ("on", "off"):
+        raise VariantError(f"browser={value} isn't a variant: use browser=on or browser=off.")
 
 
 def normalized(v: dict[str, str]) -> dict[str, str]:

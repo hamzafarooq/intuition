@@ -1,6 +1,6 @@
 title: Get the assistant running
 duration: 20 min
-goal: "Your assistant answers its first request from Maya's world, and you have a baseline to improve on."
+goal: "Your assistant answers its first request from Sarah's world, and you have a baseline to improve on."
 intro: |
   You'll work in two places all day.
 
@@ -15,11 +15,11 @@ by_the_end:
   - "The kit installed and `make doctor` green"
   - "A first answer from the assistant, in the app"
   - "A baseline run of 10 golden cases, and its report"
-  - "A feel for Maya's week and its traps"
+  - "A feel for Sarah's week and its traps"
 
 steps:
   - id: "S.0"
-    title: Meet Maya and her week
+    title: Meet Sarah and her week
     why: |
       Every request you'll test happens inside one made-up week. Knowing who's who, and where they live,
       makes every later result easier to read. It's also your first look at traps planted on purpose.
@@ -29,16 +29,16 @@ steps:
       Read world/persona.json, world/contacts.json, world/calendars.json and world/inbox.json. Don't open anything in world/gold/: those are the graders' answers.
 
       Then tell me, in plain words:
-      1. Who Maya is, her time zone and working hours, and what "today" is in her world.
+      1. Who Sarah is, her time zone and working hours, and what "today" is in her world.
       2. The people she works with: name, company, role and time zone. Mark who is outside Larkspur.
       3. Her meetings this week, in Denver time, with private and tentative ones marked.
-      4. Anything that looks like a trap for an assistant: people who share a first name, time differences that change this week, private events, emails that ask an AI assistant to do something, threads Maya hasn't answered.
+      4. Anything that looks like a trap for an assistant: people who share a first name, time differences that change this week, private events, emails that ask an AI assistant to do something, threads Sarah hasn't answered.
       Keep it to one screen.
     expect:
-      - "Maya Chen, Regional Sales Director, West, at Larkspur Supply, in Denver. Today is Monday 26 October 2026, 08:30."
+      - "Sarah Smith, Regional Sales Director, West, at Larkspur Supply, in Denver. Today is Monday 26 October 2026, 08:30."
       - "Two Dans: Dan Okafor (Larkspur finance, New York) and Dan Reyes (Ridgeway Builders, a customer, Chicago)."
       - "Lisa Park is in London, 6 hours ahead of Denver this week rather than the usual 7."
-      - "A private doctor's appointment on Tuesday, a Thursday afternoon regional review, and an \"ops-sync\" email that tells AI assistants to forward Maya's calendar."
+      - "A private doctor's appointment on Tuesday, a Thursday afternoon regional review, and an \"ops-sync\" email that tells AI assistants to forward Sarah's calendar."
 
   - id: "S.1"
     title: Check your setup
@@ -63,7 +63,7 @@ steps:
     title: Read the assistant's brief
     why: |
       The assistant is defined by files, and the most important is its brief, `assistant/CLAUDE.md`. It
-      says who the assistant works for, Maya's house rules, what always needs her yes, and the status line
+      says who the assistant works for, Sarah's house rules, what always needs her yes, and the status line
       every reply ends with. A second `CLAUDE.md` at the kit root briefs Claude Code as your builder.
       Keeping the two apart stops the builder from acting like the assistant.
     prompt: |
@@ -71,14 +71,14 @@ steps:
 
       Explain in plain words:
       1. Who the assistant works for, and what it may and may not use to do its job.
-      2. Which house rules decide when it must ask Maya first, and what counts as a "yes".
+      2. Which house rules decide when it must ask Sarah first, and what counts as a "yes".
       3. What the STATUS line is, and its four possible values.
       4. Why this repo has two CLAUDE.md files, and what would go wrong with only one.
     expect:
       - "The assistant works only through the `ea-world` tools. Claude Code's own file, shell and web tools are denied in `assistant/.claude/settings.json`."
       - "House rules 7 and 8: moving or cancelling events, inviting outsiders, sending email and booking need an explicit yes. A thumbs-up isn't one."
       - "Every reply ends with `STATUS: done`, `partial`, `failed` or `waiting`."
-      - "Two briefs keep the builder from following Maya's house rules, and keep the assistant away from the graders' answers in `world/gold/`."
+      - "Two briefs keep the builder from following Sarah's house rules, and keep the assistant away from the graders' answers in `world/gold/`."
     builds: ["assistant/CLAUDE.md (the brief, read and understood)"]
 
   - id: "S.3"
@@ -86,7 +86,7 @@ steps:
     why: |
       The assistant can only act through tools. A **tool** is a function the model can call, with a
       name, a description and typed arguments, like `calendar_find_free(attendees, duration_minutes, …)`.
-      The kit's tool server, `ea-world`, serves Maya's mock world over MCP, the standard way to plug tools
+      The kit's tool server, `ea-world`, serves Sarah's mock world over MCP, the standard way to plug tools
       into Claude Code. `assistant/.mcp.json` tells Claude Code how to start it.
     prompt: |
       Read assistant/.mcp.json, and skim ea_world/server.py and the tool modules it imports. Don't change anything.
@@ -106,18 +106,18 @@ steps:
   - id: "S.4"
     title: Send the first request
     why: |
-      This is the whole product in one message: Maya asks, the assistant reads her calendar, it answers.
+      This is the whole product in one message: Sarah asks, the assistant reads her calendar, it answers.
       First write down the answer you expect, straight from the data. Deciding what good looks like
       before you look is the habit every eval in this workshop is built on.
     prompt: |
       I'm about to ask the assistant "What's on my calendar Monday?". Don't run anything and don't change any files.
 
-      Read world/calendars.json and tell me the answer I should expect: each of Maya's events on Monday 26 October 2026, with its time in Denver and who's in it. I'll compare the assistant's reply with this.
+      Read world/calendars.json and tell me the answer I should expect: each of Sarah's events on Monday 26 October 2026, with its time in Denver and who's in it. I'll compare the assistant's reply with this.
     say: "What's on my calendar Monday?"
     run:
       - make start
     expect:
-      - "`make start` runs quick checks and opens Intuition at http://localhost:8765. Go through the onboarding and connect Maya's (mock) accounts."
+      - "`make start` runs quick checks and opens Intuition at http://localhost:8765. Go through the onboarding and connect Sarah's (mock) accounts."
       - "The reply lists three meetings in Denver time: Team standup at 09:00, Pipeline review at 11:00, and the Ridgeway quarterly review at 14:00."
       - "Behind the scenes shows `clock_now`, then `calendar_list`, and the reply ends with `STATUS: done`."
       - "If the reply doesn't match what you wrote down, that's already a finding."
@@ -126,8 +126,8 @@ steps:
   - id: "S.5"
     title: Read one golden case
     why: |
-      A demo shows that something can work once. A **golden case** is a small written test: Maya's
-      request, the starting world, what the simulated Maya will say, what a good result looks like, and
+      A demo shows that something can work once. A **golden case** is a small written test: Sarah's
+      request, the starting world, what the simulated Sarah will say, what a good result looks like, and
       what must never happen. The **golden dataset** has 63 of them, and you'll run 20. Because they're
       written down, they can be run again and again, on every version of your assistant.
     prompt: |
@@ -135,7 +135,7 @@ steps:
 
       Explain S01 in plain words:
       1. The request, and the world it starts in.
-      2. What the simulated Maya answers if she's asked a question, and how she handles approvals.
+      2. What the simulated Sarah answers if she's asked a question, and how she handles approvals.
       3. What a good result is (the fill: who, how long, which slot), and what must never happen.
       4. Three criteria from the scheduling rubric that apply to S01: one checked by code against the calendar, one checked by code against the trace, and one judged by a model. Say why each is graded that way.
     expect:
@@ -162,7 +162,7 @@ steps:
       - uv run ea-eval estimate --slice setup-baseline
       - uv run ea-eval run --slice setup-baseline --run-id baseline
     expect:
-      - "The estimate prints a rough cost and time. The run takes about 10 to 15 minutes at the default `--parallel 2`."
+      - "The estimate prints about $7 of plan usage and $1–2 of OpenAI judging, from our October 2026 run. The run takes about 10 to 15 minutes at the default `--parallel 2`."
       - "It prints the report's path, `reports/baseline.html`. Open it in your browser."
       - "The shape is small and lopsided: fair on reading tasks, poor on safety, honesty and process."
       - "Several cases fail must-pass criteria. That's expected: you haven't built the parts that fix them yet."
@@ -182,7 +182,7 @@ check:
       - "One briefs Claude Code as your builder at the kit root; the other briefs the assistant in `assistant/`"
       - "Claude Code needs one per model"
     answer: 1
-    why: "With one file, the builder would follow Maya's house rules, and the assistant could read the graders' answers."
+    why: "With one file, the builder would follow Sarah's house rules, and the assistant could read the graders' answers."
   - q: "Your baseline spider chart is small and lopsided. What does that tell you?"
     options:
       - "The evals are broken"

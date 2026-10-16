@@ -28,7 +28,7 @@ def _view(c: dict[str, Any]) -> dict[str, Any]:
 def contacts_lookup(
     query: Annotated[str, Field(description="A name, part of a name, a company or an email address")],
 ) -> dict[str, Any]:
-    """Look up people in Maya's contacts. Returns every match, with company, role, time zone, working
+    """Look up people in Sarah's contacts. Returns every match, with company, role, time zone, working
     hours and whether they work at Larkspur. A first name can match more than one person."""
     q = (query or "").strip().lower()
     if not q:

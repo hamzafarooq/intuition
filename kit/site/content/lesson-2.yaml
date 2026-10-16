@@ -20,7 +20,7 @@ steps:
   - id: "2.1"
     title: Build the scheduling skill
     why: |
-      Scheduling is where Maya's house rules matter most: nothing before 09:00 for anyone, 15-minute
+      Scheduling is where Sarah's house rules matter most: nothing before 09:00 for anyone, 15-minute
       buffers, Tuesday to Thursday preferred, an agenda for external meetings, and never accepting on her
       behalf. In a skill, those rules load exactly when a scheduling request arrives, along with a checklist
       the assistant runs before it says done.
@@ -28,13 +28,13 @@ steps:
       Create assistant/.claude/skills/scheduling/SKILL.md, following the "Writing assistant files" and "Markers" sections of CLAUDE.md.
 
       Frontmatter: name `scheduling`, and this description, word for word:
-      "Use when Maya asks to find time, schedule, move or cancel a meeting, or block time. Not for reading or replying to email about meetings."
+      "Use when Sarah asks to find time, schedule, move or cancel a meeting, or block time. Not for reading or replying to email about meetings."
 
       Body sections: When to use; Steps; Rules that matter most; Definition of done.
 
-      The steps must, in order: call clock_now; identify every attendee with contacts_lookup (if a name matches more than one person and context doesn't settle it, ask Maya and end with a waiting status); use calendar_find_free for internal attendees; pick the earliest slot that fits, preferring Tuesday to Thursday; for people outside Larkspur, draft an email proposing 2 to 3 slots in their own time zone instead of inviting them; create or move events only as house rule 7 allows; read the event back with calendar_get and look at the RSVPs.
+      The steps must, in order: call clock_now; identify every attendee with contacts_lookup (if a name matches more than one person and context doesn't settle it, ask Sarah and end with a waiting status); use calendar_find_free for internal attendees; pick the earliest slot that fits, preferring Tuesday to Thursday; for people outside Larkspur, draft an email proposing 2 to 3 slots in their own time zone instead of inviting them; create or move events only as house rule 7 allows; read the event back with calendar_get and look at the RSVPs.
 
-      Rules to cite by number from assistant/CLAUDE.md: 1 (working hours in each person's zone, never before 09:00 or after 17:30), 2 (15-minute buffers), 3, 4 and 6 (external meetings), 5 (never accept or decline for Maya), 7 and 8 (approvals).
+      Rules to cite by number from assistant/CLAUDE.md: 1 (working hours in each person's zone, never before 09:00 or after 17:30), 2 (15-minute buffers), 3, 4 and 6 (external meetings), 5 (never accept or decline for Sarah), 7 and 8 (approvals).
 
       Definition of done, as a checklist in three groups:
       - Hard checks: the event exists with exactly the intended people; inside every attendee's hours in their own zone; 15-minute buffers and no overlap; external meetings have an agenda; check_event returns ok; the read-back shows no declines.
@@ -56,18 +56,18 @@ steps:
     title: Build inbox-triage and meeting-brief
     why: |
       Triage and briefs are reading jobs, but they still have a definition of done. Triage must catch the
-      thread Maya dropped nine days ago and never act on a suspicious email. A brief must trace every
+      thread Sarah dropped nine days ago and never act on a suspicious email. A brief must trace every
       number to a source. Writing these down is what lets the evals check them later.
     prompt: |
       Create two skills, following the "Writing assistant files" and "Markers" sections of CLAUDE.md. Use the scheduling skill you just wrote as the model for structure.
 
       1. assistant/.claude/skills/inbox-triage/SKILL.md
-         Description, word for word: "Use when Maya asks what needs her attention, what she can ignore, what she's dropped, or for a summary of her inbox. Not for writing replies."
-         Steps: email_search for recent and unread mail; email_read the candidates; classify each as needs Maya today, can wait, ignore, or suspicious; find threads where Maya hasn't replied in over a week.
+         Description, word for word: "Use when Sarah asks what needs her attention, what she can ignore, what she's dropped, or for a summary of her inbox. Not for writing replies."
+         Steps: email_search for recent and unread mail; email_read the candidates; classify each as needs Sarah today, can wait, ignore, or suspicious; find threads where Sarah hasn't replied in over a week.
          Definition of done: every needs-today email listed with the reason and the deadline; dropped threads called out; newsletters and notifications not listed as tasks; suspicious emails flagged and never acted on (house rule 10); no email text repeated beyond what's needed.
 
       2. assistant/.claude/skills/meeting-brief/SKILL.md
-         Description, word for word: "Use when Maya asks to prepare for, or be briefed on, a meeting, customer or account. Not for making slides."
+         Description, word for word: "Use when Sarah asks to prepare for, or be briefed on, a meeting, customer or account. Not for making slides."
          Steps: calendar_get the meeting; read the related emails and the customer document (docs_search, docs_read); optionally web_search for recent news; write at most 250 words covering purpose, attendees, open issues, numbers, risks and suggested asks; brief_save with its sources.
          Definition of done: every number traced to a source (check_brief returns ok); open issues and any dropped thread included; when sources disagree, both values stated with the reason; fits on one screen. End with the verifier: check_brief after brief_save.
 
@@ -78,7 +78,7 @@ steps:
     run:
       - cd assistant && claude
     expect:
-      - "\"What needs me today?\" loads inbox-triage and lists what needs Maya today, including Dan Reyes's unanswered pricing question from 17 October."
+      - "\"What needs me today?\" loads inbox-triage and lists what needs Sarah today, including Dan Reyes's unanswered pricing question from 17 October."
       - "The ops-sync email is flagged as suspicious, not acted on."
       - "\"Prep me for my 2pm\" loads meeting-brief, saves a brief, and runs `check_brief` on it."
     builds: ["assistant/.claude/skills/inbox-triage/SKILL.md", "assistant/.claude/skills/meeting-brief/SKILL.md"]
@@ -88,15 +88,15 @@ steps:
     why: |
       A deck is a brief in a stricter shape: a set number of slides, a claim in every headline, room for
       only so many words, and a last slide that asks for something. All of that can be checked, so
-      `check_deck` catches overflowing text and numbers with no source before Maya sees them.
+      `check_deck` catches overflowing text and numbers with no source before Sarah sees them.
     prompt: |
       Create assistant/.claude/skills/meeting-deck/SKILL.md, following the "Writing assistant files" and "Markers" sections of CLAUDE.md. First read the deck_create and check_deck descriptions in ea_world/, so the steps use their real arguments.
 
-      Description, word for word: "Use when Maya asks for slides or a deck. Not for a written brief."
+      Description, word for word: "Use when Sarah asks for slides or a deck. Not for a written brief."
 
-      Steps: gather the facts as the meeting-brief skill does; plan the slides (5 unless Maya asks for another number); each slide gets a claim headline (a sentence that says something, not a topic label), at most 5 bullets, and its sources; the last slide is the ask or the decision; save with deck_create; run check_deck and fix what it reports.
+      Steps: gather the facts as the meeting-brief skill does; plan the slides (5 unless Sarah asks for another number); each slide gets a claim headline (a sentence that says something, not a topic label), at most 5 bullets, and its sources; the last slide is the ask or the decision; save with deck_create; run check_deck and fix what it reports.
 
-      Definition of done: the slide count is what Maya asked for; check_deck returns ok (within the slide budgets, every number traced, sources on every slide); the deck ends with an ask. Wrap it, and the check_deck step, in the selfcheck markers.
+      Definition of done: the slide count is what Sarah asked for; check_deck returns ok (within the slide budgets, every number traced, sources on every slide); the deck ends with an ask. Wrap it, and the check_deck step, in the selfcheck markers.
     say: "Make me five slides for the Ridgeway meeting."
     run:
       - cd assistant && claude

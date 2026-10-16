@@ -143,11 +143,11 @@ def validate_when(expr: str | None) -> None:
     for node in ast.walk(tree):
         if not isinstance(node, _ALLOWED_NODES):
             raise ValueError(f"`{ast.unparse(node) if isinstance(node, ast.expr) else type(node).__name__}` isn't allowed in `when`")
-        if isinstance(node, ast.Name) and node.id not in _NAMES and node.id not in ("fill", "maya", "case", "variant"):
+        if isinstance(node, ast.Name) and node.id not in _NAMES and node.id not in ("fill", "sarah", "case", "variant"):
             raise ValueError(f"Unknown name '{node.id}' in `when`")
         if isinstance(node, ast.Attribute) and not isinstance(node.value, (ast.Name, ast.Attribute)):
             raise ValueError(f"`{ast.unparse(node)}` isn't allowed in `when`")
-    eval_when(expr, {"fill": {}, "maya": {}, "case": {}, "variant": {}})
+    eval_when(expr, {"fill": {}, "sarah": {}, "case": {}, "variant": {}})
 
 
 # ---------------------------------------------------------------- `$` references
@@ -158,7 +158,7 @@ def resolve(value: Any, ctx: TrialContext) -> Any:
         head, _, rest = value[1:].partition(".")
         if head == "gold":
             return ctx.gold.ref(rest)
-        base = {"fill": ctx.fill, "maya": ctx.maya, "case": ctx.case, "variant": ctx.variant}.get(head)
+        base = {"fill": ctx.fill, "sarah": ctx.sarah, "case": ctx.case, "variant": ctx.variant}.get(head)
         if base is None:
             raise ValueError(f"Unknown reference {value}")
         cur: Any = base
@@ -190,7 +190,7 @@ def fill_refs(value: Any) -> set[str]:
 
 
 def scope_for(ctx: TrialContext) -> dict[str, Any]:
-    return {"fill": ctx.fill, "maya": ctx.maya, "case": ctx.case, "variant": ctx.variant}
+    return {"fill": ctx.fill, "sarah": ctx.sarah, "case": ctx.case, "variant": ctx.variant}
 
 
 def check_items(criterion: dict[str, Any]) -> list[dict[str, Any]]:

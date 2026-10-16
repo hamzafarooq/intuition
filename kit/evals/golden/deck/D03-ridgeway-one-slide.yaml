@@ -8,7 +8,7 @@ tags: [overflow]
 request: "Make a one-slide summary of every open issue with Ridgeway."
 turns: []
 world: {variants: [], faults: ""}
-maya:
+sarah:
   answers: {}
   approvals: none
   edit: ""

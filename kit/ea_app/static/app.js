@@ -36,16 +36,18 @@
 
   // ------------------------------------------------------------------ app tiles (connector icons)
 
-  // Original drawings: rounded-square tiles with a gradient, a soft gloss and a white glyph.
-  // Gradients and the squircle clip live once in index.html (#tg-*, #tile-sq).
+  // Original drawings in the style of iPhone app icons: a squircle with a soft top-to-bottom gradient,
+  // a light rim along the top edge, a hairline edge and a bold white glyph that casts a faint shadow.
+  // Gradients, the rim, the shadow and the squircle clip live once in index.html (#tg-*, #tile-*).
   const SQ = "M20 .6C31.5.6 35.6.6 37.5 2.5S39.4 8.5 39.4 20s0 15.6-1.9 17.5-6 1.9-17.5 1.9-15.6 0-17.5-1.9S.6 31.5.6 20s0-15.6 1.9-17.5S8.5.6 20 .6z";
+  const TILE_FONT = `font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Helvetica, Arial, sans-serif"`;
   const GLYPH = {
-    email: '<rect x="9.5" y="12.5" width="21" height="15" rx="2.6" fill="#fff"/><path d="M10.6 13.9 20 21.2l9.4-7.3" fill="none" stroke="#2A6BDD" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>',
-    contacts: '<circle cx="20" cy="16" r="5.2" fill="#fff"/><path d="M10.2 30.2c1.1-5.6 5-8.6 9.8-8.6s8.7 3 9.8 8.6z" fill="#fff"/>',
-    docs: '<path d="M13.4 9.3h10.2l5.8 5.8v15.4a1.6 1.6 0 0 1-1.6 1.6H13.4a1.6 1.6 0 0 1-1.6-1.6V10.9a1.6 1.6 0 0 1 1.6-1.6z" fill="#fff"/><path d="M23.6 9.3v4.2a1.6 1.6 0 0 0 1.6 1.6h4.2z" fill="#F7C25A"/><path d="M15.4 20h9.2M15.4 23.6h9.2M15.4 27.2h5.8" stroke="#E8930F" stroke-width="1.7" stroke-linecap="round"/>',
-    web: '<g fill="none" stroke="#fff" stroke-width="1.9"><circle cx="20" cy="20" r="9.6"/><ellipse cx="20" cy="20" rx="4.2" ry="9.6"/><path d="M10.6 17h18.8M10.6 23h18.8" stroke-linecap="round"/></g>',
-    travel: '<path transform="rotate(45 20 20)" d="M20 7.6c1.3 0 2 1.2 2 2.6V17l9.6 5.3v2.4L22 21.9V28l3 2.3v1.9L20 30.8l-5 1.4v-1.9l3-2.3v-6.1l-9.6 2.8v-2.4L18 17v-6.8c0-1.4.7-2.6 2-2.6z" fill="#fff"/>',
-    check: '<path d="M12.4 20.6l5.1 5.1 10.2-10.6" fill="none" stroke="#fff" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"/>',
+    email: '<rect x="8.8" y="11.8" width="22.4" height="16.4" rx="3.4" fill="#fff"/><path d="M10.4 13.7 20 20.9l9.6-7.2" fill="none" stroke="#8CC2FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+    contacts: '<circle cx="20" cy="15" r="5.7" fill="#fff"/><path d="M9.7 30.1c.8-5.4 4.9-8.6 10.3-8.6s9.5 3.2 10.3 8.6c.1.8-.5 1.4-1.3 1.4H11c-.8 0-1.4-.6-1.3-1.4z" fill="#fff"/>',
+    docs: '<path d="M14 8.4h8.6l6.6 6.6v15.1a2.4 2.4 0 0 1-2.4 2.4H14a2.4 2.4 0 0 1-2.4-2.4V10.8A2.4 2.4 0 0 1 14 8.4z" fill="#fff"/><path d="M22.6 8.4v4.8a1.8 1.8 0 0 0 1.8 1.8h4.8z" fill="#FFD79C"/><path d="M15.6 20h8.8M15.6 23.8h8.8M15.6 27.6h5.4" stroke="#FF9F0A" stroke-width="2.1" stroke-linecap="round"/>',
+    web: '<g fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round"><circle cx="20" cy="20" r="10.2"/><ellipse cx="20" cy="20" rx="4.5" ry="10.2"/><path d="M10.2 20h19.6"/></g>',
+    travel: '<path transform="rotate(45 20 20)" d="M20 6.8c1.3 0 2.1 1.2 2.1 2.7v6.9l9.9 5.6v2.6l-9.9-3v6.8l3.2 2.4v2.1L20 31.5l-5.3 1.4v-2.1l3.2-2.4v-6.8l-9.9 3V22l9.9-5.6V9.5c0-1.5.8-2.7 2.1-2.7z" fill="#fff" stroke="#fff" stroke-width=".8" stroke-linejoin="round"/>',
+    check: '<path d="m12 20.6 5.3 5.3L28.2 15" fill="none" stroke="#fff" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>',
   };
   function calParts() {
     const now = worldNow() || (S.cfg?.persona?.now ? new Date(S.cfg.persona.now) : new Date());
@@ -53,15 +55,21 @@
   }
   function tile(kind, size = 20) {
     const box = `class="app-tile" width="${size}" height="${size}" viewBox="0 0 40 40" aria-hidden="true" focusable="false"`;
-    const gloss = `<path d="${SQ}" fill="url(#tg-gloss)"/><path d="${SQ}" fill="none" stroke="rgb(0 0 0 / .13)" stroke-width=".8"/>`;
+    const big = size >= 22; // below this the rim and glyph shadow turn to mush, so draw less
+    const edge = (big ? `<path d="${SQ}" fill="none" stroke="url(#tg-rim)" stroke-width="1.6" clip-path="url(#tile-sq)"/>` : "")
+      + `<path class="tile-line" d="${SQ}" fill="none" stroke-width="${big ? ".8" : "1.2"}"/>`;
     if (kind === "calendar") {
       const { dow, day } = calParts();
-      return `<svg ${box}><g clip-path="url(#tile-sq)"><rect width="40" height="40" fill="url(#tg-calbody)"/><rect width="40" height="12.5" fill="url(#tg-calhead)"/></g>`
-        + `<text x="20" y="9.6" text-anchor="middle" font-size="7" font-weight="700" letter-spacing=".6" fill="#fff" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif">${esc(dow)}</text>`
-        + `<text x="20" y="31.6" text-anchor="middle" font-size="17.5" font-weight="600" fill="#2A2520" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif">${esc(day)}</text>${gloss}</svg>`;
+      const roomy = size >= 28; // room for a readable weekday
+      const head = roomy
+        ? `<text x="20" y="12.6" text-anchor="middle" font-size="7.6" font-weight="600" letter-spacing=".3" fill="#FF3B30" ${TILE_FONT}>${esc(dow)}</text>`
+        : '<rect x="11" y="6.4" width="18" height="3.6" rx="1.8" fill="#FF3B30"/>';
+      return `<svg ${box}><path d="${SQ}" fill="url(#tg-calbody)"/>${head}`
+        + `<text x="20" y="${roomy ? 31.6 : 32.4}" text-anchor="middle" font-size="${roomy ? 20 : 22}" font-weight="${roomy ? 400 : 700}" letter-spacing="-.5" fill="#1C1C1E" ${TILE_FONT}>${esc(day)}</text>${edge}</svg>`;
     }
     if (!GLYPH[kind]) return "";
-    return `<svg ${box}><path d="${SQ}" fill="url(#tg-${kind})"/>${GLYPH[kind]}${gloss}</svg>`;
+    const glyph = big ? `<g filter="url(#tile-glyph)">${GLYPH[kind]}</g>` : GLYPH[kind];
+    return `<svg ${box}><path d="${SQ}" fill="url(#tg-${kind})"/>${glyph}${edge}</svg>`;
   }
   // A tile that can show "not connected" (desaturated) or "disconnected" (desaturated, slash badge).
   function tileBox(kind, size, state = "on") {
@@ -104,7 +112,7 @@
   const TAG = {
     tool_call: "tool call", tool_result: "result", skill_loaded: "skill", delegate: "hand-off", handoff_result: "report",
     approval_request: "approval", approval_response: "decision", check: "check", stop_check_block: "stop check",
-    signal: "signal", browser_step: "browser", site_event: "site", user: "Maya", assistant: "reply",
+    signal: "signal", browser_step: "browser", site_event: "site", user: "Sarah", assistant: "reply",
     thinking_summary: "reasoning", status: "status", usage: "usage", turn_end: "turn end", budget_exceeded: "budget",
     error: "error", message_queued: "sent", turn_start: "turn", session_started: "session", reset: "reset",
     option_changed: "option",
@@ -218,7 +226,7 @@
     if (Array.isArray(out.slots)) return out.slots.length ? `${out.slots.length} slot${out.slots.length === 1 ? "" : "s"}, first ${hm(out.slots[0].start)}` : "no slots";
     if (Array.isArray(out.matches)) return `${out.matches.length} match${out.matches.length === 1 ? "" : "es"}`;
     if (Array.isArray(out.options)) return `${out.options.length} options`;
-    if (out.event_id) return `event ${out.event_id}${out.rsvps ? " · " + Object.entries(out.rsvps).filter(([p]) => p !== "maya").map(([p, s]) => `${p.split(".")[0]} ${s}`).join(", ") : ""}`;
+    if (out.event_id) return `event ${out.event_id}${out.rsvps ? " · " + Object.entries(out.rsvps).filter(([p]) => p !== "sarah").map(([p, s]) => `${p.split(".")[0]} ${s}`).join(", ") : ""}`;
     if (out.booking_id) return `booking ${out.booking_id}${out.total_usd != null ? ` · $${out.total_usd}` : ""}`;
     if (out.brief_id) return `brief ${out.brief_id} · ${out.words} words`;
     if (out.deck_id) return `deck ${out.deck_id}`;
@@ -256,7 +264,7 @@
       case "signal": return `<b>${esc(e.kind)}</b> ${esc(e.detail || "")}`;
       case "browser_step": return `${a}<b${e.action === "blocked" ? ' class="bad"' : ""}>${esc((e.action || e.tool || "step").replace(/_page$/, "").replace(/_/g, " "))}</b> <span class="sub">${esc(clip(e.url || "", 90))}${e.target ? " · " + esc(e.target) : ""}${e.value ? " · “" + esc(clip(e.value, 60)) + "”" : ""}${stepNote(e) ? " · " + esc(clip(stepNote(e), 140)) : ""}</span>`;
       case "site_event": return `${a}<b>${esc(e.kind || e.event || "event")}</b> <span class="sub">${esc(e.site || "")} ${esc(siteHold(e))}${siteTotal(e) != null ? " · $" + esc(siteTotal(e)) : ""} ${esc(clip(siteWhere(e), 60))}</span>`;
-      case "user": return `${e.source && e.source !== "maya" ? `<span class="agent-tag">${esc(e.source)}</span>` : ""}${esc(clip(e.text, 240))}`;
+      case "user": return `${e.source && e.source !== "sarah" ? `<span class="agent-tag">${esc(e.source)}</span>` : ""}${esc(clip(e.text, 240))}`;
       case "assistant": return `${a}${esc(clip(plain(splitStatus(e.text).body), 240))}`;
       case "thinking_summary": return `${a}<em>${esc(clip(e.text, 240))}</em>`;
       case "status": return `${chipHtml(e.status, e.reason)}`;
@@ -266,7 +274,7 @@
       case "error": return `<b>${esc(e.where || "error")}</b> <span class="sub">${esc(clip(e.message, 240))}</span>`;
       case "message_queued": return `${esc(clip(e.text, 200))}${e.queued ? ' <span class="sub">(queued)</span>' : ""}`;
       case "turn_start": return `Turn ${esc(e.turn)} started`;
-      case "session_started": return `Run <b>${esc(e.run_name)}</b> · ${esc(e.options?.harness)} · ${esc(e.options?.model)} · search ${esc(e.options?.search_mode)}${e.options?.browser ? " · browser" : ""}`;
+      case "session_started": return `Run <b>${esc(e.run_name)}</b> · ${esc(e.options?.harness)} · ${esc(e.options?.model)} · search ${esc(e.options?.search_mode)}${e.options?.browser ? " · browser" : ""}${e.options?.real_sites ? " · <b>real-site search (instructor demo)</b>" : ""}`;
       case "reset": return "The world and the conversation were reset";
       case "option_changed": return `Auto-approve after a yes is now <b>${e.auto_approve ? "on" : "off"}</b>`;
       default: return `<span class="sub">${esc(clip(JSON.stringify(e), 200))}</span>`;
@@ -323,7 +331,7 @@
     const g = groupOf(e);
     const row = el("details", `ev cat-${catOf(e)}`);
     row.dataset.group = g; row.dataset.i = String(e._i);
-    const tag = e.type === "user" ? (e.source && e.source !== "maya" ? e.source : "Maya") : e.type === "assistant" && e.agent !== "main" ? "agent says" : TAG[e.type] || e.type;
+    const tag = e.type === "user" ? (e.source && e.source !== "sarah" ? e.source : "Sarah") : e.type === "assistant" && e.agent !== "main" ? "agent says" : TAG[e.type] || e.type;
     let extra = "";
     const shot = screenshotPath(e);
     if (shot) extra = `<img class="thumb" loading="lazy" alt="Screenshot of ${esc(e.url || "the page")}" src="${esc(outputUrl(shot))}">`;
@@ -526,7 +534,7 @@
     if (act) t.typing.querySelector(".typing-label").textContent = act + "…";
     if (e.type === "status") t.status = { status: e.status, reason: e.reason };
     if (e.type === "usage") t.usage = e;
-    if (e.type === "user" && (!e.source || e.source === "maya")) { const m = S.messages.get(t.mid); if (m) setTick(m, "read"); }
+    if (e.type === "user" && (!e.source || e.source === "sarah")) { const m = S.messages.get(t.mid); if (m) setTick(m, "read"); }
     if (e.type === "assistant" && (!e.agent || e.agent === "main")) onAssistant(t, e);
     if (e.type === "approval_request") onApprovalRequest(t, e);
     if (e.type === "approval_response") onApprovalResponse(e);
@@ -564,7 +572,7 @@
         case "approval_request": steps.push({ e, res: responses.get(String(e.call_id)) }); break;
         case "approval_response": if (!requests.has(String(e.call_id))) steps.push({ e }); break;
         case "assistant": if (e.agent && e.agent !== "main" && !handoffs.has((e.text || "").trim())) steps.push({ e }); break;
-        case "user": if (e.source && e.source !== "maya") steps.push({ e }); break;
+        case "user": if (e.source && e.source !== "sarah") steps.push({ e }); break;
         case "turn_end": if (e.stopped_by && e.stopped_by !== "end_turn") steps.push({ e }); break;
         case "status": case "usage": case "message_queued": case "turn_start": case "session_started": case "option_changed": break;
         default: steps.push({ e });
@@ -763,7 +771,7 @@
     $("#setup").scrollIntoView();
   }
 
-  // ------------------------------------------------------------------ Maya's world
+  // ------------------------------------------------------------------ Sarah's world
 
   function scheduleWorld() {
     clearTimeout(S.worldTimer);
@@ -781,7 +789,7 @@
   function rsvpBadges(ev) {
     const out = [];
     for (const a of ev.attendees || []) {
-      if (a === "maya") continue;
+      if (a === "sarah") continue;
       const s = (ev.rsvps || {})[a] || "needs_action";
       const sym = { accepted: "✓", declined: "✗", tentative: "?", needs_action: "…" }[s] || "";
       const reason = (ev.rsvp_reasons || {})[a];
@@ -851,7 +859,7 @@
     loadWorld();
   }
   async function resetWorld() {
-    if (!confirm("Reset Maya's world? You get a fresh run directory and a new conversation. Your setup choices stay.")) return;
+    if (!confirm("Reset Sarah's world? You get a fresh run directory and a new conversation. Your setup choices stay.")) return;
     try { await api("POST", `/api/sessions/${S.sid}/reset`); loadWorld(); }
     catch (err) { toast(err.message); }
   }
@@ -971,6 +979,13 @@
     b.disabled = !c.browser.available;
     b.checked = c.browser.available && (saved.browser ?? c.browser.default);
     $("#browser-note").textContent = c.browser.available ? "Opens Brave so you can watch it fill in the booking sites. " + c.browser.message : c.browser.message;
+    // real-site search: instructor demo, only when the app was started with it
+    const rs = c.real_sites || {};
+    $("#real-badge").hidden = !rs.enabled;
+    $("#real-note").hidden = !rs.enabled;
+    if (rs.enabled) {
+      $("#real-note").innerHTML = `<b>${esc(rs.label)} is on.</b> With "Book through the browser" on, the assistant may also search ${esc(listText(rs.sites || []))} for live prices, in a clean throwaway browser (port ${esc(rs.port)}${rs.browser_ready ? "" : ", not answering yet"}). Quotes only: nothing is booked, signed in to or filled with personal details on a real site; a guard blocks it. Sites may show bot checks or change their layout.`;
+    }
     $("#opt-auto").checked = saved.auto_approve ?? true;
     // guide link
     const g = $("#guide-link");

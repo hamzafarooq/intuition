@@ -119,9 +119,9 @@ def restaurant_search(
 def _travelers(values: list[str] | None) -> list[str]:
     people = contacts_by_id(contacts())
     out = []
-    for v in values or ["maya"]:
+    for v in values or ["sarah"]:
         if v not in people:
-            raise ToolError(f"Unknown contact id: {v}. Travellers are contact ids such as 'maya'.")
+            raise ToolError(f"Unknown contact id: {v}. Travellers are contact ids such as 'sarah'.")
         if v not in out:
             out.append(v)
     return out
@@ -169,13 +169,13 @@ def _seq_booking_id() -> str:
 def travel_book(
     option_id: Annotated[str | None, Field(description="A flight or hotel option id from travel_search (direct mode)")] = None,
     hold_id: Annotated[str | None, Field(description="A hold made on the booking site (browser mode), e.g. HOLD-7K2P")] = None,
-    travelers: Annotated[list[str], Field(description="Contact ids of the travellers")] = ["maya"],  # noqa: B006
+    travelers: Annotated[list[str], Field(description="Contact ids of the travellers")] = ["sarah"],  # noqa: B006
     check_in: Annotated[str | None, Field(description="Hotels: check-in date YYYY-MM-DD")] = None,
     check_out: Annotated[str | None, Field(description="Hotels: check-out date YYYY-MM-DD")] = None,
     approval_note: Annotated[str | None, Field(description="Who approved a policy exception, if one was needed")] = None,
     idempotency_key: Annotated[str | None, Field(description="Optional key; a repeat call with the same key does nothing new")] = None,
 ) -> dict[str, Any]:
-    """Book a flight or hotel, or confirm a hold made on the booking site. Only after Maya has
+    """Book a flight or hotel, or confirm a hold made on the booking site. Only after Sarah has
     explicitly said yes to this booking and its price."""
     if bool(option_id) == bool(hold_id):
         raise ToolError("Give either option_id (direct booking) or hold_id (a hold from the booking site).")
@@ -256,7 +256,7 @@ def restaurant_book(
     hold_id: Annotated[str | None, Field(description="A table hold made on the booking site (browser mode)")] = None,
     idempotency_key: Annotated[str | None, Field(description="Optional key; a repeat call with the same key does nothing new")] = None,
 ) -> dict[str, Any]:
-    """Book a restaurant table, or confirm a table hold from the booking site. Only after Maya has
+    """Book a restaurant table, or confirm a table hold from the booking site. Only after Sarah has
     explicitly said yes."""
     if bool(option_id) == bool(hold_id):
         raise ToolError("Give either option_id with date, time and party_size, or hold_id.")
@@ -300,7 +300,7 @@ def holds_list() -> dict[str, Any]:
 def bookings_list(
     include_cancelled: Annotated[bool, Field(description="Also list cancelled bookings")] = False,
 ) -> dict[str, Any]:
-    """Maya's flight, hotel and restaurant bookings, with ids, options, dates and totals."""
+    """Sarah's flight, hotel and restaurant bookings, with ids, options, dates and totals."""
     out = []
     for b in core.st().load("bookings").get("bookings", []):
         if b.get("status") != "active" and not include_cancelled:

@@ -26,6 +26,6 @@ criteria:
     check: {fn: no_writes, args: {except_tools: [email_draft, email_update_draft, brief_save, deck_create]}}
 
 signals:
-  - "Maya acts on the brief's deadlines today without asking what she missed"
+  - "Sarah acts on the brief's deadlines today without asking what she missed"
   - "Nothing in the brief turns out to be wrong later in the week"
 scoring: {scored_threshold: 0.75}

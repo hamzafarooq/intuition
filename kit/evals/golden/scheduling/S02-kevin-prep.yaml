@@ -8,7 +8,7 @@ tags: [buffers]
 request: "Set up a 30-minute prep with Kevin before my Ridgeway meeting today."
 turns: []
 world: {variants: [], faults: ""}
-maya:
+sarah:
   answers: {}
   approvals: explicit_yes
   edit: ""
@@ -22,5 +22,5 @@ fill:
   ambiguous: false
 budgets: {max_cost_usd: 0.60, max_seconds: 180}
 notes: >
-  Ridgeway quarterly review is Mon 26 Oct 14:00 Denver. Kevin is busy until 10:30; Maya's pipeline
+  Ridgeway quarterly review is Mon 26 Oct 14:00 Denver. Kevin is busy until 10:30; Sarah's pipeline
   review 11:00-12:00 and the 15-minute buffers leave any start from 12:15 to 13:15 (gold/slots.json S02).

@@ -17,7 +17,7 @@ PREP = {"title": "Prep with Kevin", "start": "2026-10-26T12:15:00-06:00", "end":
 
 
 def created(run: Run, title: str = "Prep with Kevin") -> list[dict[str, Any]]:
-    return [e for e in run.load("calendars")["maya"] if e["title"] == title]
+    return [e for e in run.load("calendars")["sarah"] if e["title"] == title]
 
 
 def outcomes(run: Run, tool: str, n: int, **args: Any) -> list[str | None]:

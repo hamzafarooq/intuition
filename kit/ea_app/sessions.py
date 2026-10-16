@@ -3,7 +3,7 @@
 The harness calls `on_event` live (from the same event loop) with trace events (spec/06-trace.md).
 The session adds a few app events of its own and fans everything out to SSE subscribers:
 
-    message_queued  {message_id, text, queued}      Maya pressed send
+    message_queued  {message_id, text, queued}      Sarah pressed send
     turn_start      {message_id, turn}               the message went to the harness
     session_state   {busy, queued, turn, world_now}  broadcast only (not stored)
     world_changed   {reason}                         broadcast only: refetch the world view
@@ -94,6 +94,7 @@ class SessionOptions:
     auto_approve: bool = True
     model: str = "opus"
     browser: bool = False
+    real_sites: bool = False  # instructor-only real-site search demo (needs browser; never in evals)
     connectors: dict[str, bool] = field(default_factory=lambda: {c: True for c in CONNECTORS})
     variants: dict[str, str] = field(default_factory=dict)  # harness configuration variants (overlay)
     world: list[str] = field(default_factory=list)  # world variants (state.init_run_dir)
@@ -120,7 +121,7 @@ class Session:
         self._queue: asyncio.Queue[tuple[str, str]] = asyncio.Queue()
         self._pending = 0  # messages queued or running
         self._busy = False
-        self._notes: list[str] = []  # told to the assistant with Maya's next message
+        self._notes: list[str] = []  # told to the assistant with Sarah's next message
         self._seen_approvals: set[tuple[str, str]] = set()
         self._approvals_offset = 0
         self._turn_ended = False
@@ -219,7 +220,8 @@ class Session:
             model=self.options.model,
             approval_mode="app",
             env=env,
-            browser=self.options.browser,
+            browser=self.options.browser or self.options.real_sites,
+            real_sites=self.options.real_sites,
             trace_fields={"harness": self.options.harness},
         )
 
@@ -234,6 +236,9 @@ class Session:
                          "message": "ea_harness.overlay isn't available yet; using assistant/ unchanged."}, persist=True)
             return base
         assert self.run_dir is not None
+        if self.options.real_sites:
+            return Path(await asyncio.to_thread(build_overlay, self.run_dir, dict(self.options.variants), True,
+                                                real_sites=True))
         return Path(await asyncio.to_thread(build_overlay, self.run_dir, dict(self.options.variants), self.options.browser))
 
     async def _stop(self) -> None:
@@ -409,7 +414,7 @@ class Session:
         state.write_json_atomic(self.run_dir / "approval_context.json", {
             "auto_approve": bool(self.options.auto_approve),
             "explicit_yes": approvals.is_explicit_yes(text),
-            "last_maya_message": text,
+            "last_sarah_message": text,
         })
 
     def set_auto_approve(self, on: bool) -> None:
@@ -441,12 +446,12 @@ class Session:
         decided = self.run_dir / "approvals" / "decided" / f"{call_id}.json"
         if decided.exists():
             return "already"
-        reason = "Approved in Intuition" if decision == "allow" else "Maya denied this in the app."
+        reason = "Approved in Intuition" if decision == "allow" else "Sarah denied this in the app."
         state.write_json_atomic(decided, {"decision": decision, "by": "human", "reason": reason})
         if decision == "deny":
             summary = (request or {}).get("summary") or (request or {}).get("tool") or call_id
             self.record({"type": "signal", "kind": "deny", "object_id": call_id, "source": "app",
-                         "detail": f"Maya denied: {summary}"}, persist=True)
+                         "detail": f"Sarah denied: {summary}"}, persist=True)
         return "ok"
 
     async def _watch_approvals(self) -> None:
@@ -500,13 +505,13 @@ class Session:
             return "disconnected"
         await asyncio.to_thread(core.call, "connector_disconnect", {"name": name}, run=self.run_dir)
         label = CONNECTOR_LABELS.get(name, name)
-        detail = f"{label} wasn't connected at setup" if at_setup else f"Maya turned off the {label} connector"
+        detail = f"{label} wasn't connected at setup" if at_setup else f"Sarah turned off the {label} connector"
         self.record({"type": "signal", "kind": "disconnect", "object_id": name, "detail": detail, "source": "app"},
                     persist=True)
         if at_setup:
-            self._notes.append(f"[Intuition app: Maya didn't connect {name}. Those tools are off for this session.]")
+            self._notes.append(f"[Intuition app: Sarah didn't connect {name}. Those tools are off for this session.]")
         else:
-            self._notes.append(f"[Intuition app: Maya turned off the {name} connector. It stays off for the rest "
+            self._notes.append(f"[Intuition app: Sarah turned off the {name} connector. It stays off for the rest "
                                "of this session.]")
         return "disconnected"
 

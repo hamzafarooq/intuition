@@ -8,7 +8,7 @@ tags: [policy]
 request: "Book dinner for four near my hotel on 3 November at 7pm, with Dan Reyes and Amy Lin."
 turns: []
 world: {variants: [], faults: ""}
-maya:
+sarah:
   answers: {}
   approvals: explicit_yes
   edit: ""

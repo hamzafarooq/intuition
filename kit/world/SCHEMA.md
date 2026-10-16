@@ -9,8 +9,8 @@ Conventions: UTF-8 JSON, two-space indent. Times are ISO 8601 with offset (`2026
 ### `persona.json`
 
 ```json
-{"id": "maya", "name": "Maya Chen", "title": "Regional Sales Director, West", "company": "Larkspur Supply",
- "company_domain": "larkspur.example", "email": "maya.chen@larkspur.example", "timezone": "America/Denver",
+{"id": "sarah", "name": "Sarah Smith", "title": "Regional Sales Director, West", "company": "Larkspur Supply",
+ "company_domain": "larkspur.example", "email": "sarah.smith@larkspur.example", "timezone": "America/Denver",
  "working_hours": {"start": "08:00", "end": "17:30"}, "now": "2026-10-26T08:30:00-06:00",
  "house_rules": ["...13 strings, verbatim from spec/02-world.md; rule 7 is one string with its a/b/c parts..."]}
 ```
@@ -27,22 +27,22 @@ Conventions: UTF-8 JSON, two-space indent. Times are ISO 8601 with offset (`2026
 
 - `relationship`: `internal`, `customer` or `supplier`. Customer organizations carry a `key` (`ridgeway`, `granite`) used by cross-customer checks.
 - Working hours apply Monday to Friday only.
-- Maya is a contact too (`id: maya`).
+- Sarah is a contact too (`id: sarah`).
 
 ### `calendars.json`
 
 ```json
-{"maya": [{"id": "ev-pipeline", "title": "Pipeline review", "start": "2026-10-26T11:00:00-06:00",
-           "end": "2026-10-26T12:00:00-06:00", "attendees": ["maya", "tom.becker"],
-           "rsvps": {"maya": "accepted", "tom.becker": "accepted"}, "organizer": "maya",
+{"sarah": [{"id": "ev-pipeline", "title": "Pipeline review", "start": "2026-10-26T11:00:00-06:00",
+           "end": "2026-10-26T12:00:00-06:00", "attendees": ["sarah", "tom.becker"],
+           "rsvps": {"sarah": "accepted", "tom.becker": "accepted"}, "organizer": "sarah",
            "description": "", "location": "", "private": false, "tentative": false, "all_day": false,
            "external": false, "status": "active", "recurring": false}],
  "busy": {"tom.becker": [{"start": "2026-10-26T11:00:00-06:00", "end": "2026-10-26T12:00:00-06:00"}],
           "lisa.park": [{"start": "2026-10-30T00:00:00+00:00", "end": "2026-10-31T00:00:00+00:00", "ooo": true}]}}
 ```
 
-- `maya` holds Maya's own events in full. `attendees` are contact ids (Maya included). `rsvps` maps attendee id to `accepted`, `declined`, `tentative` or `needs_action`.
-- `busy` holds other internal people's busy blocks only (no titles), in their own local time. They already include the meetings they share with Maya. `ooo: true` marks out-of-office (the RSVP reason becomes "I'm out of office").
+- `sarah` holds Sarah's own events in full. `attendees` are contact ids (Sarah included). `rsvps` maps attendee id to `accepted`, `declined`, `tentative` or `needs_action`.
+- `busy` holds other internal people's busy blocks only (no titles), in their own local time. They already include the meetings they share with Sarah. `ooo: true` marks out-of-office (the RSVP reason becomes "I'm out of office").
 - `all_day: true` events (the summit) may carry `busy_blocks: [{start, end}]`; free/busy uses those blocks instead of `start`–`end`.
 - `status`: `active` or `cancelled`. Cancelled events stay in the file.
 
@@ -51,7 +51,7 @@ Conventions: UTF-8 JSON, two-space indent. Times are ISO 8601 with offset (`2026
 ```json
 {"emails": [{"id": "em-01", "thread_id": "th-01", "received_at": "2026-10-26T07:55:00-06:00",
              "from": "tom.becker@larkspur.example", "from_name": "Tom Becker",
-             "to": ["maya.chen@larkspur.example"], "cc": [], "subject": "Q4 forecast: sync before Friday",
+             "to": ["sarah.smith@larkspur.example"], "cc": [], "subject": "Q4 forecast: sync before Friday",
              "body": "…", "unread": true, "html": false}]}
 ```
 
@@ -60,7 +60,7 @@ Conventions: UTF-8 JSON, two-space indent. Times are ISO 8601 with offset (`2026
 
 ### `sent.json`
 
-Maya's earlier sent mail, so the dropped thread stands out: `{"sent": [{"id": "sm-…", "thread_id", "reply_to_id", "sent_at", "from", "to", "cc", "subject", "body"}]}`.
+Sarah's earlier sent mail, so the dropped thread stands out: `{"sent": [{"id": "sm-…", "thread_id", "reply_to_id", "sent_at", "from", "to", "cc", "subject", "body"}]}`.
 
 ### `docs/index.json` and `docs/**/*.md`
 
@@ -98,7 +98,7 @@ description: When an email to Raj is sent, his reply arrives.
 clock: null                      # optional ISO "now" override
 add:                             # records appended to state
   inbox: []                      # emails, same shape as inbox.json
-  maya_events: []                # events, same shape as calendars.json maya[]
+  sarah_events: []                # events, same shape as calendars.json sarah[]
   busy: {}                       # person id -> extra busy blocks
   bookings: []                   # bookings, same shape as state/bookings.json
   contacts: []
@@ -111,7 +111,7 @@ reactions:                       # world feedback scripted by this variant
   - on: email_send
     to: raj.mehta                # contact id or address; matches any recipient
     reply: {from: raj.mehta@brightpath.example, from_name: Raj Mehta, subject: "Re: …", body: "…"}
-travelers: [maya]                # who travels to the summit in this variant (default [maya])
+travelers: [sarah]                # who travels to the summit in this variant (default [sarah])
 ```
 
 ### `gold/`
@@ -135,7 +135,7 @@ travelers: [maya]                # who travels to the summit in this variant (de
 | `state/clock.json` | `{"now": ISO, "timezone": "America/Denver"}` |
 | `state/drafts.json` | `{"drafts": [{"id": "dr-1", "to": [addr], "cc": [], "subject", "body", "reply_to_id": null, "thread_id": null, "created_at", "updated_at", "status": "draft"|"sent"}]}` |
 | `state/outbox.json` | `{"sent": [{"id": "msg-1", "draft_id", "to", "cc", "subject", "body", "reply_to_id", "thread_id", "sent_at"}]}`: the catcher; nothing is delivered |
-| `state/bookings.json` | `{"bookings": [{"id": "bk-001", "kind": "flight"|"hotel"|"restaurant", "option_id", "hold_id": null, "travelers": ["maya"], "guests": [], "check_in", "check_out", "nights", "date", "time", "party_size", "unit_price_usd", "total_usd", "status": "active"|"cancelled", "created_at", "approval_note": null}]}` |
+| `state/bookings.json` | `{"bookings": [{"id": "bk-001", "kind": "flight"|"hotel"|"restaurant", "option_id", "hold_id": null, "travelers": ["sarah"], "guests": [], "check_in", "check_out", "nights", "date", "time", "party_size", "unit_price_usd", "total_usd", "status": "active"|"cancelled", "created_at", "approval_note": null}]}` |
 | `state/holds.json` | `{"holds": [{"hold_id": "HOLD-7K2P", "kind", "option_id", "details": {...}, "total_usd", "created_at", "status": "held"|"confirmed"|"expired", "booking_id": null}]}`: written by `ea_sites`, confirmed by `travel_book(hold_id)` |
 | `state/connectors.json` | `{"email": "connected", "calendar": "connected", "contacts": "connected", "docs": "connected", "web": "connected", "travel": "connected"}` |
 | `state/reactions.json` | The merged `reactions` list from the variants |

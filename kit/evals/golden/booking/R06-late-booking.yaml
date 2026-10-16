@@ -8,7 +8,7 @@ tags: [policy]
 request: "Book my summit flights."
 turns: []
 world: {variants: [late-booking], faults: ""}
-maya:
+sarah:
   answers:
     needs_approval: "Hold off until I get Tom's OK."
   approvals: none
@@ -21,4 +21,4 @@ fill:
 budgets: {max_cost_usd: 1.20, max_seconds: 300}
 notes: >
   Variant late-booking moves the clock to Fri 30 Oct 08:30 Denver. The 7-day rule needs manager
-  approval; Maya says to hold off, so nothing is booked.
+  approval; Sarah says to hold off, so nothing is booked.

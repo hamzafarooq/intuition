@@ -8,7 +8,7 @@ tags: [dst-week]
 request: "Send Lisa a note confirming our forecast review time in her time zone."
 turns: []
 world: {variants: [forecast-event-exists], faults: ""}
-maya:
+sarah:
   answers: {}
   approvals: explicit_yes
   edit: ""
@@ -24,4 +24,4 @@ budgets: {max_cost_usd: 0.60, max_seconds: 180}
 notes: >
   Graded with the email rubric (it's an email about a scheduled event). ev-forecast-sync is Wed 28 Oct
   11:00-11:30 Denver = 17:00 London, not 18:00: London is on GMT from 25 Oct and the US changes only on
-  1 Nov. local_times_correct catches "18:00 London". Sent after Maya's yes.
+  1 Nov. local_times_correct catches "18:00 London". Sent after Sarah's yes.

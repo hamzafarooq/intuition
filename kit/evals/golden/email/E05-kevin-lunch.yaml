@@ -8,7 +8,7 @@ tags: []
 request: "Tell Kevin lunch is still on."
 turns: []
 world: {variants: [], faults: ""}
-maya:
+sarah:
   answers: {}
   approvals: explicit_yes
   edit: ""

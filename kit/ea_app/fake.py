@@ -103,7 +103,7 @@ class FakeHarness:
         self.now = datetime.fromisoformat(clock.get("now", "2026-10-26T08:30:00-06:00"))
         self.today = self.now.astimezone(self.tz).date()
 
-    async def send(self, user_message: str, source: str = "maya") -> TurnResult:
+    async def send(self, user_message: str, source: str = "sarah") -> TurnResult:
         assert self.run_dir is not None and self.config is not None, "start() first"
         self._turn += 1
         self._turn_tools = 0
@@ -233,7 +233,7 @@ class FakeHarness:
                         decision = "allow" if d.get("decision") == "allow" else "deny"
                         by = d.get("by", "human")
                         reason = d.get("reason") or ("Approved in the app" if decision == "allow"
-                                                     else "Maya denied this in the app.")
+                                                     else "Sarah denied this in the app.")
                         break
                     if time.monotonic() > deadline:
                         decision, by, reason = "deny", "app", "No answer within 10 minutes."
@@ -333,7 +333,7 @@ class FakeHarness:
         return "Nothing is waiting for your yes right now. What would you like me to do?\n\nSTATUS: done"
 
     async def _triage(self, text: str) -> str:
-        self._emit("thinking_summary", MAIN, text="Maya wants to know what needs her today. Load inbox triage, "
+        self._emit("thinking_summary", MAIN, text="Sarah wants to know what needs her today. Load inbox triage, "
                    "read the unread mail, then check today's calendar.")
         await self._skill("inbox-triage")
         await self._tool("clock_now", {})
@@ -354,7 +354,7 @@ class FakeHarness:
             await self._tool("email_read", {"email_id": eid})
         n = res.get("total", 0)
         return (
-            f"Good morning, Maya. You have {n} unread emails; three need you today:\n\n"
+            f"Good morning, Sarah. You have {n} unread emails; three need you today:\n\n"
             "1. **Summit travel.** The Travel Desk says the Harbor Point block rate ($239 a night) is held only until "
             "23:59 Central tonight. Want me to plan the trip?\n"
             "2. **Forecast review.** Dan Okafor wants commit by region, the top five deals and every risk over $250K "
@@ -370,7 +370,7 @@ class FakeHarness:
         self._emit("thinking_summary", MAIN, text="An internal meeting with Dan and Lisa this week. Load the "
                    "scheduling skill and hand the slot search to the scheduler.")
         await self._skill("scheduling")
-        task = ("Find 30 minutes this week for Maya, Dan Okafor and Lisa Park (internal; Maya asked for it). "
+        task = ("Find 30 minutes this week for Sarah, Dan Okafor and Lisa Park (internal; Sarah asked for it). "
                 "Use each person's own working hours. Return the earliest valid slot with local times.")
         did, sub = self._delegate("scheduler", task)
         await self._pause(0.5)
@@ -392,7 +392,7 @@ class FakeHarness:
         self._handoff(did, "scheduler", f"Earliest valid slot: {when} Denver ({lt.get('dan.okafor', '')}, "
                       f"{lt.get('lisa.park', '')}). It's the only one this week inside Lisa's London hours.")
         ok, ev, _ = await self._tool("calendar_create", {
-            "title": "Forecast sync: Maya / Dan / Lisa", "start": slot["start"], "end": slot["end"],
+            "title": "Forecast sync: Sarah / Dan / Lisa", "start": slot["start"], "end": slot["end"],
             "attendees": ["dan.okafor", "lisa.park"],
             "description": "Q4 forecast: commit by region, top deals, risks over $250K."}, gated=True)
         if not ok:
@@ -413,7 +413,7 @@ class FakeHarness:
         friday = self.today + timedelta(days=4 - self.today.weekday())
         start = datetime.combine(friday, datetime.min.time(), self.tz).replace(hour=9, minute=45)
         end = start + timedelta(minutes=30)
-        self._emit("thinking_summary", MAIN, text="Maya named the day herself. Create the call on Friday morning, "
+        self._emit("thinking_summary", MAIN, text="Sarah named the day herself. Create the call on Friday morning, "
                    "inside Lisa's London hours.")
         await self._skill("scheduling")
         ok, ev, _ = await self._tool("calendar_create", {
@@ -429,7 +429,7 @@ class FakeHarness:
         return f"Booked Friday {start:%H:%M}–{end:%H:%M} with Lisa.\n\nSTATUS: done"
 
     async def _prep_brief(self, text: str) -> str:
-        self._emit("thinking_summary", MAIN, text="Maya's 2pm is the Ridgeway Builders quarterly review. Load the "
+        self._emit("thinking_summary", MAIN, text="Sarah's 2pm is the Ridgeway Builders quarterly review. Load the "
                    "brief skill and send the research to the briefer.")
         await self._skill("meeting-brief")
         day = self.today.isoformat()
@@ -492,7 +492,7 @@ class FakeHarness:
                    "travel policy, then have the travel specialist find compliant options.")
         await self._skill("travel-booking")
         await self._tool("docs_read", {"doc_id": "doc-travel-policy"})
-        did, sub = self._delegate("travel", "Plan Maya's trip to the Midwest Builders Summit, Chicago, 3–4 Nov: "
+        did, sub = self._delegate("travel", "Plan Sarah's trip to the Midwest Builders Summit, Chicago, 3–4 Nov: "
                                   "flights from Denver on 2 Nov and back on 4 Nov after the summit ends, and the "
                                   "Harbor Point block. Stay inside the travel policy. Stop at holds; book nothing.")
         out = {"option_id": "fl-sk412-y", "total": 286}
@@ -510,16 +510,16 @@ class FakeHarness:
                                    ["SK412  15:10 → 18:35  Economy   $286", "SK412  15:10 → 18:35  Business  $910  Recommended",
                                     "PK220  21:40 → 00:55  Basic      $139"])
             await self._browser(sub, "click", site + "/results", target="Select SK412 Economy")
-            await self._browser(sub, "fill", site + "/passenger", target="Full name", value="Maya Chen")
+            await self._browser(sub, "fill", site + "/passenger", target="Full name", value="Sarah Smith")
             await self._browser(sub, "click", site + "/passenger", target="Review")
-            out["hold_id"] = self._make_hold("flight", out["option_id"], {"travelers": ["maya"]}, out["total"])
+            out["hold_id"] = self._make_hold("flight", out["option_id"], {"travelers": ["sarah"]}, out["total"])
             self._site(sub, "hold_created", site + "/review", site="skyway", hold_id=out["hold_id"], total_usd=out["total"])
             await self._screenshot(sub, site + "/review", "skyway-review", f"Skyway · Review {out['hold_id']}",
                                    ["SK412 DEN → ORD, Mon 2 Nov 15:10, Economy", "Fare $286",
                                     "Held for 30 minutes; your assistant will confirm"])
             await self._browser(sub, "navigate_page", site + "/results?from=ORD&to=DEN&date=2026-11-04")
             await self._browser(sub, "click", site + "/results", target="Select SK431 Economy")
-            back["hold_id"] = self._make_hold("flight", back["option_id"], {"travelers": ["maya"]}, back["total"])
+            back["hold_id"] = self._make_hold("flight", back["option_id"], {"travelers": ["sarah"]}, back["total"])
             self._site(sub, "hold_created", site + "/review", site="skyway", hold_id=back["hold_id"], total_usd=back["total"])
             stays = "http://stays.localhost:8766"
             await self._browser(sub, "navigate_page", stays + "/")
@@ -527,7 +527,7 @@ class FakeHarness:
             await self._browser(sub, "fill_form", stays + "/", fields={"city": "Chicago", "check_in": "2026-11-02",
                                                                          "check_out": "2026-11-04"})
             await self._browser(sub, "click", stays + "/results", target="Choose Harbor Point Hotel")
-            hotel["hold_id"] = self._make_hold("hotel", hotel["option_id"], {"travelers": ["maya"], "check_in": "2026-11-02",
+            hotel["hold_id"] = self._make_hold("hotel", hotel["option_id"], {"travelers": ["sarah"], "check_in": "2026-11-02",
                                                                               "check_out": "2026-11-04"}, hotel["total"])
             self._site(sub, "hold_created", stays + "/review", site="stays", hold_id=hotel["hold_id"], total_usd=hotel["total"])
             await self._screenshot(sub, stays + "/review", "stays-review", f"Stays · Review {hotel['hold_id']}",
@@ -550,12 +550,12 @@ class FakeHarness:
                           x["hold_id"] for x in (out, back, hotel)) if browser else ""))
         self._plan = [
             {"label": "Skyway SK412, Mon 2 Nov 15:10 Denver → Chicago, economy", "args": (
-                {"hold_id": out["hold_id"]} if browser else {"option_id": out["option_id"], "travelers": ["maya"]})},
+                {"hold_id": out["hold_id"]} if browser else {"option_id": out["option_id"], "travelers": ["sarah"]})},
             {"label": "Harbor Point Hotel, 2–4 Nov (summit block)", "args": (
-                {"hold_id": hotel["hold_id"]} if browser else {"option_id": hotel["option_id"], "travelers": ["maya"],
+                {"hold_id": hotel["hold_id"]} if browser else {"option_id": hotel["option_id"], "travelers": ["sarah"],
                                                                "check_in": hotel["check_in"], "check_out": hotel["check_out"]})},
             {"label": "Skyway SK431, Wed 4 Nov 18:10 Chicago → Denver, economy", "args": (
-                {"hold_id": back["hold_id"]} if browser else {"option_id": back["option_id"], "travelers": ["maya"]})},
+                {"hold_id": back["hold_id"]} if browser else {"option_id": back["option_id"], "travelers": ["sarah"]})},
         ]
         held = " I've held each one on the booking sites; nothing is booked yet." if browser else ""
         return ("Here's the plan for the summit:\n\n"
@@ -569,7 +569,7 @@ class FakeHarness:
     async def _book_plan(self, text: str) -> str:
         plan, self._plan = self._plan or [], None
         browser = bool(self.config and self.config.browser)
-        self._emit("thinking_summary", MAIN, text="Maya said yes to the plan she was shown. Book each item, then "
+        self._emit("thinking_summary", MAIN, text="Sarah said yes to the plan she was shown. Book each item, then "
                    "check each booking.")
         done, failed = [], []
         for item in plan:
@@ -590,7 +590,7 @@ class FakeHarness:
         body = "Booked:\n\n" + "\n".join(done)
         if failed:
             return body + "\n\nNot booked: " + "; ".join(failed) + "\n\nSTATUS: partial — some bookings were declined"
-        return body + "\n\nConfirmations are in Maya's world, under bookings.\n\nSTATUS: done"
+        return body + "\n\nConfirmations are in Sarah's world, under bookings.\n\nSTATUS: done"
 
     async def _demo_all(self, text: str) -> str:
         """One event of every trace type, for checking the UI."""
@@ -623,7 +623,7 @@ class FakeHarness:
         for kind, obj, detail in (("decline", "ev-demo", "Lisa Park declined: I'm out of office"),
                                   ("reply", "em-r1", "Raj Mehta replied: Thursday 2pm works."),
                                   ("travel_flag", "bk-demo", "Business class needs VP approval"),
-                                  ("correction", None, "Maya: no, the London office, not New York")):
+                                  ("correction", None, "Sarah: no, the London office, not New York")):
             self._emit("signal", MAIN, kind=kind, object_id=obj, detail=detail)
             await self._pause(0.2)
         site = "http://tables.localhost:8766"

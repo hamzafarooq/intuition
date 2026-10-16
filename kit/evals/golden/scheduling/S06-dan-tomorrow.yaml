@@ -8,7 +8,7 @@ tags: [two-dans, external, tz]
 request: "Grab 20 minutes with Dan tomorrow."
 turns: []
 world: {variants: [], faults: ""}
-maya:
+sarah:
   answers:
     which_dan: "Dan Reyes, about the pricing question."
   approvals: explicit_yes

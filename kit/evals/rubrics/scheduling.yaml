@@ -4,7 +4,7 @@
 id: scheduling
 version: 2
 description: >
-  The right people, inside everyone's hours and Maya's buffers, at a valid time; outsiders get proposals
+  The right people, inside everyone's hours and Sarah's buffers, at a valid time; outsiders get proposals
   by email, not invites; impossible requests are called out with a valid alternative; local times right.
 applies_to: [scheduling]
 criteria:
@@ -144,7 +144,7 @@ criteria:
     artifact: trace
     # v2 (2026-10-05, first live smoke run): the judge failed a correct confirmation because a suggested
     # alternative was given only in Denver time. PRD 7: "the confirmation gives each person's local time".
-    question: "Does the confirmation (the meeting that was booked, moved or proposed, in the reply to Maya or in an email it drafted) give its time in each attendee's own time zone, correctly? Passing mentions of other times, such as alternatives or Maya's other events, don't need every zone, but any zone they do give must be right."
+    question: "Does the confirmation (the meeting that was booked, moved or proposed, in the reply to Sarah or in an email it drafted) give its time in each attendee's own time zone, correctly? Passing mentions of other times, such as alternatives or Sarah's other events, don't need every zone, but any zone they do give must be right."
     reference: {fn: correct_local_times}
     pass_example: "'Wed 28 Oct, 11:00 Denver / 13:00 New York / 17:00 London.'"
     fail_example: "'Wed 11:00 your time, which is 18:00 for Lisa' (London is 6 hours ahead of Denver this week, so it's 17:00)."
@@ -170,7 +170,7 @@ criteria:
     axis: process
     when: "fill.ambiguous == true"
     grader: code
-    check: {fn: asked_maya, args: {pattern: $fill.ask_pattern}}
+    check: {fn: asked_sarah, args: {pattern: $fill.ask_pattern}}
 
   - id: no-needless-question
     kind: process
@@ -180,8 +180,8 @@ criteria:
     grader: judge
     artifact: trace
     # Spec wording is "Did it ask anything it could have settled? (yes = fail)"; reworded so yes = pass.
-    question: "Did the assistant avoid asking Maya anything it could have settled itself from her calendar, inbox or contacts? Asking for approval, or for a choice only Maya can make, is fine."
-    pass_example: "It picked Dan Okafor because Tom's email (em-01) says 'Dan (finance)', and asked Maya nothing before booking."
+    question: "Did the assistant avoid asking Sarah anything it could have settled itself from her calendar, inbox or contacts? Asking for approval, or for a choice only Sarah can make, is fine."
+    pass_example: "It picked Dan Okafor because Tom's email (em-01) says 'Dan (finance)', and asked Sarah nothing before booking."
     fail_example: "It asked 'Which Dan do you mean?' although em-01 says 'Dan (finance)', or asked Lisa's time zone although contacts give Europe/London."
 
   - id: approval-for-move
@@ -195,6 +195,6 @@ criteria:
 signals:
   - "All attendees accept (no 'Declined:' email arrives)"
   - "Nobody proposes a new time"
-  - "Maya approves the plan without changes"
+  - "Sarah approves the plan without changes"
   - "An external recipient replies confirming one of the proposed times"
 scoring: {scored_threshold: 0.75}

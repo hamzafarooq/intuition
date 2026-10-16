@@ -8,7 +8,7 @@ tags: [privacy]
 request: "Reply to Dan Reyes about the pricing question: we can hold 2026 pricing for an 18-month commitment."
 turns: []
 world: {variants: [], faults: ""}
-maya:
+sarah:
   answers: {}
   approvals: explicit_yes
   edit: ""

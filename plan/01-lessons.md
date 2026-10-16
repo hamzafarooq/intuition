@@ -12,8 +12,8 @@ Goal: students know what a personal assistant agent is, their assistant answers 
 
 | Step | What happens |
 |---|---|
-| S.0 What we're building (5 min) | What a personal assistant agent is: you ask it, it reads your inbox and calendar, and it acts for you. Instinct as the real-world example, and its three reported first-week failures. Meet Maya and her week |
-| S.1 Make the folder, start Claude Code, hand over the brief | `CLAUDE.md` describes Maya, the house rules, what always needs approval, and the status line every task must end with |
+| S.0 What we're building (5 min) | What a personal assistant agent is: you ask it, it reads your inbox and calendar, and it acts for you. Instinct as the real-world example, and its three reported first-week failures. Meet Sarah and her week |
+| S.1 Make the folder, start Claude Code, hand over the brief | `CLAUDE.md` describes Sarah, the house rules, what always needs approval, and the status line every task must end with |
 | S.2 Add the starter files | `world/`, `mcp/ea_world/`, `evals/`, `harness/`, `rubrics/`; Python environment |
 | S.3 Register the MCP server | `.mcp.json`; `/mcp` lists the `ea-world` tools |
 | S.4 First request | "What's on my calendar Monday?" |
@@ -49,7 +49,7 @@ Goal: house rules and definitions of done packaged as skills, with proof that th
 
 | Step | What happens |
 |---|---|
-| 2.1 Build the scheduling skill | House rules (nothing before 9:00 local time for any attendee, 15-minute buffers, prefer Tuesday to Thursday, external meetings need an agenda, never accept on Maya's behalf) and the scheduling definition of done as a checklist |
+| 2.1 Build the scheduling skill | House rules (nothing before 9:00 local time for any attendee, 15-minute buffers, prefer Tuesday to Thursday, external meetings need an agenda, never accept on Sarah's behalf) and the scheduling definition of done as a checklist |
 | 2.2 Build inbox-triage and meeting-brief | Adapted from the `meeting-analyzer`, `exec-summary` and `email-writer` skills in the multi-agent-course repo, each with its definition of done |
 | 2.3 Build meeting-deck | Five-slide HTML deck for a meeting, from customer notes, threads and search results |
 | 2.4 Skill-trigger suite | 20 prompts that should load each skill and 20 that shouldn't. Precision and recall, read from the trace |
@@ -75,7 +75,7 @@ Goal: an orchestrator with four specialists; rubrics that grade any valid path; 
 | 3.5 Calibrate the judge | Label 20 trials for two judged criteria without seeing the judge's answer; compare; TPR and TNR; reword and rerun |
 | 3.6 Add self-checks | Verifier tools in each skill's checklist, read-back after writes, the reviewer sub-agent for emails, briefs and decks, and the stop hook that won't accept "done" before a check has run |
 | 3.7 Self-checks off vs on | Same cases. Compare the overclaim rate and the "honest" axis |
-| 3.8 Signal cases | Cases where an attendee declines or Maya edits a draft: does the assistant notice and act without being told? |
+| 3.8 Signal cases | Cases where an attendee declines or Sarah edits a draft: does the assistant notice and act without being told? |
 
 Demo, 3 minutes, before 3.4: the "wrong eval". The same runs score 100% on a "does the reply sound complete" judge and fail the state check, because the assistant said "booked" and nothing was booked.
 
@@ -94,10 +94,10 @@ Goal: the assistant can't send, book or create without an explicit yes, and that
 | Step | What happens |
 |---|---|
 | 4.1 Set the gate | `settings.json`: send, book and create always ask. Try it: approve one, deny one |
-| 4.2 Gate cases (precedent: an email sent without checking) | The simulated Maya replies explicit yes, no, something vague, or a thumbs-up. Five trials each. Nothing may be sent or booked without an explicit yes, so pass^5 must be 100% |
+| 4.2 Gate cases (precedent: an email sent without checking) | The simulated Sarah replies explicit yes, no, something vague, or a thumbs-up. Five trials each. Nothing may be sent or booked without an explicit yes, so pass^5 must be 100% |
 | 4.3 Injection cases (precedent: instructions in an email were followed) | Attack emails and attack web pages, each paired with a harmless look-alike. Attack success rate, task success under attack, false blocks |
 | 4.4 Disconnect cases (precedent: inbox data kept after disconnect) | After `connector_disconnect("email")`, no email tool succeeds and no earlier email content appears in replies |
-| 4.5 Privacy cases | Invites and emails to outsiders never include Maya's private event titles or notes |
+| 4.5 Privacy cases | Invites and emails to outsiders never include Sarah's private event titles or notes |
 
 What to expect: the harness gate blocks every unapproved send even when the model tries. The trace still shows the attempt, which is why "did it try to send?" and "was anything sent?" are separate criteria.
 

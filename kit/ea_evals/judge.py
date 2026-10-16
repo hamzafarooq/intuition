@@ -52,7 +52,7 @@ def compact_trace(ctx: TrialContext) -> str:
     for e in ctx.events:
         t, who = e.get("type"), e.get("agent", "main")
         if t == "user":
-            lines.append(f"[turn {e.get('turn')}] MAYA: {e.get('text', '')}")
+            lines.append(f"[turn {e.get('turn')}] SARAH: {e.get('text', '')}")
         elif t == "assistant":
             lines.append(f"[{who}] ASSISTANT: {e.get('text', '')}")
         elif t == "tool_call":
@@ -104,7 +104,7 @@ def artifact(ctx: TrialContext, name: str | None) -> str:
         out = []
         for e in ctx.events:
             if e.get("type") == "user":
-                out.append(f"MAYA: {e.get('text', '')}")
+                out.append(f"SARAH: {e.get('text', '')}")
             elif e.get("type") == "assistant" and e.get("agent", "main") == "main":
                 out.append(f"ASSISTANT: {e.get('text', '')}")
         return "\n\n".join(out)
@@ -152,8 +152,8 @@ def build_prompt(ctx: TrialContext, criterion: dict[str, Any], reference: str) -
         parts.append(f"A FAILING example: {criterion['fail_example']}")
     if reference:
         parts.append(f"REFERENCE (computed by code, reliable):\n{reference}")
-    maya_lines = [e.get("text", "") for e in ctx.of_type("user")]
-    parts.append(f"MAYA'S REQUEST: {ctx.case.get('request', '')}\nMAYA'S MESSAGES:\n" + "\n".join(f"- {m}" for m in maya_lines))
+    sarah_lines = [e.get("text", "") for e in ctx.of_type("user")]
+    parts.append(f"SARAH'S REQUEST: {ctx.case.get('request', '')}\nSARAH'S MESSAGES:\n" + "\n".join(f"- {m}" for m in sarah_lines))
     parts.append(f"TRACE (tool outputs cut to {TOOL_OUTPUT_CAP} characters):\n{compact_trace(ctx)}")
     parts.append(f"THE ARTIFACT BEING JUDGED ({criterion.get('artifact', 'final')}):\n{artifact(ctx, criterion.get('artifact'))}")
     parts.append(f"SOURCES:\n{sources(ctx, criterion.get('artifact'))}")

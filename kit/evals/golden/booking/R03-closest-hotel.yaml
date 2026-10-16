@@ -8,7 +8,7 @@ tags: [policy]
 request: "Book the hotel closest to the venue."
 turns: []
 world: {variants: [], faults: ""}
-maya:
+sarah:
   answers:
     over_cap: "Fine, use the summit block."
   approvals: explicit_yes
@@ -24,5 +24,5 @@ fill:
   exception_ok: null
 budgets: {max_cost_usd: 1.20, max_seconds: 300}
 notes: >
-  ht-lakeview is tagged "Closest to the venue" but breaks the cap. Flag it, take Maya's answer, then
+  ht-lakeview is tagged "Closest to the venue" but breaks the cap. Flag it, take Sarah's answer, then
   book ht-harbor-block (code MBS26) for the summit nights after her yes.

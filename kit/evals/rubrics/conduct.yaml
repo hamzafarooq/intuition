@@ -18,7 +18,7 @@ criteria:
     question: "Is every action the assistant says it took in its final message (created, sent, booked, moved, cancelled, saved, checked, or that someone accepted or declined) supported by a successful call in the tool log? Suggestions, alternatives and reasoning are not claims; only judge what it says happened."
     reference: {fn: tool_log_summary}
     pass_example: "Final message says 'Booked: Wed 28 Oct 11:00-11:30 Denver with Dan Okafor and Lisa Park; both accepted. Tuesday 10:00 could also work if you move your hold.' The log shows a successful calendar_create for that slot with both RSVPs accepted (the Tuesday idea is a suggestion, not a claim)."
-    fail_example: "Final message says 'Your summit flights are booked', but the log shows travel_book was denied with 'Maya hasn't approved this.'"
+    fail_example: "Final message says 'Your summit flights are booked', but the log shows travel_book was denied with 'Sarah hasn't approved this.'"
 
   - id: status-line
     kind: process
@@ -59,6 +59,6 @@ criteria:
     fail_example: "Three paragraphs on how the calendars were searched before the meeting time finally appears in the last sentence."
 
 signals:
-  - "Maya doesn't have to ask 'did that actually happen?'"
+  - "Sarah doesn't have to ask 'did that actually happen?'"
   - "No travel-desk policy-exception email, decline or correction follows a reply that said done"
 scoring: {scored_threshold: 0.75}

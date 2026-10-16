@@ -33,6 +33,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 .app-tile { display: block; flex: none; filter: var(--tile-shadow); overflow: visible; }
 .tile-box { position: relative; display: inline-grid; flex: none; width: var(--ts, 20px); height: var(--ts, 20px); }
 .tile-box .app-tile { transition: filter .2s; }
+.app-tile .tile-line { stroke: var(--tile-line, rgb(0 0 0 / .09)); }
 .tile-box.off .app-tile { filter: grayscale(1) opacity(.5); }
 .tile-box .slash { position: absolute; right: -3px; bottom: -3px; width: max(11px, 42%); height: max(11px, 42%); color: var(--bad); }
 .ev-body .app-tile, .s-main .app-tile { display: inline-block; vertical-align: -3px; margin-right: 6px; }
@@ -107,6 +108,9 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 .nav-session { min-width: 0; flex: 1; display: flex; }
 .run-pill { font-family: var(--font-mono); font-size: var(--step--2); color: var(--muted); border: 1px solid var(--line); border-radius: var(--radius-pill); padding: 3px 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
 .nav-right { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+.real-badge { white-space: nowrap; border: 1px solid color-mix(in srgb, var(--warn) 40%, transparent); }
+.real-note { margin-top: 12px; max-width: none; }
+@media (max-width: 640px) { .real-badge { white-space: normal; font-size: 11px; } }
 .nav-link { font-size: var(--step--1); font-weight: 600; text-decoration: none; padding: 7px 14px; border-radius: var(--radius-pill); border: 1px solid var(--line-strong); background: transparent; }
 .nav-link:hover { background: var(--surface-3); }
 
@@ -153,9 +157,12 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
 .card-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .persona { display: flex; align-items: center; gap: 16px; margin: 16px 0 14px; }
 .initials {
-  width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center; flex: none;
+  position: relative; overflow: hidden;
+  width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; flex: none;
   background: var(--accent-soft); color: var(--accent-strong); font-family: var(--font-serif); font-size: 1.45rem; font-weight: 600;
 }
+/* Sarah's photo covers the initials; they show through only if it fails to load. */
+.initials .avatar-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .persona-name { font-family: var(--font-serif); font-size: var(--step-2); font-weight: 600; }
 .persona-role { color: var(--ink-2); }
 .persona-meta { color: var(--muted); font-size: var(--step--1); }
@@ -338,7 +345,8 @@ h1, h2, h3 { margin: 0; font-weight: 600; }
   margin: 2px 6px 6px 28px; padding: 8px 10px; max-height: 240px; overflow: auto; background: var(--surface-3);
   border-radius: 8px; font-family: var(--font-mono); font-size: 11px; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere;
 }
-.step .thumb, .ev .thumb { display: block; margin: 6px 0 2px; width: 100%; max-width: 260px; border-radius: 8px; border: 1px solid var(--line); }
+/* Fixed box so a lazy-loaded screenshot can't grow the list and knock the trace or chat off the bottom. */
+.step .thumb, .ev .thumb { display: block; margin: 6px 0 2px; width: 100%; max-width: 260px; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; border-radius: 8px; border: 1px solid var(--line); background: var(--surface-3); }
 .problems { margin: 3px 0 0; padding-left: 16px; color: var(--bad); }
 
 /* approval card (a special bubble) */
@@ -567,7 +575,7 @@ body[data-view="chat"] #nav-session { display: flex; }
 .cat-system { --cat: var(--c-system); }
 .cat-error { --cat: var(--c-error); }
 
-/* Maya's world */
+/* Sarah's world */
 .world { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 14px; align-items: start; }
 .w-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-l); padding: 16px; min-width: 0; box-shadow: var(--shadow-1); }
 .w-card.wide { grid-column: 1 / -1; }

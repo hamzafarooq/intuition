@@ -2,7 +2,14 @@
 
 import pytest
 
-from ea_evals.components import args_match, first_tool_call, grade_skill, grade_tool_use, load_suite, normalize_answer
+from ea_evals.components import (
+    args_match,
+    first_tool_call,
+    grade_skill,
+    grade_tool_use,
+    load_suite,
+    normalize_answer,
+)
 
 
 @pytest.mark.parametrize(

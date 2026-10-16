@@ -2,8 +2,16 @@
 
 The profile in ~/.intuition/browser-profile never touches your own cookies or logins. The window opens
 on the right half of the screen so Intuition can sit on the left.
+
+    uv run python tools/browser.py --real           # instructor demo: a clean, throwaway browser on port 9223
+    uv run python tools/browser.py --real --close   # close it and delete its profile
+
+`--real` is for the real-site search demo only (ea_harness/real_sites.py). It never reuses port 9222
+or any existing profile: each launch gets a fresh temporary profile. `make demo-real` (ea-start
+--real-sites) opens and closes it for you.
 """
 
+import argparse
 import shutil
 import subprocess
 import sys
@@ -38,7 +46,29 @@ def find() -> str | None:
     return None
 
 
-def main() -> int:
+def real(close: bool) -> int:
+    from ea_harness import clean_browser
+
+    if close:
+        print("Closed the clean browser and deleted its profile." if clean_browser.close() else "No clean browser was open.")
+        return 0
+    try:
+        info = clean_browser.launch()
+    except clean_browser.CleanBrowserError as exc:
+        print(exc, file=sys.stderr)
+        return 1
+    print(f"Clean browser ready on port {info['port']} ({info['browser']}, throwaway profile {info['profile']}).")
+    print("Close it with: uv run python tools/browser.py --real --close")
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    p = argparse.ArgumentParser(description="Open the booking browser with remote debugging.")
+    p.add_argument("--real", action="store_true", help="instructor demo: a clean, throwaway browser on port 9223")
+    p.add_argument("--close", action="store_true", help="with --real: close it and delete its profile")
+    args = p.parse_args(argv)
+    if args.real:
+        return real(args.close)
     if debug_port_open():
         print("A browser is already listening on port 9222.")
         return 0
