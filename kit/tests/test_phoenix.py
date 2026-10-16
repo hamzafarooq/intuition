@@ -97,3 +97,15 @@ def test_endpoint(monkeypatch) -> None:
     monkeypatch.setenv("PHOENIX_COLLECTOR_ENDPOINT", "http://phoenix.example:6006")
     assert P.endpoint_url() == "http://phoenix.example:6006/v1/traces"
     assert P.endpoint_url("http://localhost:7007/v1/traces/") == "http://localhost:7007/v1/traces"
+
+
+def test_latest_picks_the_newest_session_with_a_trace(tmp_path, monkeypatch) -> None:
+    from ea_world import paths
+
+    monkeypatch.setattr(paths, "runs_dir", lambda: tmp_path)
+    assert P.trial_dirs("latest") == []
+    for name in ("app-20261016-090606", "app-20261016-103942"):
+        (tmp_path / name).mkdir()
+        (tmp_path / name / "trace.jsonl").write_text("")
+    (tmp_path / "app-20261016-110000").mkdir()  # a session that never produced a trace
+    assert P.trial_dirs("latest") == [tmp_path / "app-20261016-103942"]

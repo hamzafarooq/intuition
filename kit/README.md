@@ -12,15 +12,15 @@ A four-hour workshop kit. You build Sarah Smith's executive assistant in Claude 
 
 Intuition is the assistant Sarah texts; in the workshop you text it from a mock phone in your browser (localhost:8765). Everything is fictional and runs on your laptop. No real accounts are touched.
 
-## Optional: view a run in Phoenix (instructors)
+## Optional: watch the assistant in Phoenix
 
-`ea-eval phoenix` sends a finished run's traces to a local [Arize Phoenix](https://phoenix.arize.com) as OpenInference spans, so you can show the same run in our report and in an industry observability tool. Each trial becomes one trace: the trial and its grade at the root, then every model step, tool call and sub-agent on the trace's own timeline.
+`make trace` sends a mock-phone session or an eval run to a local [Arize Phoenix](https://phoenix.arize.com) as OpenInference spans, so you can see the same trace in an industry observability tool. Each session or trial becomes one trace: the request (and its grade, for eval runs) at the root, then every model step, tool call and sub-agent on the trace's own timeline.
 
-1. Start Phoenix in a second terminal: `uvx arize-phoenix serve` (or `docker run -p 6006:6006 arizephoenix/phoenix`).
-2. `uv run --extra phoenix ea-eval phoenix <run-id>`. Add `--dry-run` to print one trial's span tree without sending anything.
-3. Open http://localhost:6006 and choose the `intuition` project. Each trial's grade shows as `pass` and `overclaim` annotations.
+1. In a second terminal: `make phoenix`. It runs `uvx arize-phoenix serve`, so nothing is added to the kit's own environment. Docker works too: `docker run -p 6006:6006 arizephoenix/phoenix`.
+2. Text Intuition from the mock phone, then `make trace`. That sends the newest session under `runs/`. For an eval run: `make trace RUN=<run-id>`.
+3. Open http://localhost:6006 and choose the `intuition` project. Blocked or failed tool calls show as errors; each eval trial's grade shows as `pass` and `overclaim` annotations.
 
-The `phoenix` extra adds only OpenTelemetry and OpenInference, so a plain `uv sync` is unchanged. `--endpoint` (or `PHOENIX_COLLECTOR_ENDPOINT`) and `--project` choose where the spans go.
+Under the hood this is `uv run --extra phoenix ea-eval phoenix latest`. Add `ARGS=--dry-run` to print the span tree without sending anything. `--endpoint` (or `PHOENIX_COLLECTOR_ENDPOINT`) and `--project` choose where the spans go. The `phoenix` extra adds only OpenTelemetry and OpenInference, so a plain `uv sync` is unchanged.
 
 ## Instructor demo: real-site search
 
