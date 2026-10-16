@@ -4,7 +4,7 @@ Three record formats. The trace is the harness's view, the call log is the tool 
 
 ## Trace (`trace.jsonl`)
 
-Written by the harness adapter (Claude Code now; the independent harness later), streamed live to the app, read by graders and the report.
+Written by the harness adapter (Claude Code now; the independent harness later), streamed live to the mock phone, read by graders and the report.
 
 Common fields on every event:
 
@@ -42,7 +42,7 @@ Common fields on every event:
 
 Rules:
 - Every `tool_call` has exactly one `tool_result` with the same `call_id`.
-- `signal` events for world reactions come from the call log's `signals` field and are emitted right after the `tool_result` that caused them. `edit`, `deny` and `correction` signals come from the simulated Sarah or the app.
+- `signal` events for world reactions come from the call log's `signals` field and are emitted right after the `tool_result` that caused them. `edit`, `deny` and `correction` signals come from the simulated Sarah or the mock phone.
 - The `status` event is parsed from the last line of the final assistant text that matches `^STATUS:\s*(done|partial|failed|waiting)\b\s*(?:[—-]\s*(.*))?$`. No match gives `missing`.
 
 ## Server call log (`calls.jsonl`)

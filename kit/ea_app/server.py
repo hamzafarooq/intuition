@@ -1,4 +1,5 @@
-"""The Intuition web app: Starlette, server-sent events and a static front end (spec/14-app.md).
+"""The mock phone (Intuition's local web page): Starlette, server-sent events and a static front end
+(spec/14-app.md).
 
     GET  /phone/{id}                              the phone alone, for its own window (same session, same stream)
     GET  /api/config                              app name, harnesses, Claude Code status, search, browser, voice
@@ -246,7 +247,7 @@ def create_app(
         browser_on = bool(body.get("browser", False))
         want_real = body.get("real_sites")
         if want_real and not real_sites:
-            return _error(400, f"{RS.LABEL} is off. It's an instructor demo: start the app with `make demo-real` "
+            return _error(400, f"{RS.LABEL} is off. It's an instructor demo: start the mock phone with `make demo-real` "
                                "(or EA_REAL_SITES=on).")
         real = bool(real_sites and harness == "claude_code" and browser_on and want_real is not False)
         opts = SessionOptions(harness=harness, search_mode=search, auto_approve=bool(body.get("auto_approve", True)),

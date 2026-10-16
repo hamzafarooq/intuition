@@ -5,7 +5,7 @@ hero:
   eyebrow: "The Intuition workshop · four hours"
   title: "Build Sarah's assistant. Then find out how far to trust it."
   lede: >
-    You'll build a personal assistant agent in Claude Code, meet it in a small app, and test every part
+    You'll build a personal assistant agent in Claude Code, text it from a mock phone, and test every part
     of it with written test cases graded by rubrics. Everything runs on your laptop, against a made-up world.
   actions:
     - {label: "Start with setup", href: "setup.html", primary: true}
@@ -36,11 +36,11 @@ sections:
           A golden dataset of 63 written test cases (you'll run 20), each graded by a rubric: code checks the
           facts, a model judge checks the judgements. You test the model, the tools, the skills, the agent,
           the team, the harness and safety.
-      - kicker: "The app"
-        title: "Intuition, to meet your assistant"
+      - kicker: "The mock phone"
+        title: "A phone to text your assistant"
         body: >
-          A small web app on your laptop. Set Sarah up, message her assistant, approve or deny what it wants to
-          do, and watch every tool call behind the scenes.
+          Intuition is the assistant Sarah texts. You text it from a mock phone in your browser: set Sarah up,
+          message her assistant, approve or deny what it wants to do, and watch every tool call behind the scenes.
     after: >
       You leave with a report full of spider charts that shows where your assistant works, where it fails
       and what it costs, plus three new test cases made from its own mistakes.

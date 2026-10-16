@@ -232,8 +232,8 @@ class FakeHarness:
                         d = state.read_json(decided, {}) or {}
                         decision = "allow" if d.get("decision") == "allow" else "deny"
                         by = d.get("by", "human")
-                        reason = d.get("reason") or ("Approved in the app" if decision == "allow"
-                                                     else "Sarah denied this in the app.")
+                        reason = d.get("reason") or ("Approved on her phone" if decision == "allow"
+                                                     else "Sarah denied this on her phone.")
                         break
                     if time.monotonic() > deadline:
                         decision, by, reason = "deny", "app", "No answer within 10 minutes."

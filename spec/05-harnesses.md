@@ -1,8 +1,8 @@
 # Harness
 
-**Decision (2026-10-04): the assistant runs on Claude Code only, for now.** The runner and the app drive the Claude Code CLI in headless mode. It uses each person's own Claude login (Pro or Max), so no Anthropic API key is needed. The independent harness is deferred; its design is kept at the end of this file for later.
+**Decision (2026-10-04): the assistant runs on Claude Code only, for now.** The runner and the mock phone drive the Claude Code CLI in headless mode. It uses each person's own Claude login (Pro or Max), so no Anthropic API key is needed. The independent harness is deferred; its design is kept at the end of this file for later.
 
-Everything talks to the harness through one interface, so the independent harness can be added later without touching the runner or the app:
+Everything talks to the harness through one interface, so the independent harness can be added later without touching the runner or the mock phone:
 
 ```python
 class Harness(Protocol):
@@ -64,7 +64,7 @@ claude -p "<sarah's message>"
 - **`<run_dir>/mcp.json`** is written by the adapter for this trial. It has one `ea-world` stdio server entry, with `EA_RUN_DIR`, `EA_MODE`, `EA_WORLD_VARIANT`, `EA_FAULTS`, `EA_SEED`, `EA_APPROVAL_MODE`, `SERPAPI_API_KEY`, `PATH` and `HOME` passed explicitly. `--strict-mcp-config` stops the project `.mcp.json` from adding a second server.
 - **Settings, skills and agents** come from the overlaid `assistant/` folder, because it is the working directory: CLAUDE.md, `.claude/settings.json` (permissions and hooks) and `.claude/skills/`. **Verify** that `.claude/agents/` loads in `-p` mode (one report says it doesn't). If it doesn't, the adapter reads each agent file and passes them all through `--agents` as JSON (verify that flag's shape).
 - **Personal settings also load** (no `--setting-sources` in `-p`). `make doctor` warns when `~/.claude/CLAUDE.md` or user-level hooks exist, because they can change results. The report records the Claude Code version and whether personal settings were present.
-- **Environment for the subprocess:** `MCP_TOOL_TIMEOUT=600000`, and `CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS` raised above 10 minutes (verify the name), so approval waits in the app aren't cut off or backgrounded. Also set `"timeout": 600000` on the `ea-world` entry in `mcp.json`.
+- **Environment for the subprocess:** `MCP_TOOL_TIMEOUT=600000`, and `CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS` raised above 10 minutes (verify the name), so approval waits on the mock phone aren't cut off or backgrounded. Also set `"timeout": 600000` on the `ea-world` entry in `mcp.json`.
 - **Session continuity:** the first turn's `result` event gives `session_id`. Later turns pass `--resume <session_id>`, so the whole conversation stays in one Claude Code session.
 - **Timeout:** 10 minutes per turn. Kill the process and record `stopped_by="error"` after that.
 - **Usage limits:** if the CLI reports a plan usage limit, stop with `stopped_by="usage_limit"`; the runner pauses the run and says when to resume.
@@ -80,7 +80,7 @@ It decides by `EA_APPROVAL_MODE`:
 | Mode | Used by | Decision |
 |---|---|---|
 | `script` | the runner | Applies the approval policy ([04-assistant.md](04-assistant.md#approval-policy)) using `<run_dir>/approval_context.json`, which the runner rewrites before every turn (case data and Sarah's latest message) |
-| `app` | the app | Writes the request to `<run_dir>/approvals/pending/<id>.json` and waits (polling every 0.5 seconds, up to 10 minutes) for `<run_dir>/approvals/decided/<id>.json`, written when the user clicks Approve or Deny. Timeout means deny |
+| `app` | the mock phone | Writes the request to `<run_dir>/approvals/pending/<id>.json` and waits (polling every 0.5 seconds, up to 10 minutes) for `<run_dir>/approvals/decided/<id>.json`, written when the user clicks Approve or Deny. Timeout means deny |
 | `allow_all` | the `gate=off` variant | Allows |
 
 On allow with `idempotency=auto`, the tool returns `updatedInput` with `idempotency_key = sha256(tool + canonical_json(args))[:16]` added to write tools. That's the harness-level fix in Lesson 5.

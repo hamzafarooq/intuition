@@ -25,7 +25,7 @@ the assistant = files
    └── permissions        reads allowed; send, book and create always ask
           │ loaded by
 Claude Code (the harness), run headless on the student's subscription
-   ▲ driven by: the Intuition app (mock phone + chat) and the eval runner
+   ▲ driven by: the mock phone (Intuition's local page) and the eval runner
    │ calls                                            writes
 MCP server: ea-world ── mock world, verifiers, approval tool      one trace format
                                                                          │
@@ -46,14 +46,14 @@ golden dataset (63 cases, rubrics) ──► eval runner, k trials ──► Ope
 | Grading | Rubrics as the main tool: outcome, process and team criteria; each criterion graded by code where it's a fact, by a calibrated model judge where it's a judgement | Agent runs vary and many paths are right; rubrics grade properties, not one path |
 | Results display | Spider charts per run, task type and team, up to three runs overlaid, exact numbers beside them | Shows the assistant's shape and how fixes change it |
 | Self-checks | Definition of done in each skill, verifier tools, read-back after writes, a reviewer sub-agent, and a stop check in the harness | Grounded in state and code, not the model's opinion of itself; measured by overclaim rate |
-| Harness | Claude Code only for now, driven headless by the app and the runner on each student's subscription; independent harness later | No Anthropic API key needed; students already have Claude Code subscriptions |
-| Search | `web_search` and `web_fetch` tools on SerpAPI, each student's own key; live in the app, recorded results in evals | Replayed results make trials comparable and keep within the 250-search free plan |
+| Harness | Claude Code only for now, driven headless by the mock phone and the runner on each student's subscription; independent harness later | No Anthropic API key needed; students already have Claude Code subscriptions |
+| Search | `web_search` and `web_fetch` tools on SerpAPI, each student's own key; live on the mock phone, recorded results in evals | Replayed results make trials comparable and keep within the 250-search free plan |
 | Models | Assistant: Claude Code `opus`. Judge and simulated Sarah: OpenAI (`gpt-6.1-sol`, `gpt-6-luna`; confirm ids) | A different family as judge avoids self-grading |
 | Keys | OpenAI key provided during the workshop; students bring SerpAPI; no Anthropic API key; Google key unused | Owner decision |
-| Setup | Download the repo, add keys, `make start` (checks, server, app); local only; cloud deployment later and separate | [spec/15-setup.md](spec/15-setup.md) |
+| Setup | Download the repo, add keys, `make start` (checks, server, mock phone); local only; cloud deployment later and separate | [spec/15-setup.md](spec/15-setup.md) |
 | Guide site | Not public; ships inside the starter repo and opens locally | Shared with attendees only for now |
-| App | **Intuition**: onboarding page plus a messaging simulator docked on the side, with a behind-the-scenes view; voice as a stretch | Makes the assistant feel like a product and shows the machinery live ([spec/14-app.md](spec/14-app.md)) |
-| Phone | Deferred | Students use the app on the laptop for now; options are in [plan/04-phone.md](plan/04-phone.md) |
+| Mock phone | **Intuition** is the assistant Sarah texts; students text it from a mock phone in the browser: an onboarding page plus a messaging simulator docked on the side, with a behind-the-scenes view; voice as a stretch | Makes the assistant feel like a product and shows the machinery live ([spec/14-app.md](spec/14-app.md)) |
+| Phone | Deferred | Students use the mock phone on the laptop for now; options are in [plan/04-phone.md](plan/04-phone.md) |
 
 ## The four hours
 

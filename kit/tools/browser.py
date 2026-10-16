@@ -1,7 +1,7 @@
 """`make browser`: open Brave (or Chrome) with remote debugging on port 9222 and its own profile.
 
 The profile in ~/.intuition/browser-profile never touches your own cookies or logins. The window opens
-on the right half of the screen so Intuition can sit on the left.
+on the right half of the screen so the mock phone can sit on the left.
 
     uv run python tools/browser.py --real           # instructor demo: a clean, throwaway browser on port 9223
     uv run python tools/browser.py --real --close   # close it and delete its profile

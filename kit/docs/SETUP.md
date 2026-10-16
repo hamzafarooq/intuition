@@ -7,7 +7,7 @@ This guide gets you from a clean laptop to your first message with Sarah Smith's
 - A Mac, Windows (WSL2 recommended) or Linux machine with about 2 GB free.
 - A Claude Pro or Max account. Claude Code runs the assistant on your own plan; no Anthropic API key is needed.
 - An OpenAI API key. It runs the grader (the "judge") and the simulated Sarah in evals. The workshop provides one; afterwards, use your own.
-- Optionally, a free [SerpAPI](https://serpapi.com) key for live web search in the app. Evals always replay recorded search results, so they never need it.
+- Optionally, a free [SerpAPI](https://serpapi.com) key for live web search on the mock phone. Evals always replay recorded search results, so they never need it.
 - Optionally, Brave (recommended) or Chrome, plus Node.js 20 or later, to watch bookings happen in a browser window.
 - About 15 minutes.
 
@@ -76,7 +76,7 @@ It prints one line per check, green or red, with the fix for anything red. Fix t
 make start
 ```
 
-This runs the quick checks, starts the app, and opens Intuition in your browser: the onboarding page, with the phone and chat beside it. Claude Code runs the assistant in the background. Go through the onboarding, connect Sarah's (mock) accounts, then send "What needs me today?". Stop with Ctrl+C.
+This runs the quick checks, then opens the mock phone in your browser: the onboarding page, with the phone and chat beside it. Intuition is the assistant Sarah texts; in the workshop you text it from this mock phone (localhost:8765). Claude Code runs the assistant in the background. Go through the onboarding, connect Sarah's (mock) accounts, then send "What needs me today?". Stop with Ctrl+C.
 
 To watch bookings happen in a browser, run `make browser` first (it opens Brave or Chrome with a separate profile that never touches your own logins), and leave "Book through the browser" on during onboarding.
 
@@ -125,14 +125,14 @@ OpenAI judging costs about $0.10–$0.20 a trial; `--max-cost` caps OpenAI spend
 | `OPENAI_API_KEY` missing or invalid | Check `.env`; `make doctor` tests the key with one tiny call |
 | Live search returns nothing | Check `SERPAPI_API_KEY`, or switch back to mock search; the free plan is 250 searches a month |
 | Times look wrong on Windows | `make setup` installs `tzdata`; rerun it |
-| The app won't open on port 8765 | `uv run ea-app --port 8800` |
+| The mock phone won't open on port 8765 | `uv run ea-app --port 8800` |
 | A run stopped with "cost cap reached" | Raise `--max-cost` or run a smaller slice |
-| Bookings don't show in a browser | `make browser`, then reload the app; `make doctor` shows whether port 9222 answers |
+| Bookings don't show in a browser | `make browser`, then reload the mock phone; `make doctor` shows whether port 9222 answers |
 
 ## 14. Updating and resetting
 
 - `git pull`, then `make setup`, to update.
-- `uv run ea-world reset`, or "Reset world" in the app, to start Sarah's world fresh.
+- `uv run ea-world reset`, or "Reset world" on the mock phone, to start Sarah's world fresh.
 - Delete `evals/results/` and `reports/` (or `make clean-runs`) to clear old runs.
 
 ### Browser commands for Linux and Windows
@@ -145,9 +145,9 @@ OpenAI judging costs about $0.10–$0.20 a trial; `--max-cost` caps OpenAI spend
 
 ## Instructor demo: real-site search
 
-This is for instructors, and it's off unless you turn it on. Students' setup, the app's default behaviour and every eval are unchanged.
+This is for instructors, and it's off unless you turn it on. Students' setup, the mock phone's default behaviour and every eval are unchanged.
 
-- **Turn it on:** `make demo-real` (or `EA_REAL_SITES=on uv run ea-start --real-sites`). It starts a separate, clean Brave or Chrome on port 9223 with a fresh profile in a temporary folder, so it never sees your own cookies, logins or history, and it never uses the port 9222 browser. The app shows a **Real-site search (instructor demo)** badge. Stop the app with Ctrl+C and the browser closes and its profile is deleted; if anything is left over, run `uv run python tools/browser.py --real --close`.
+- **Turn it on:** `make demo-real` (or `EA_REAL_SITES=on uv run ea-start --real-sites`). It starts a separate, clean Brave or Chrome on port 9223 with a fresh profile in a temporary folder, so it never sees your own cookies, logins or history, and it never uses the port 9222 browser. The mock phone shows a **Real-site search (instructor demo)** badge. Stop the mock phone with Ctrl+C and the browser closes and its profile is deleted; if anything is left over, run `uv run python tools/browser.py --real --close`.
 - **What it can do:** with "Book through the browser" on, the travel specialist may open expedia.com and google.com/travel (flights and hotels), type places, dates and the number of travellers, and read results and prices. It reports them as live quotes.
 - **What it can't do:** sign in, open account, cart, checkout, payment or booking pages, type personal details (names, emails, phone, card or loyalty numbers), or click Book, Reserve, Sign in, Checkout and similar. The browser guard blocks these and the trace shows each block. Bookings still happen only on the workshop's mock sites, after Sarah approves.
 - **Expect surprises:** real sites change their layout and may show bot checks, captchas or consent pages. The assistant stops on that site and tries the other one; it never tries to get around them.

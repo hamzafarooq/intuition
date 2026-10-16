@@ -269,7 +269,7 @@ def check_doctor_quick_runs() -> tuple[bool, str]:
 
 
 def check_app_booked_through_browser() -> tuple[bool, str]:
-    """A real app session where R01 was booked from holds made in Brave and approved in the app."""
+    """A real mock-phone session where R01 was booked from holds made in Brave and approved on the mock phone."""
     for run in sorted((KIT / "runs").glob("app-*"), reverse=True):
         try:
             bookings = json.loads((run / "state" / "bookings.json").read_text()).get("bookings", [])
@@ -280,7 +280,7 @@ def check_app_booked_through_browser() -> tuple[bool, str]:
         by_app = [a for a in approvals if a.get("kind") == "response" and a.get("decision") == "allow" and a.get("by") in ("app", "human")]
         shots = list((run / "outputs" / "browser").glob("*.png"))
         if len(from_holds) >= 3 and by_app:
-            return True, (f"app session `{run.name}`: {len(from_holds)} bookings from site holds, {len(by_app)} approvals in the app, "
+            return True, (f"app session `{run.name}`: {len(from_holds)} bookings from site holds, {len(by_app)} approvals on the mock phone, "
                           f"{len(shots)} browser screenshots behind the scenes")
     return False, "no app session with browser bookings yet"
 

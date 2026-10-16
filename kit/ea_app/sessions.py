@@ -446,7 +446,7 @@ class Session:
         decided = self.run_dir / "approvals" / "decided" / f"{call_id}.json"
         if decided.exists():
             return "already"
-        reason = "Approved in Intuition" if decision == "allow" else "Sarah denied this in the app."
+        reason = "Approved on her phone" if decision == "allow" else "Sarah denied this on her phone."
         state.write_json_atomic(decided, {"decision": decision, "by": "human", "reason": reason})
         if decision == "deny":
             summary = (request or {}).get("summary") or (request or {}).get("tool") or call_id

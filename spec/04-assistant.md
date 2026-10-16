@@ -1,13 +1,13 @@
 # The assistant
 
-The assistant is a set of files in `kit/assistant/`. Claude Code loads them, whether a person runs `claude` there, or the runner and the app drive it headless. A future independent harness will load the same files.
+The assistant is a set of files in `kit/assistant/`. Claude Code loads them, whether a person runs `claude` there, or the runner and the mock phone drive it headless. A future independent harness will load the same files.
 
 ## Why a separate folder
 
 Students use Claude Code at the kit root to *build* things, and the assistant is defined by a `CLAUDE.md`. If both lived at the root, Claude Code would read Sarah's brief while students are asking it to write code. It could also read the gold labels in `world/gold/`. So:
 
 - `kit/CLAUDE.md` is the **builder's brief**: "This repo is a workshop kit. The assistant lives in `assistant/`. Put skills in `assistant/.claude/skills/`…"
-- `kit/assistant/` is the **assistant**. Run it with `cd assistant && claude`, or through the app. Its settings deny Claude Code's built-in file, shell and web tools, so it can only act through `ea-world` tools, skills and sub-agents.
+- `kit/assistant/` is the **assistant**. Run it with `cd assistant && claude`, or text it from the mock phone. Its settings deny Claude Code's built-in file, shell and web tools, so it can only act through `ea-world` tools, skills and sub-agents.
 
 ## Layout
 
@@ -151,7 +151,7 @@ The Monday-brief team uses ordinary sub-agents called in sequence, not Claude Co
 
 ## Approval policy
 
-One policy, implemented in three places: the house rules (model behaviour), `settings.json` (Claude Code's gate), and `ea_world/approvals.py`, used by the `approval_prompt` tool that Claude Code calls for every gated action (scripted answers in evals, approval cards in the app).
+One policy, implemented in three places: the house rules (model behaviour), `settings.json` (Claude Code's gate), and `ea_world/approvals.py`, used by the `approval_prompt` tool that Claude Code calls for every gated action (scripted answers in evals, approval cards on the mock phone).
 
 A gated call is **authorized** when any of these hold:
 

@@ -58,7 +58,7 @@
 
           {% if s.say %}
           <div class="part">
-            <h3 class="part-label">Say to the assistant <span class="hint">in the app, or in <code>cd assistant &amp;&amp; claude</code></span></h3>
+            <h3 class="part-label">Say to the assistant <span class="hint">on the mock phone, or in <code>cd assistant &amp;&amp; claude</code></span></h3>
             {{ codeblock(s.say|as_list|join("\n"), "say", "message " ~ s.id) }}
           </div>
           {% endif %}

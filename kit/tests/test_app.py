@@ -1,4 +1,5 @@
-"""The Intuition app (spec/14-app.md): API, sessions, SSE, approvals, connectors, world, outputs, reset.
+"""The mock phone (Intuition's local web page, spec/14-app.md): API, sessions, SSE, approvals, connectors,
+world, outputs, reset.
 
 Offline and fast: Starlette's TestClient with the scripted FakeHarness (no Claude), which does real
 work against the mock world and waits on the real app-mode approval file protocol.

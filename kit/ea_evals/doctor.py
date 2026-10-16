@@ -199,7 +199,7 @@ def check_openai() -> Result:
 def check_serpapi(with_search: bool) -> Result:
     key = os.environ.get("SERPAPI_API_KEY")
     if not key:
-        return Result(None, "SERPAPI_API_KEY not set: live search in the app is off (evals always use recorded results)", "optional: add a free key from serpapi.com to .env")
+        return Result(None, "SERPAPI_API_KEY not set: live search on the mock phone is off (evals always use recorded results)", "optional: add a free key from serpapi.com to .env")
     if not with_search:
         return Result(True, "SERPAPI_API_KEY set (not tested; --with-search uses 1 search)")
     from ea_world.web import serpapi_fetch

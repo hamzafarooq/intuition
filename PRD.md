@@ -12,9 +12,9 @@
 
 We are building a hands-on workshop kit in which students build a personal executive assistant and then prove how far it can be trusted. The assistant reads an inbox and calendar, schedules meetings, prepares meeting briefs and short decks, searches the web, makes bookings, and asks before doing anything it can't undo. Everything runs on the student's laptop against a made-up world, so no real accounts are involved.
 
-The core of the kit is the evaluation. A golden dataset of about 60 written use cases, each graded with a rubric, defines what "good" looks like, and an automated runner tests the assistant against it. Rubrics are the main grading tool because agent runs vary and more than one path can be right. The assistant is built in and runs on Claude Code, which is the harness: the runner and the app drive it in the background on each student's own Claude Code subscription. Comparing harness configurations shows how much of the result comes from the software around the model. The assistant also checks its own work before saying it's done, and the evals measure whether those self-checks can be trusted. By the end of four hours, each student has a report showing where their assistant works, where it fails, and what it costs.
+The core of the kit is the evaluation. A golden dataset of about 60 written use cases, each graded with a rubric, defines what "good" looks like, and an automated runner tests the assistant against it. Rubrics are the main grading tool because agent runs vary and more than one path can be right. The assistant is built in and runs on Claude Code, which is the harness: the runner and the mock phone drive it in the background on each student's own Claude Code subscription. Comparing harness configurations shows how much of the result comes from the software around the model. The assistant also checks its own work before saying it's done, and the evals measure whether those self-checks can be trusted. By the end of four hours, each student has a report showing where their assistant works, where it fails, and what it costs.
 
-Students meet their assistant through **Intuition**, a local web app. An onboarding page sets Sarah up and connects her (mock) accounts, then a messaging simulator opens docked on the side. A "behind the scenes" view shows every skill, hand-off, tool call, search, check and approval as it happens.
+**Intuition** is the assistant Sarah texts, on iMessage or WhatsApp. In the workshop, students text it from a mock phone in their browser (localhost:8765). An onboarding page sets Sarah up and connects her (mock) accounts, then a messaging simulator opens docked on the side. A "behind the scenes" view shows every skill, hand-off, tool call, search, check and approval as it happens.
 
 ## 2. The problem
 
@@ -32,7 +32,7 @@ Students meet their assistant through **Intuition**, a local web app. An onboard
 | **The instructor** | A workshop that runs to time, a strong live demo, and materials that work on a clean laptop |
 | **Self-paced learners** (later) | The same guide online, usable without the instructor |
 
-Students are assumed to have a laptop and a Claude Code subscription (Pro or Max), which runs the assistant. They download the repo, add an OpenAI key (judging and the simulated Sarah; provided during the workshop) and a SerpAPI key (live search), and run one command, which starts the server and opens the app. No Anthropic API key is needed. No earlier experience with agents or personal assistants is assumed: the workshop starts by explaining what a personal assistant agent is, and introduces each idea (tools, skills, sub-agents, approvals, evals) when it's built.
+Students are assumed to have a laptop and a Claude Code subscription (Pro or Max), which runs the assistant. They download the repo, add an OpenAI key (judging and the simulated Sarah; provided during the workshop) and a SerpAPI key (live search), and run one command, which starts the server and opens the mock phone. No Anthropic API key is needed. No earlier experience with agents or personal assistants is assumed: the workshop starts by explaining what a personal assistant agent is, and introduces each idea (tools, skills, sub-agents, approvals, evals) when it's built.
 
 ## 4. Goals and non-goals
 
@@ -56,8 +56,8 @@ Students are assumed to have a laptop and a Claude Code subscription (Pro or Max
 
 **Later, not now**
 
-- Reaching the assistant from a real phone (Telegram, iMessage, or the app over the network). For now students use the Intuition app's messaging simulator on the laptop, or Claude Code. Research on the phone options is kept in [plan/04-phone.md](plan/04-phone.md).
-- Voice is a stretch goal: dictation and read-aloud in the app using the browser's own speech features.
+- Reaching the assistant from a real phone (Telegram, iMessage, or the mock phone over the network). For now students text it from the mock phone on the laptop, or use Claude Code. Research on the phone options is kept in [plan/04-phone.md](plan/04-phone.md).
+- Voice is a stretch goal: dictation and read-aloud on the mock phone using the browser's own speech features.
 
 ## 5. What we're building
 
@@ -66,10 +66,10 @@ Students are assumed to have a laptop and a Claude Code subscription (Pro or Max
 | A | **The assistant** | The agent as a set of files: brief, skills, sub-agents, an agent team, permissions, self-checks |
 | B | **The mock world** | A fictional executive's week (inbox, calendar, contacts, documents, travel and restaurant options) served through a local tool server, with attendees and contacts that respond |
 | C | **The golden dataset** | About 60 written use cases that say what a good result looks like and what must never happen |
-| D | **The harness** | Claude Code, driven in the background (headless) by the runner and the app; a small independent harness comes later |
+| D | **The harness** | Claude Code, driven in the background (headless) by the runner and the mock phone; a small independent harness comes later |
 | E | **The eval runner and report** | Automated tests of every layer through Claude Code, judged by an OpenAI model, with an HTML report |
 | F | **The guide site** | Step-by-step lessons: each step explains why, gives a prompt to paste, and says what to expect |
-| G | **The Intuition app** | A local web app: onboarding page, a messaging simulator docked on the side, and a behind-the-scenes view of everything the assistant does |
+| G | **The mock phone (Intuition's local page)** | A local web page that stands in for Sarah's phone: onboarding page, a messaging simulator docked on the side, and a behind-the-scenes view of everything the assistant does |
 
 ## 6. User stories
 
@@ -82,7 +82,7 @@ The executive is Sarah Smith, Regional Sales Director at a fictional company, ba
 3. *"Prep me for my 2pm with Ridgeway."* It gives a one-screen brief from the customer notes, email threads and a web search, and every number matches a source.
 4. *"Make me five slides for that meeting."* It produces a short deck I could present, with no text overflowing the slides.
 5. *"Tell Raj I can't do Thursday and offer two other times."* It drafts the email and shows it to me. It sends only after I clearly say yes. A thumbs-up isn't a yes.
-6. *"Book my Chicago trip for the summit, within policy."* It finds a flight and hotel within the travel policy and asks before booking. In the app I can watch it do this in a browser, on the airline's and hotel's (mock) websites.
+6. *"Book my Chicago trip for the summit, within policy."* It finds a flight and hotel within the travel policy and asks before booking. With the mock phone open, I can watch it do this in a browser, on the airline's and hotel's (mock) websites.
 7. When an email or a web page contains hidden instructions, it ignores them.
 8. When I disconnect my email, it stops reading it and doesn't reuse what it read earlier.
 9. When it says something is done, it is. When it isn't sure, it tells me what it checked and what it couldn't.
@@ -95,7 +95,7 @@ The executive is Sarah Smith, Regional Sales Director at a fictional company, ba
 13. I can see a failing run's full record (what the assistant said, which tools it called, what it checked, and what changed) and turn it into a new golden case.
 14. I can run the same assistant under different harness settings (hooks, sub-agents, model) and see where results differ.
 15. I can see my assistant's strengths and weaknesses as a spider chart, and watch its shape change as I fix things.
-16. I can set Sarah up in an app that feels like a real assistant product, message the assistant, approve or deny its actions with a tap, and watch what it does behind the scenes.
+16. I can set Sarah up on a mock phone that feels like texting a real assistant, message the assistant, approve or deny its actions with a tap, and watch what it does behind the scenes.
 
 ### The instructor
 
@@ -310,8 +310,8 @@ Each requirement has a check that shows it's done.
 | ID | Requirement | Done when |
 |---|---|---|
 | D1 | The assistant is defined by files (brief, skills, sub-agents, permissions, tools) in `assistant/` | No harness-specific copy of the assistant |
-| D2 | The runner and the app drive Claude Code headless on the user's own subscription: one conversation per trial, resumed turn by turn, approvals through the tool server's approval tool | A golden case runs end to end with no human input and no Anthropic API key |
-| D3 | One trace format for everything: messages, tool calls and results, skills loaded, hand-offs, approvals, checks, signals, tokens and cost | Graders, the report and the app read one format |
+| D2 | The runner and the mock phone drive Claude Code headless on the user's own subscription: one conversation per trial, resumed turn by turn, approvals through the tool server's approval tool | A golden case runs end to end with no human input and no Anthropic API key |
+| D3 | One trace format for everything: messages, tool calls and results, skills loaded, hand-offs, approvals, checks, signals, tokens and cost | Graders, the report and the mock phone read one format |
 | D4 | Harness configuration variants: hooks on or off, sub-agents on or off, model, effort, idempotency | Each runs from a flag and appears in the report |
 | D5 | Later: an independent harness behind the same interface, for a cross-harness comparison | Not in this build |
 
@@ -347,9 +347,9 @@ Each requirement has a check that shows it's done.
 | F4 | Recorded replays for steps that take long or may fail live | At least one per lesson |
 | F5 | Readable on a phone and a laptop | Checked at both widths |
 | F6 | Not public for now: shared with attendees only | Ships inside the starter repo and opens locally; no public URL |
-| F7 | Local setup guide for Mac, Windows (WSL2) and Linux, `make doctor`, and one-command `make start` | From a clean machine with Claude Code logged in, the app opens and answers in under 15 minutes ([spec/15-setup.md](spec/15-setup.md)) |
+| F7 | Local setup guide for Mac, Windows (WSL2) and Linux, `make doctor`, and one-command `make start` | From a clean machine with Claude Code logged in, the mock phone opens and the assistant answers in under 15 minutes ([spec/15-setup.md](spec/15-setup.md)) |
 
-### G. The Intuition app
+### G. The mock phone (Intuition's local page)
 
 | ID | Requirement | Done when |
 |---|---|---|
@@ -361,13 +361,13 @@ Each requirement has a check that shows it's done.
 | G6 | A behind-the-scenes view: the live trace and Sarah's world (calendar, inbox, outbox, bookings, outputs, connectors) | Updates after every write |
 | G7 | Turning a connector off disconnects it in the tool server | The disconnect case can be shown by hand |
 | G8 | Voice (stretch): dictation and read-aloud using the browser's speech features, hidden where unsupported | Works in Chrome and Safari |
-| G9 | When Sarah asks for a reservation, the assistant visibly works in a Brave window on the mock booking sites, stops at holds, and books only after approval; screenshots appear behind the scenes | Live demo of R01 in the app, with Brave beside it |
+| G9 | When Sarah asks for a reservation, the assistant visibly works in a Brave window on the mock booking sites, stops at holds, and books only after approval; screenshots appear behind the scenes | Live demo of R01 on the mock phone, with Brave beside it |
 
 ## 11. What the workshop looks like
 
 | Block | Time | Students build | Students test |
 |---|---|---|---|
-| Setup | 20 min | What a personal assistant agent is; the brief, mock world and tool server; set Sarah up in the Intuition app | First message answered in the app; first golden-dataset run as a baseline |
+| Setup | 20 min | What a personal assistant agent is; the brief, mock world and tool server; set Sarah up on the mock phone | First message answered on the mock phone; first golden-dataset run as a baseline |
 | 1. Tools | 35 min | Fixed tool descriptions and a time-zone bug | Tool unit tests, right tool vs right arguments, date reasoning, one-try vs every-try pass rates |
 | 2. Skills | 35 min | Scheduling, inbox triage, meeting brief and meeting deck skills, each with its definition of done | Does each skill load when it should? Does it change behaviour? |
 | 3. Sub-agents | 50 min | Orchestrator, four specialists, verifier tools, the reviewer | Writing rubrics; outcome and process rubrics; the simulated Sarah; judge calibration; overclaim rate |
@@ -398,7 +398,7 @@ Step-by-step detail: [plan/01-lessons.md](plan/01-lessons.md).
 - **No Anthropic API key.** The judge and the simulated Sarah use OpenAI (default `gpt-6.1-sol` and `gpt-6-luna`; confirm the ids at build time). A different model family as judge also avoids a model grading its own family's work.
 - **The OpenAI key** is provided during the workshop; students use their own afterwards. Judging costs a few cents per trial.
 - **Bookings in a visible browser are optional** and need Brave or Chrome and Node.js. Without them, bookings happen directly through the tools, with no other change.
-- **Students use their own SerpAPI key** on the free plan: 250 searches a month, 50 an hour. Evals always replay recorded results; live search is used in the app.
+- **Students use their own SerpAPI key** on the free plan: 250 searches a month, 50 an hour. Evals always replay recorded results; live search is used on the mock phone.
 - **Personal Claude Code settings also load** in headless runs. `make doctor` warns if they could change results.
 - **Judges are kept consistent** by fixing the model, its settings, the prompt and a structured yes/no answer, and by re-judging a sample to measure stability.
 - **Models give different answers from run to run.** Every result is reported over repeat trials, and recorded runs back up anything shown live.
@@ -429,7 +429,7 @@ Step-by-step detail: [plan/01-lessons.md](plan/01-lessons.md).
 | 4 | Claude Code headless adapter, approval tool, stop hook and the trace format | D1–D4 |
 | 5 | Eval runner, thresholds and report | E1–E13 |
 | 6 | Live mode for the instructor demo | B8, B9 |
-| 7 | The Intuition app, mock booking sites and browser bookings | G1–G9, B12, E17 |
+| 7 | The mock phone, mock booking sites and browser bookings | G1–G9, B12, E17 |
 | 8 | Guide site and local setup | F1–F7 |
 | 9 | Dry run on a clean laptop, timed, and an instructor reference run with costs | Section 12 |
 
@@ -447,8 +447,8 @@ Target dates to be set.
 | Deployment | Local only: download, add keys, `make start`. Cloud deployment instructions come separately, later |
 | Search | SerpAPI, with each student's own free key |
 | Guide site | Not public for now; shared with attendees only |
-| Phone access | Later; the Intuition app's simulator runs on the laptop for now |
-| App name | Intuition (working name, easy to change) |
+| Phone access | Later; students text the assistant from the mock phone on the laptop for now |
+| Assistant name | Intuition (working name, easy to change). It's an assistant Sarah texts, not an app; the local page is the mock phone |
 
 **Open**
 
@@ -483,4 +483,4 @@ Target dates to be set.
 | Agent team | Several agents working on one deliverable, checking each other |
 | MCP server | A program that gives the assistant tools. Here, the mock world |
 | Prompt injection | Instructions hidden in content the assistant reads, such as an email or web page, trying to make it do something the user didn't ask for |
-| Intuition | The workshop's web app for meeting and messaging the assistant |
+| Intuition | The assistant Sarah texts. In the workshop you text it from a mock phone in your browser (localhost:8765) |

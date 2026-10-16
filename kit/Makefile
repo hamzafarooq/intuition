@@ -6,11 +6,11 @@ UV ?= uv
 help:
 	@echo "make setup    install dependencies; create .env from .env.example"
 	@echo "make doctor   check every prerequisite (uses a little of your Claude plan)"
-	@echo "make start    quick checks, then open the Intuition app"
+	@echo "make start    quick checks, then open the mock phone"
 	@echo "make test     offline tests (no keys needed)"
 	@echo "make smoke    one golden case, one trial, through Claude Code"
 	@echo "make browser  open Brave/Chrome with remote debugging for browser bookings"
-	@echo "make demo-real  instructor only: the app with real-site search (quotes only, clean throwaway browser)"
+	@echo "make demo-real  instructor only: the mock phone with real-site search (quotes only, clean throwaway browser)"
 	@echo "make site     build the guide into site/dist/"
 	@echo "make starter  build ../starter/ from this kit"
 

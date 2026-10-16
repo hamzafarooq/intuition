@@ -28,7 +28,7 @@ These documents specify the whole kit in enough detail to build it in one pass w
 | [13-decisions-log.md](13-decisions-log.md) | Decisions made while writing the spec, and changes during the build |
 | [15-setup.md](15-setup.md) | Local setup for students taking the code home: `docs/SETUP.md`, `make doctor`, troubleshooting |
 | [16-browser-bookings.md](16-browser-bookings.md) | Reservations made visibly in a Brave window on mock booking sites, with holds confirmed only through the gated booking tools |
-| [14-app.md](14-app.md) | The Intuition app: onboarding page, docked messaging simulator, behind-the-scenes view, approvals, voice |
+| [14-app.md](14-app.md) | The mock phone (Intuition's local page): onboarding page, docked messaging simulator, behind-the-scenes view, approvals, voice |
 
 ## Build sequence
 
@@ -45,9 +45,9 @@ These documents specify the whole kit in enough detail to build it in one pass w
 | 9 | Runner, judge, simulated Sarah, metrics | 09 | `tests/test_runner_offline.py` passes; fixture traces grade as expected |
 | 10 | Report with spider charts | 09 | Report renders from fixture results; charts follow the rules |
 | 11 | Component suites | 10 | Each suite runs offline with fixtures and live with one item |
-| 12 | The Intuition app | 14 | `tests/test_app.py` passes; visual check at desktop and phone widths |
+| 12 | The mock phone | 14 | `tests/test_app.py` passes; visual check at desktop and phone widths |
 | 12b | Mock booking sites, holds, browser guard, browser mode | 16 | `tests/test_sites.py` and `test_browser_guard.py` pass; a live R01 booking through Brave passes the booking rubric |
-| 13 | Live smoke run and `make doctor` | 12, 15 | `make doctor` all green; `make smoke` passes through Claude Code; one conversation works in the app |
+| 13 | Live smoke run and `make doctor` | 12, 15 | `make doctor` all green; `make smoke` passes through Claude Code; one conversation works on the mock phone |
 | 14 | Starter repo generation | 11 | `starter/` builds; the planted tool test fails there and passes in `kit/` |
 | 15 | Guide site | 11 | `site/dist/` opens locally; every lesson page renders; progress survives reload |
 | 16 | Reference run and dry run | 12 | All acceptance checks recorded in `reports/acceptance.md` |

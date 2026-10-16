@@ -1,12 +1,12 @@
-# The app: Intuition
+# The mock phone: Intuition's local page
 
-A local web app that makes the assistant feel like a real product. An onboarding page, in the spirit of signing up for a personal assistant, sets Sarah up and "connects" her accounts. A messaging simulator then opens docked on the side. Behind it, the app runs a harness against the tool server and streams everything that happens, so students can watch skills, sub-agents, tool calls, searches, checks and approvals live.
+Intuition is the assistant Sarah texts, on iMessage or WhatsApp. In the workshop you text it from a mock phone in your browser (localhost:8765): a local web page that stands in for her phone and makes the assistant feel like a real product. An onboarding page, in the spirit of signing up for a personal assistant, sets Sarah up and "connects" her accounts. A messaging simulator then opens docked on the side. Behind it, the mock phone runs a harness against the tool server and streams everything that happens, so students can watch skills, sub-agents, tool calls, searches, checks and approvals live.
 
 ## Name and look
 
-- **Name:** **Intuition** (working name; one setting, `APP_NAME`). Use only this name and original wording. Don't use Instinct's name, logo or copy, or WhatsApp's name, logo, icons or brand colours. The app should read as its own product, so it can't be mistaken for either company.
+- **Name:** **Intuition** (working name; one setting, `APP_NAME`). Use only this name and original wording. Don't use Instinct's name, logo or copy, or WhatsApp's name, logo, icons or brand colours. Intuition and the mock phone should read as their own product, so they can't be mistaken for either company.
 - **Landing style:** minimal and editorial. A large serif headline, generous whitespace, one short paragraph, one primary action. Write original copy, for example: headline "Message it. It handles the rest." and a sub-line "Your assistant reads your inbox and calendar, gets things done, and asks before anything it can't undo."
-- **Messaging style:** generic chat conventions (right-aligned user bubbles, left-aligned assistant bubbles, timestamps, a typing indicator, delivered ticks) in the app's own palette.
+- **Messaging style:** generic chat conventions (right-aligned user bubbles, left-aligned assistant bubbles, timestamps, a typing indicator, delivered ticks) in the mock phone's own palette.
 - Light and dark themes from design tokens. Readable from 360 px wide.
 
 ## Package and stack
@@ -14,8 +14,8 @@ A local web app that makes the assistant feel like a real product. An onboarding
 - `kit/ea_app/` with Starlette and Uvicorn, using server-sent events for streaming. Static front end in `ea_app/static/` (vanilla HTML, CSS and JS, no build step).
 - Command `ea-app [--port 8765] [--open]` serves http://localhost:8765 and optionally opens the browser.
 - Each session drives Claude Code headless through the adapter ([05-harnesses.md](05-harnesses.md)) with `EA_APPROVAL_MODE=app`. Approval cards read `<run_dir>/approvals/pending/` and write the decision files.
-- On start, the app runs the `make doctor` checks for Claude Code and shows a clear message if `claude` is missing or not logged in.
-- The app hosts one harness instance per session ([05-harnesses.md](05-harnesses.md)) and forwards its trace events to the browser.
+- On start, the mock phone runs the `make doctor` checks for Claude Code and shows a clear message if `claude` is missing or not logged in.
+- The mock phone's server hosts one harness instance per session ([05-harnesses.md](05-harnesses.md)) and forwards its trace events to the browser.
 
 ## Screens
 
@@ -64,7 +64,7 @@ Wide screens show both screens 2 and 3. Mobile shows the simulator, with "Behind
 
 | Method and path | Body | Returns |
 |---|---|---|
-| `GET /api/config` | | App name, available harnesses, whether live search and voice are available |
+| `GET /api/config` | | Assistant name (`app_name`), available harnesses, whether live search and voice are available |
 | `POST /api/sessions` | `{harness, search_mode, auto_approve, variants?}` | `{session_id}`: creates a run directory and starts a harness |
 | `GET /api/sessions/{id}/events` | | Server-sent events: each trace event as JSON, plus `world_changed` after writes |
 | `POST /api/sessions/{id}/messages` | `{text}` | `202`; the turn runs in the background |
@@ -85,9 +85,9 @@ Only one turn runs per session at a time; a message sent mid-turn is queued and 
 
 ## Workshop use
 
-- **Setup:** students open the app, connect accounts, and send the first message. Claude Code in `assistant/` remains available for anyone who prefers the terminal.
+- **Setup:** students open the mock phone, connect accounts, and send the first message. Claude Code in `assistant/` remains available for anyone who prefers the terminal.
 - **Lessons:** the "Behind the scenes" view is the live demo surface. Lesson 4 uses the approval cards and the connector toggles; the disconnect case X07 can be shown here by hand.
-- The guide site links to the app, and the app's footer links back to the guide.
+- The guide site links to the mock phone, and the mock phone's footer links back to the guide.
 
 ## Tests
 

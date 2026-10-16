@@ -766,7 +766,7 @@
     }
     store.set("intuition:session", null);
     S.sid = null;
-    toast("That session has ended (the app restarted). Start a new one.");
+    toast("That session has ended (the mock phone restarted). Start a new one.");
     showView("landing");
     $("#setup").scrollIntoView();
   }
@@ -1339,7 +1339,7 @@
     if (!PHONE) initHero();
     if (PHONE) $("#chat-back").setAttribute("aria-label", "Close this window");
     try { S.cfg = await api("GET", "/api/config"); }
-    catch (err) { $("#start-error").textContent = `The app's server didn't answer: ${err.message}`; return; }
+    catch (err) { $("#start-error").textContent = `The mock phone's server didn't answer: ${err.message}`; return; }
     setupInit();
     await initVoice();
     updateSend();

@@ -1,6 +1,6 @@
 # World data contract
 
-The shapes of every file in `world/` and in a run directory's `state/`. The tool server (`ea_world`), the mock booking sites (`ea_sites`), the app (`ea_app`) and the graders (`ea_evals`) all read these. Change a shape here first, then in the code.
+The shapes of every file in `world/` and in a run directory's `state/`. The tool server (`ea_world`), the mock booking sites (`ea_sites`), the mock phone (`ea_app`) and the graders (`ea_evals`) all read these. Change a shape here first, then in the code.
 
 Conventions: UTF-8 JSON, two-space indent. Times are ISO 8601 with offset (`2026-10-28T11:00:00-06:00`), stored in the owner's local time. Dates are `YYYY-MM-DD`. Money is integer US dollars. Every top-level JSON value is an object (never a bare list), so files can grow fields.
 
@@ -143,4 +143,4 @@ travelers: [sarah]                # who travels to the summit in this variant (d
 
 Other run-directory files: `calls.jsonl`, `approvals.jsonl`, `stopcheck.jsonl`, `site.jsonl`, `browser.jsonl`, `trace.jsonl`, `meta.json`, `approval_context.json`, `turn_start`, `approvals/pending/`, `approvals/decided/`, `outputs/briefs/`, `outputs/decks/`, `outputs/browser/`, `final_state/`.
 
-Locking: any process that writes `state/` takes an exclusive `fcntl` lock on `<run_dir>/state/.lock` around read-modify-write, and writes atomically (temp file, then rename). The tool server re-reads state from disk at the start of every call, so writes from the sites or the app are never lost.
+Locking: any process that writes `state/` takes an exclusive `fcntl` lock on `<run_dir>/state/.lock` around read-modify-write, and writes atomically (temp file, then rename). The tool server re-reads state from disk at the start of every call, so writes from the sites or the mock phone are never lost.

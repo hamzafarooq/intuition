@@ -6,14 +6,15 @@ intro: |
 
   - **Claude Code at the kit root** is your building partner. Open a terminal in the kit's top folder and
     run `claude`. You paste each step's prompt there, and it reads and changes the kit's files.
-  - **The assistant** is a separate Claude Code setup in `assistant/`, with its own brief. You talk to it in
-    the Intuition app, or with `cd assistant && claude`.
+  - **The assistant** is a separate Claude Code setup in `assistant/`, with its own brief. It's Intuition,
+    the assistant Sarah texts. You text it from a mock phone in your browser (http://localhost:8765), or
+    talk to it with `cd assistant && claude`.
 
   Every eval run uses your Claude plan, so the lessons run small slices, usually one trial per case.
   `uv run ea-eval estimate --slice <name>` shows a rough cost and time before you start one.
 by_the_end:
   - "The kit installed and `make doctor` green"
-  - "A first answer from the assistant, in the app"
+  - "A first answer from the assistant, on the mock phone"
   - "A baseline run of 10 golden cases, and its report"
   - "A feel for Sarah's week and its traps"
 
@@ -117,7 +118,7 @@ steps:
     run:
       - make start
     expect:
-      - "`make start` runs quick checks and opens Intuition at http://localhost:8765. Go through the onboarding and connect Sarah's (mock) accounts."
+      - "`make start` runs quick checks and opens the mock phone at http://localhost:8765. Go through the onboarding and connect Sarah's (mock) accounts."
       - "The reply lists three meetings in Denver time: Team standup at 09:00, Pipeline review at 11:00, and the Ridgeway quarterly review at 14:00."
       - "Behind the scenes shows `clock_now`, then `calendar_list`, and the reply ends with `STATUS: done`."
       - "If the reply doesn't match what you wrote down, that's already a finding."

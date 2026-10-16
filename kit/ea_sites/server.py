@@ -86,7 +86,7 @@ async def index(request: Request) -> Response:
 
 async def _no_world(request: Request, exc: Exception) -> Response:
     return _plain_page(request, "No world loaded", "No world is loaded",
-                       f"{exc} Start the Intuition app or a run, then reload this page.", 503)
+                       f"{exc} Start the mock phone or a run, then reload this page.", 503)
 
 
 async def _server_error(request: Request, exc: Exception) -> Response:

@@ -11,7 +11,7 @@ DEFAULTS = {"skills": "on", "selfcheck": "on", "gate": "on", "team": "on", "hook
 # they stay deterministic and never touch a real website.
 REAL_SITES_REFUSED = ("browser=real is the instructor-only real-site search demo, and evals refuse it: real sites "
                       "change from minute to minute, so results couldn't be compared or graded. Use browser=on "
-                      "(the mock booking sites), or run the demo in the app with `make demo-real`.")
+                      "(the mock booking sites), or run the demo on the mock phone with `make demo-real`.")
 
 
 

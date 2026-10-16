@@ -8,7 +8,7 @@ See "Build status" below.
 
 ## What this is
 
-A four-hour workshop kit. Students download a repo, add two keys and run one command. **Intuition** opens in the browser: an onboarding page with a mock phone and a messaging chat docked beside it. Behind it, Claude Code runs Sarah Smith's executive assistant on the student's own Claude Code subscription, against a mock world (inbox, calendar, contacts, documents, travel, web).
+A four-hour workshop kit. Students download a repo, add two keys and run one command. **Intuition** is the assistant Sarah texts, on iMessage or WhatsApp. In the workshop, students text it from a mock phone that opens in the browser (localhost:8765): an onboarding page with the phone's chat docked beside it. Behind it, Claude Code runs Sarah Smith's executive assistant on the student's own Claude Code subscription, against a mock world (inbox, calendar, contacts, documents, travel, web).
 
 In the lessons, students build the assistant's parts and evaluate each layer: tools, skills, single agent, multi-agent, harness settings and safety. They use a 63-case golden dataset graded with rubrics, judged by an OpenAI model, and shown as spider charts. Instinct's three reported launch-week failures become the safety suites.
 
@@ -16,10 +16,11 @@ In the lessons, students build the assistant's parts and evaluate each layer: to
 
 | Topic | Decision |
 |---|---|
-| Harness | **Claude Code only for now**, driven headless (`claude -p`, stream-json, `--resume`, approvals through an MCP tool) by the app and the eval runner. Independent harness deferred ([spec/later/](spec/later/independent-harness.md)) |
+| Framing (16 October) | **Intuition is not an app.** It's an assistant Sarah texts, on iMessage or WhatsApp. The local page at localhost:8765 (`ea_app`: onboarding, docked phone, behind-the-scenes view) stands in for her phone and is called **the mock phone** |
+| Harness | **Claude Code only for now**, driven headless (`claude -p`, stream-json, `--resume`, approvals through an MCP tool) by the mock phone and the eval runner. Independent harness deferred ([spec/later/](spec/later/independent-harness.md)) |
 | Who pays for what | Students have **Claude Code subscriptions**, which run the assistant. The **OpenAI key** (provided during the workshop) runs the judge and the simulated Sarah. Students bring a **SerpAPI key**. No Anthropic API key. Google key not used |
-| Student path | Download the repo, add the OpenAI and SerpAPI keys to `.env`, run `make start`. The app opens with the mock phone and chat. Local only; cloud deployment instructions come separately, later |
-| App | **Intuition**, with its own name, look and wording; nothing copied from Instinct or WhatsApp. Voice is a stretch goal using browser speech |
+| Student path | Download the repo, add the OpenAI and SerpAPI keys to `.env`, run `make start`. The mock phone opens in the browser, with the onboarding page and chat. Local only; cloud deployment instructions come separately, later |
+| Name and look | **Intuition** and its mock phone have their own name, look and wording; nothing copied from Instinct or WhatsApp. Voice is a stretch goal using browser speech |
 | Reservations | When Sarah asks to book, the assistant visibly works in a **Brave** window on mock booking sites (Skyway, Stays, Tables), using the same Chrome DevTools MCP setup as this environment (Brave on port 9222). The browser only creates holds; the gated booking tools confirm them after approval ([spec/16-browser-bookings.md](spec/16-browser-bookings.md)) |
 | Grading | Rubrics as the main tool (outcome, process and team criteria; facts graded in code, judgements by a calibrated judge); spider charts; overclaim rate for self-checks |
 | Everything else | [spec/13-decisions-log.md](spec/13-decisions-log.md) |
@@ -44,7 +45,7 @@ evals/
     ea_world/    MCP tool server (mcp v2): tools, verifiers, faults, world feedback, approval_prompt tool
     ea_harness/  Claude Code headless adapter (stream-json → trace), stop-check hook
     ea_evals/    runner, rubric engine, OpenAI judge, simulated Sarah, metrics, report, doctor
-    ea_app/      Intuition: onboarding, mock phone and chat, behind-the-scenes view
+    ea_app/      the mock phone: onboarding, phone and chat, behind-the-scenes view
     ea_sites/    mock booking websites (flights, hotels, restaurants) for the visible browser
     evals/       golden cases, rubrics, component suites, slices, thresholds, fixtures
     site/        guide site
@@ -66,10 +67,10 @@ Everything in the build sequence (spec/00-README.md) is done except the dry run.
 | Golden dataset (63 cases), 11 rubrics, slices, thresholds, 14 fixture traces | Built | `tests/test_golden_schema.py`, `test_rubrics.py`, `test_checks.py` |
 | Runner, judge (OpenAI `gpt-5.6-sol`), simulated Sarah (`gpt-5.6-luna`), metrics, report with spider charts | Built | `reports/smoke-s01.html`, `reports/live-r01-browser.html` |
 | Component suites (dates, tool use, skill triggers) | Built | One live item each |
-| Intuition app (`make start`): live hero, docked phone, pop-out phone, behind-the-scenes view, approval cards, colourful connector tiles | Built | A real 3-turn session: triage, R01 holds made in Brave, booked on "Yes, go ahead." |
+| Mock phone (`make start`): live hero, docked phone, pop-out phone, behind-the-scenes view, approval cards, colourful connector tiles | Built | A real 3-turn session: triage, R01 holds made in Brave, booked on "Yes, go ahead." |
 | Mock booking sites (Skyway, Stays, Tables) | Built | Live R01 through Brave passes the booking rubric |
 | Guide site (`make site`, 11 pages, 14 replays) and starter repo (`make starter`) | Built | `tests/test_site.py`; the planted find_free test fails in `starter/` and passes in `kit/` |
-| `make doctor` | Built | All green except a busy port while the app was running |
+| `make doctor` | Built | All green except a busy port while the mock phone was running |
 | Acceptance | `kit/reports/acceptance.md` | 46 verified, 28 verified so far with a larger live run or a person's check to do, 0 failing, 1 exception (independent harness, deferred) |
 | `ea-eval phoenix <run>` (15 October): sends a run's traces to a local Arize Phoenix as OpenInference spans. Optional `phoenix` extra; instructors only | Built | Live: smoke-s01 (29 spans) and live-r01-browser (157 spans) arrived in Phoenix 20.22 with nesting and the pass and overclaim annotations. Phoenix's "Total Cost" reads low, because output tokens aren't exported |
 | Cost estimates (15 October): `ea-eval estimate` prices each case from the measured runs | Built | `tests/test_cli.py`. setup-baseline ≈ $7.54 of plan usage + $1.50 OpenAI |
@@ -119,7 +120,7 @@ All four are in kit/evals/results/ (`rec-*`), with reports in kit/reports/. Toge
 
 ### Things a person still checks
 
-The dry run from a clean account on macOS, Linux and WSL2, timed (docs/SETUP.md); voice in Chrome and Safari; the side-by-side originality review of the app (no Instinct or WhatsApp names, logos, colours or copy).
+The dry run from a clean account on macOS, Linux and WSL2, timed (docs/SETUP.md); voice in Chrome and Safari; the side-by-side originality review of the mock phone (no Instinct or WhatsApp names, logos, colours or copy).
 
 ### Where to look
 
@@ -127,7 +128,7 @@ The dry run from a clean account on macOS, Linux and WSL2, timed (docs/SETUP.md)
 - What each PRD requirement rests on: kit/reports/acceptance.md (`uv run python tools/acceptance.py` regenerates it).
 - The live runs:
   - in kit/evals/results/: `smoke-s01`, `live-r01-browser`, `concise-check`, the component runs, and the four `rec-*` lesson runs
-  - the app sessions in kit/runs/app-*
+  - the mock-phone sessions in kit/runs/app-*
 
 ## Skills to load during the build
 
@@ -143,7 +144,7 @@ The dry run from a clean account on macOS, Linux and WSL2, timed (docs/SETUP.md)
   - agent-team cases $1.43–$3.06 (mean $2.14 over five trials)
   - about $2 for a browser booking
   - $0.10–$0.20 of OpenAI judging per trial (`gpt-5.6-sol` is $5/$30 per million tokens)
-- **SerpAPI:** live search in the app uses the free plan's 250 searches a month. Evals never search live.
+- **SerpAPI:** live search on the mock phone uses the free plan's 250 searches a month. Evals never search live.
 - **OpenAI** for multi-turn team cases (the simulated Sarah plus the judge): about $0.70 a trial.
 - **Students:** each lesson runs small slices with `--parallel 2`, and the runner pauses and resumes at plan limits. Every lesson slice live comes to about 136 trials, roughly $95 of plan usage per student, so most results should come from the recorded runs.
 

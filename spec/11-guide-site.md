@@ -8,7 +8,7 @@ A static site that walks students through the workshop step by step. It isn't pu
 
 | Page | Contents |
 |---|---|
-| `index.html` | What you'll build (the assistant, the evals, the app); what a personal assistant agent is; the Instinct story and its three reported first-week failures, framed as "reported"; the four-hour agenda; "Start with setup" |
+| `index.html` | What you'll build (the assistant, the evals, the mock phone); what a personal assistant agent is; the Instinct story and its three reported first-week failures, framed as "reported"; the four-hour agenda; "Start with setup" |
 | `setup.html` and `lesson-1.html` … `lesson-5.html`, `wrap.html` | One page per block of [plan/01-lessons.md](../plan/01-lessons.md) |
 | `rubrics.html` | How to write a rubric: the rules from [08-rubrics.md](08-rubrics.md#rubric-file-schema), with a worked example and a bad-to-good rewrite |
 | `cheatsheet.html` | The eval layers (LLM, tools, skills, agent, multi-agent, harness, safety): what to test, what to collect, how to grade, an example failure from Sarah's world |
@@ -72,7 +72,7 @@ The builder writes every prompt during the build, following these rules:
 - `site/build.py` renders `site/templates/*.j2` with Jinja into `site/dist/`, inlining CSS and JS, so pages work from `file://` with no server and no network.
 - Progress is saved in `localStorage` under `intuition-guide:v1:<step-id>`, wrapped in try/catch so the page still works when storage is blocked.
 - Replays are pre-rendered from `.jsonl` traces at build time.
-- Design tokens are shared with the app (`ea_app/static/tokens.css`), in light and dark. Readable at 360 px. A link to the app (http://localhost:8765) sits in the header.
+- Design tokens are shared with the mock phone (`ea_app/static/tokens.css`), in light and dark. Readable at 360 px. A link to the mock phone (http://localhost:8765) sits in the header.
 - **Visual check:** every page in a browser at 1440 and 390 widths, light and dark.
 
 ## Starter repo
@@ -80,7 +80,7 @@ The builder writes every prompt during the build, following these rules:
 `tools/make_starter.py` builds `../starter/` from `kit/`.
 
 **Copied unchanged:**
-- world data, the tool server (except the file below), harnesses, runner, report and app
+- world data, the tool server (except the file below), harnesses, runner, report and mock phone
 - the golden dataset, component suites, and every rubric except `email.yaml`
 - the three pre-built skills: `email-reply`, `travel-booking`, `web-research`
 - the builder's `CLAUDE.md`, and the prebuilt `site/dist/`

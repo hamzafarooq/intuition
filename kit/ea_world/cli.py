@@ -28,7 +28,7 @@ def main(argv: list[str] | None = None) -> None:
         state.init_run_dir(run_dir, args.variant)
         state.write_current(run_dir)
         print(f"New world: {run_dir}")
-        print("Restart Claude Code (or the app) to use it.")
+        print("Restart Claude Code (or the mock phone) to use it.")
         return
     if args.cmd == "tools":
         from .server import tool_names

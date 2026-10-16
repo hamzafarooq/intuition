@@ -1,11 +1,12 @@
-"""`ea-app` serves the Intuition app; `ea-start` runs quick checks first, then serves it and opens it.
+"""`ea-app` serves the mock phone (Intuition's local web page); `ea-start` runs quick checks first, then serves
+it and opens it.
 
     ea-app [--port 8765] [--host 127.0.0.1] [--open] [--fake] [--real-sites]
     ea-start [--port 8765] [--host 127.0.0.1] [--no-open] [--fake] [--real-sites]
 
 `--real-sites` (or `EA_REAL_SITES=on`; `make demo-real`) is the instructor-only real-site search demo
 (ea_harness/real_sites.py): it opens a clean, throwaway browser on port 9223, lets browser sessions
-search real travel sites for quotes, and closes the browser and deletes its profile when the app stops.
+search real travel sites for quotes, and closes the browser and deletes its profile when the mock phone stops.
 """
 
 import argparse
@@ -39,13 +40,13 @@ def note(text: str) -> None:
 
 
 def _parser(prog: str, start: bool) -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog=prog, description="Intuition: the executive-assistant workshop app.")
+    p = argparse.ArgumentParser(prog=prog, description="The mock phone: text Intuition, the workshop's executive assistant, from your browser.")
     p.add_argument("--port", type=int, default=int(os.environ.get("EA_APP_PORT", "8765")))
     p.add_argument("--host", default="127.0.0.1")
     if start:
         p.add_argument("--no-open", action="store_true", help="don't open the browser")
     else:
-        p.add_argument("--open", action="store_true", help="open the app in the browser")
+        p.add_argument("--open", action="store_true", help="open the mock phone in the browser")
     p.add_argument("--fake", action="store_true", help="use the scripted demo harness (no Claude needed)")
     p.add_argument("--real-sites", action="store_true",
                    help="instructor demo: let browser sessions search real travel sites for quotes, in a clean "
@@ -81,7 +82,7 @@ def open_clean_browser() -> bool:
         bad(f"{real_sites.LABEL}: {exc}")
         return False
     ok(f"{real_sites.LABEL}: clean throwaway {info.get('browser', 'browser')} on port {info['port']} "
-       "(fresh profile, deleted when the app stops)")
+       "(fresh profile, deleted when the mock phone stops)")
     note("Real sites give quotes only; holds and bookings stay on the workshop's booking sites. Evals never use this.")
     return True
 
@@ -95,7 +96,7 @@ def serve(host: str, port: int, open_browser: bool, fake: bool, log_level: str =
     logging.basicConfig(level=log_level.upper(), format="%(asctime)s %(name)s %(levelname)s %(message)s")
     app = create_app(fake=fake, sites_port=int(os.environ.get("EA_SITES_PORT", "8766")), real_sites=real_sites)
     url = f"http://{'localhost' if host in ('127.0.0.1', '0.0.0.0') else host}:{port}"
-    print(_color("1", f"{app.state.app_name} is running at {url}") + ("  (scripted demo harness)" if fake else "")
+    print(_color("1", f"The mock phone is running at {url}; text {app.state.app_name} from it") + ("  (scripted demo harness)" if fake else "")
           + ("  (real-site search: instructor demo)" if real_sites else ""))
     print("Press Ctrl+C to stop.")
     if open_browser:
@@ -122,7 +123,7 @@ def main(argv: list[str] | None = None) -> None:
 
 
 def start(argv: list[str] | None = None) -> None:
-    """Quick checks (Claude Code present and logged in, port free), then the app."""
+    """Quick checks (Claude Code present and logged in, port free), then the mock phone."""
     args = _parser("ea-start", start=True).parse_args(argv)
     print(_color("1", "Checking your setup"))
     load_env()
@@ -154,7 +155,7 @@ def start(argv: list[str] | None = None) -> None:
     (ok if b["available"] else note)(b["message"])
     real = real_sites_on(args) and open_clean_browser()
     if not ready and not args.fake:
-        note("Starting anyway; the app explains what to fix. Use --fake for the scripted demo.")
+        note("Starting anyway; the mock phone explains what to fix. Use --fake for the scripted demo.")
     print()
     serve(args.host, args.port, not args.no_open, args.fake, args.log_level, real_sites=real)
 

@@ -22,7 +22,7 @@ steps:
       Claude Code's permissions have three lists: `allow` (just run it), `ask` (stop and get approval
       first) and `deny` (never). Deny wins over ask, and ask wins over allow. Put the seven tools that
       change the world in `ask`, and Claude Code itself pauses before each one and asks the kit's approval
-      tool. In the app that shows an approval card; in evals, the test script answers.
+      tool. On the mock phone that shows an approval card; in evals, the test script answers.
     prompt: |
       Edit assistant/.claude/settings.json. Add a permissions.ask list with exactly these seven tools, by their mcp__ea-world__ names: calendar_create, calendar_update, calendar_cancel, email_send, travel_book, travel_cancel, restaurant_book.
 
@@ -37,7 +37,7 @@ steps:
     run:
       - make start
     expect:
-      - "In the app, each send shows an approval card with the full email. Approve the first: it lands in Sarah's outbox, a catcher, so nothing leaves your laptop."
+      - "On the mock phone, each send shows an approval card with the full email. Approve the first: it lands in Sarah's outbox, a catcher, so nothing leaves your laptop."
       - "Deny the second: nothing is sent, and the assistant says so."
       - "Behind the scenes shows each approval request and your decision."
     builds: ["assistant/.claude/settings.json (approval gate)"]

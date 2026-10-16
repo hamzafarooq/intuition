@@ -4,7 +4,7 @@ Students take the code home and run everything on their own laptop. There's no c
 
 ## The student's path
 
-Download the repo, add two keys, run one command. `make start` checks prerequisites, starts the server, and opens the app (the mock phone and chat); Claude Code runs the assistant behind it. Separate cloud-deployment instructions will come later and aren't part of this kit.
+Download the repo, add two keys, run one command. `make start` checks prerequisites, starts the server, and opens the mock phone (the onboarding page, phone and chat); Claude Code runs the assistant behind it. Intuition is the assistant Sarah texts; in the workshop you text it from this mock phone in your browser (localhost:8765). Separate cloud-deployment instructions will come later and aren't part of this kit.
 
 ## What runs where
 
@@ -13,9 +13,9 @@ Everything runs on the laptop:
 | Piece | Needs |
 |---|---|
 | The assistant | Claude Code CLI, logged in with the student's own Claude account (Pro or Max) |
-| Tool server, runner, report, app, guide | Python 3.12 managed by uv |
+| Tool server, runner, report, mock phone, guide | Python 3.12 managed by uv |
 | Judge and simulated Sarah | `OPENAI_API_KEY` |
-| Live web search in the app | `SERPAPI_API_KEY` (evals always use recorded results) |
+| Live web search on the mock phone | `SERPAPI_API_KEY` (evals always use recorded results) |
 | Bookings in a visible browser (optional, recommended) | Brave or Chrome, and Node.js 20+ (for `npx chrome-devtools-mcp`). `make start` launches the browser with remote debugging on port 9222 |
 
 No Anthropic API key is needed. Claude usage counts against the student's plan limits, so the guide explains how to keep runs small.
@@ -39,7 +39,7 @@ Sections, in order:
 5. **Set up:** `make setup`. On Windows without `make`, run `uv sync`, then copy `.env.example` to `.env`.
 6. **Add keys:** edit `.env` and set `OPENAI_API_KEY=...` and optionally `SERPAPI_API_KEY=...`. Never commit `.env`; it's already in `.gitignore`.
 7. **Check everything:** `make doctor` (below). Fix anything red before continuing.
-8. **Start it:** `make start`. This runs the quick checks, starts the server, and opens Intuition in your browser: the onboarding page with the phone and chat beside it, and Claude Code running the assistant in the background. Go through the onboarding, then send "What needs me today?". Stop with Ctrl+C.
+8. **Start it:** `make start`. This runs the quick checks, starts the server, and opens the mock phone in your browser: the onboarding page with the phone and chat beside it, and Claude Code running the assistant in the background. Go through the onboarding, then send "What needs me today?". Stop with Ctrl+C.
 9. **Or use the terminal:** `cd assistant && claude`, and ask the same question.
 10. **Run your first evals:** `uv run ea-eval run --slice setup-baseline`, then open the report it prints.
 11. **Open the guide:** `site/dist/index.html` in your browser.
@@ -47,7 +47,7 @@ Sections, in order:
 13. **Troubleshooting:** the table below.
 14. **Updating and resetting:**
     - `git pull` and `make setup` to update
-    - `ea-world reset` or "Reset world" in the app to start the mock world fresh
+    - `ea-world reset` or "Reset world" on the mock phone to start the mock world fresh
     - delete `evals/results/` and `reports/` to clear old runs
 
 ### Troubleshooting table
@@ -62,7 +62,7 @@ Sections, in order:
 | `OPENAI_API_KEY` missing or invalid | Check `.env`; `make doctor` tests the key with one tiny call |
 | Live search returns nothing | Check `SERPAPI_API_KEY`, or switch back to mock search; the free plan is 250 searches a month |
 | Times look wrong on Windows | `make setup` installs `tzdata`; rerun it |
-| The app won't open on port 8765 | `uv run ea-app --port 8800` |
+| The mock phone won't open on port 8765 | `uv run ea-app --port 8800` |
 | A run stopped with "cost cap reached" | Raise `--max-cost` or run a smaller slice |
 
 ## `make start`
@@ -95,6 +95,6 @@ Ten lines: what this is, `make setup`, add keys to `.env`, `make doctor`, `make 
 
 ## Acceptance
 
-- Following `docs/SETUP.md` from a clean user account on macOS gets to a first assistant reply in the app in under 15 minutes. Repeat on Linux, and on Windows with WSL2. Record the times.
+- Following `docs/SETUP.md` from a clean user account on macOS gets to a first assistant reply on the mock phone in under 15 minutes. Repeat on Linux, and on Windows with WSL2. Record the times.
 - `make doctor` turns red with the right fix for each of: no `claude`, not logged in, no OpenAI key, port busy.
 - `git status` after setup shows no tracked `.env` and no run artifacts.

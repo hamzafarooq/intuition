@@ -48,8 +48,8 @@ steps:
       - cd assistant && claude
     expect:
       - "The file starts with `---`, then the name and the description exactly as given."
-      - "In the app, or in `cd assistant && claude`, the first thing behind the scenes is the scheduling skill loading."
-      - "The event lands on Wed 28 Oct, 11:00 Denver / 13:00 New York / 17:00 London. Use \"Reset world\" in the app to try again."
+      - "On the mock phone, or in `cd assistant && claude`, the first thing behind the scenes is the scheduling skill loading."
+      - "The event lands on Wed 28 Oct, 11:00 Denver / 13:00 New York / 17:00 London. Use \"Reset world\" on the mock phone to try again."
     builds: ["assistant/.claude/skills/scheduling/SKILL.md"]
 
   - id: "2.2"

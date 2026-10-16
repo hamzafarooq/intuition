@@ -91,7 +91,7 @@ B7:
   tests: [tests/test_feedback.py]
 B8:
   check: modes_share_tool_names
-  manual: "live search in the app with a SerpAPI key (no key on this machine yet)"
+  manual: "live search on the mock phone with a SerpAPI key (no key on this machine yet)"
 B9:
   tests: [tests/test_tools.py::test_web_search]
   manual: "record mode with a SerpAPI key"

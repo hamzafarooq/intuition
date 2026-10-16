@@ -154,7 +154,7 @@ Behaviour by `EA_APPROVAL_MODE`:
 | Mode | Decision |
 |---|---|
 | `script` | Read `<run_dir>/approval_context.json` (written by the runner before each turn: case `fill.mode`, attendees, `pre_authorized`, Sarah's latest message and whether it's the explicit-yes line) and apply the approval policy in [04-assistant.md](04-assistant.md#approval-policy) |
-| `app` | Write `<run_dir>/approvals/pending/<id>.json` with a one-line human summary, then poll every 0.5 seconds for `<run_dir>/approvals/decided/<id>.json` (written by the app's API). Deny after 10 minutes. If the context file says the user's latest message was an explicit yes and auto-approve is on, allow at once |
+| `app` | Write `<run_dir>/approvals/pending/<id>.json` with a one-line human summary, then poll every 0.5 seconds for `<run_dir>/approvals/decided/<id>.json` (written by the mock phone's API). Deny after 10 minutes. If the context file says the user's latest message was an explicit yes and auto-approve is on, allow at once |
 | `allow_all` | Allow |
 
 - On allow with `EA_IDEMPOTENCY=auto`, add `idempotency_key` (a hash of tool and canonical arguments) to write tools through `updatedInput`.

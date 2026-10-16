@@ -29,7 +29,8 @@ sections:
       - {term: "Agent team", meaning: "Several agents working on one deliverable, checking each other."}
       - {term: "MCP server", meaning: "A program that gives the assistant tools. Here, the mock world."}
       - {term: "Prompt injection", meaning: "Instructions hidden in content the assistant reads, such as an email or web page, trying to make it do something the user didn't ask for."}
-      - {term: "Intuition", meaning: "The workshop's web app for meeting and messaging the assistant."}
+      - {term: "Intuition", meaning: "The assistant Sarah texts. In the workshop you text it from a mock phone in your browser."}
+      - {term: "Mock phone", meaning: "The page at http://localhost:8765 that stands in for Sarah's phone: onboarding, the chat and a behind-the-scenes view. `make start` opens it."}
 
   - id: more
     heading: More terms from the lessons

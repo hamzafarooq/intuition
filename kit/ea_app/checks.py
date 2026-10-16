@@ -49,7 +49,7 @@ def claude_status(timeout: float = 20.0) -> dict[str, Any]:
     if not path:
         out["logged_in"] = False
         out["message"] = ("Claude Code isn't installed (no `claude` command found). Install it from "
-                          "code.claude.com, open a new terminal, and start Intuition again.")
+                          "code.claude.com, open a new terminal, and start the mock phone again.")
         return out
     try:
         v = subprocess.run([path, "--version"], capture_output=True, text=True, timeout=timeout)

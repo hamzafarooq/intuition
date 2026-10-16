@@ -156,8 +156,8 @@ def handle(tool_name: str, tool_input: dict[str, Any], tool_use_id: str | None, 
                 d = read_json(decided, {}) or {}
                 pending.unlink(missing_ok=True)
                 if d.get("decision") == "allow":
-                    return respond("allow", d.get("by", "human"), d.get("reason", "Approved in the app"))
-                return respond("deny", d.get("by", "human"), d.get("reason", "Sarah denied this in the app."))
+                    return respond("allow", d.get("by", "human"), d.get("reason", "Approved on her phone"))
+                return respond("deny", d.get("by", "human"), d.get("reason", "Sarah denied this on her phone."))
             time.sleep(POLL_SECONDS)
         pending.unlink(missing_ok=True)
         return respond("deny", "app", "No answer within 10 minutes.")

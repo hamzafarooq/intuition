@@ -60,12 +60,12 @@ Hand-written trace, call-log and final-state triples that prove graders catch ea
 
 ## Requirement traceability
 
-`reports/acceptance.md` lists every PRD requirement ID (A1–A19, B1–B11, C1–C6, B12, D1–D5, E1–E17, F1–F7, and the app requirements G1–G9 in the PRD) with the test or check that proves it and its result. The build isn't done until every row is green or has an accepted, written exception.
+`reports/acceptance.md` lists every PRD requirement ID (A1–A19, B1–B11, C1–C6, B12, D1–D5, E1–E17, F1–F7, and the mock phone requirements G1–G9 in the PRD) with the test or check that proves it and its result. The build isn't done until every row is green or has an accepted, written exception.
 
 ## Dry run
 
 On a clean laptop account, follow the guide from the starter repo as a student would:
 - Time each step and record the times on the step cards.
 - Complete every lesson's prompts in Claude Code, and run every eval command.
-- Open the app, connect accounts, send the suggested messages, and try approve, deny and disconnect.
+- Open the mock phone, connect accounts, send the suggested messages, and try approve, deny and disconnect.
 - Fix anything that breaks or takes more than 20% longer than planned.

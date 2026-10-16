@@ -8,7 +8,7 @@
 | Tool server | `kit/ea_world/` | MCP stdio server. Serves every tool over a per-run copy of the world; logs calls; injects faults; produces world feedback; runs verifiers |
 | Builder's brief | `kit/CLAUDE.md` | Tells Claude Code (used by students to build) what the repo is and where things go |
 | Assistant files | `kit/assistant/` | The assistant: `CLAUDE.md`, `.mcp.json`, `.claude/` (skills, sub-agents, settings, hooks). See [04-assistant.md](04-assistant.md) |
-| App | `kit/ea_app/` | Intuition: onboarding page, docked messaging simulator, behind-the-scenes view ([14-app.md](14-app.md)) |
+| Mock phone | `kit/ea_app/` | Intuition's local page: onboarding page, docked messaging simulator, behind-the-scenes view ([14-app.md](14-app.md)) |
 | Mock booking sites | `kit/ea_sites/` | Skyway, Stays and Tables on port 8766: the websites the assistant uses in the visible browser ([16-browser-bookings.md](16-browser-bookings.md)) |
 | Harness | `kit/ea_harness/` | Drives the Claude Code CLI headless (`claude -p`, stream-json, `--resume`, approvals through `ea-world`'s `approval_prompt` tool) and converts its events into the trace. Holds the shared stop-check logic. The independent harness is deferred |
 | Eval runner | `kit/ea_evals/` | Runs cases on either harness, simulates Sarah, answers approvals, grades with rubrics, computes metrics, writes results and reports |
@@ -52,7 +52,7 @@ kit/
       skills/<name>/SKILL.md   scheduling, inbox-triage, meeting-brief, meeting-deck,
                                email-reply, travel-booking, web-research, monday-brief
       agents/<name>.md         scheduler, inbox, briefer, travel, reviewer, planner, challenger, qa
-  ea_app/                      the Intuition app (see 14-app.md)
+  ea_app/                      the mock phone, Intuition's local page (see 14-app.md)
     server.py  sessions.py  static/
   ea_sites/                    mock booking sites on :8766 (see 16-browser-bookings.md)
     server.py  templates/  static/
@@ -112,7 +112,7 @@ kit/
 |---|---|---|
 | Language | Python 3.11+ | `zoneinfo` from the standard library; add `tzdata` as a dependency so Windows works |
 | Packaging | `uv`, single `pyproject.toml` | Console scripts: `ea-world`, `ea-eval`, `ea-app` |
-| Web app | `starlette`, `uvicorn` | Server-sent events via a streaming response; vanilla JS front end, no build step |
+| Mock phone | `starlette`, `uvicorn` | Server-sent events via a streaming response; vanilla JS front end, no build step |
 | MCP server and client | `mcp>=2.3,<3` (official Python SDK; FastMCP is `MCPServer` in v2) | See the notes in [03-mcp-server.md](03-mcp-server.md) and [05-harnesses.md](05-harnesses.md) |
 | Assistant runtime | Claude Code CLI (installed separately, logged in with the user's Claude account) | Driven headless; no Anthropic API key needed |
 | Judge and simulated Sarah | `openai` (official Python SDK), Responses API with structured outputs | Verify model ids and the structured-output request shape at build time |
@@ -135,8 +135,8 @@ No Node, Bun or browser automation is required. Deck overflow is checked against
 | `EA_CLAUDE_MODEL` | `opus` | Claude Code model for the assistant and sub-agents (alias or full id) |
 | `EA_JUDGE_MODEL` | `gpt-6.1-sol` | Judge (OpenAI). Verify the id at build time |
 | `EA_SIM_MODEL` | `gpt-6-luna` | Simulated Sarah's classifier (OpenAI, cheapest tier). Verify the id at build time |
-| `EA_BROWSER` | `on` in the app if a browser is available, `off` in evals | Browser booking mode ([16-browser-bookings.md](16-browser-bookings.md)) |
-| `EA_APPROVAL_MODE` | set by the runner or app | `script`, `app` or `allow_all` ([05-harnesses.md](05-harnesses.md#approvals---permission-prompt-tool)) |
+| `EA_BROWSER` | `on` for mock-phone sessions if a browser is available, `off` in evals | Browser booking mode ([16-browser-bookings.md](16-browser-bookings.md)) |
+| `EA_APPROVAL_MODE` | set by the runner or the mock phone | `script`, `app` or `allow_all` ([05-harnesses.md](05-harnesses.md#approvals---permission-prompt-tool)) |
 | `EA_MODE` | `mock` | `mock`, `record` (live search, saved to cassettes), `live` (live search, not saved) |
 | `EA_RUN_DIR` | `runs/interactive-<timestamp>` | Tool server state for this run |
 | `EA_WORLD_VARIANT` | none | Comma-separated variant names from `world/variants/` |
@@ -152,11 +152,11 @@ No Node, Bun or browser automation is required. Deck overflow is checked against
 | `make test` | All offline tests; no API key needed |
 | `make doctor` | Checks every prerequisite ([15-setup.md](15-setup.md#make-doctor)) |
 | `make smoke` | One case, one trial, through Claude Code (uses a little of the Claude plan, plus OpenAI for judging) |
-| `make app` | Start the Intuition app |
+| `make app` | Start the mock phone |
 | `make browser` | Start Brave (or Chrome) with remote debugging on port 9222 and a separate profile |
 | `ea-world` | Starts the MCP server on stdio (normally launched by `.mcp.json` or the harness) |
 | `ea-world reset` | Starts a fresh interactive run dir |
-| `ea-app --open` | Start the Intuition app at http://localhost:8765 |
+| `ea-app --open` | Start the mock phone at http://localhost:8765 |
 | `cd assistant && claude` | Talk to the assistant in Claude Code |
 | `ea-eval run --cases workshop --trials 3` | Run golden cases ([09-runner-and-report.md](09-runner-and-report.md)) |
 | `ea-eval component llm_dates --trials 5` | Run a component suite |

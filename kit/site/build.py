@@ -324,7 +324,7 @@ def replay_rows(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
             )
         elif t == "approval_response":
             allow = e.get("decision") == "allow"
-            who = {"script": "the eval script", "human": "Sarah", "app": "Sarah in the app"}.get(
+            who = {"script": "the eval script", "human": "Sarah", "app": "Sarah on her phone"}.get(
                 e.get("by", ""), e.get("by", "")
             )
             reason = f": {e['reason']}" if e.get("reason") else ""

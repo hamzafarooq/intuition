@@ -1,16 +1,16 @@
 # Intuition: build an executive assistant, then prove how far you can trust it
 
-A four-hour workshop kit. You build Sarah Smith's executive assistant in Claude Code, meet it in the Intuition app, and test every layer with a golden dataset of 63 cases graded by rubrics.
+A four-hour workshop kit. You build Sarah Smith's executive assistant in Claude Code, text it from a mock phone, and test every layer with a golden dataset of 63 cases graded by rubrics.
 
 1. Install Claude Code and log in, and install uv: [docs/SETUP.md](docs/SETUP.md).
 2. `make setup`
 3. Add `OPENAI_API_KEY` (and optionally `SERPAPI_API_KEY`) to `.env`.
 4. `make doctor`, and fix anything red.
-5. `make start` opens the app; send "What needs me today?".
+5. `make start` opens the mock phone; send "What needs me today?".
 6. `uv run ea-eval run --slice setup-baseline` runs your first evals.
 7. The guide is in `site/dist/index.html` (`make site` builds it).
 
-Everything is fictional and runs on your laptop. No real accounts are touched.
+Intuition is the assistant Sarah texts; in the workshop you text it from a mock phone in your browser (localhost:8765). Everything is fictional and runs on your laptop. No real accounts are touched.
 
 ## Optional: view a run in Phoenix (instructors)
 
@@ -26,8 +26,8 @@ The `phoenix` extra adds only OpenTelemetry and OpenInference, so a plain `uv sy
 
 Off for students and in every eval. Turn it on only to show the assistant comparing live prices:
 
-1. `make demo-real` (the same as `EA_REAL_SITES=on uv run ea-start --real-sites`). It opens a clean, throwaway Brave or Chrome window on port 9223 with a brand-new profile: no cookies, no saved logins, never your own profile. The profile is deleted when the app stops (or run `uv run python tools/browser.py --real --close`).
-2. The app shows a **Real-site search (instructor demo)** badge. Leave "Book through the browser" on and ask, for example, "What do flights from Denver to Chicago on 4 November cost? Just compare, don't book."
+1. `make demo-real` (the same as `EA_REAL_SITES=on uv run ea-start --real-sites`). It opens a clean, throwaway Brave or Chrome window on port 9223 with a brand-new profile: no cookies, no saved logins, never your own profile. The profile is deleted when the mock phone stops (or run `uv run python tools/browser.py --real --close`).
+2. The mock phone shows a **Real-site search (instructor demo)** badge. Leave "Book through the browser" on and ask, for example, "What do flights from Denver to Chicago on 4 November cost? Just compare, don't book."
 
 What it can do: open expedia.com and google.com/travel (flights and hotels), type places, dates and the number of travellers, and read results and prices. Real sites give quotes only. Holds and bookings still happen on the workshop's mock sites, through the gated booking tools, after Sarah says yes.
 
